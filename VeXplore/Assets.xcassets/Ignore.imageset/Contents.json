@@ -1,0 +1,22 @@
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "1464180871_bin_cancel_close_cross_delete_empty_exit_garbage_minus_out_recycle_remove_trash copy.png",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "1464180871_bin_cancel_close_cross_delete_empty_exit_garbage_minus_out_recycle_remove_trash.png",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}

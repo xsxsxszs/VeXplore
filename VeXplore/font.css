@@ -1,0 +1,28 @@
+/* font-size */
+h1 {
+    font-size: <H1_FONT_SIZE>px;
+}
+
+h2 {
+    font-size: <H2_FONT_SIZE>px;
+}
+
+h3 {
+    font-size: <H3_FONT_SIZE>px;
+}
+
+pre {
+    font-size: <PRE_FONT_SIZE>px;
+}
+
+body {
+    font-size: <BODY_FONT_SIZE>px;
+}
+
+.subtle {
+    font-size : <SUBTLE_FONT_SIZE>px;
+}
+
+.subtle .fade {
+    font-size : <SUBTLE_FADE_FONT_SIZE>px;
+}
