@@ -43,6 +43,7 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
     init()
     {
         super.init(nibName: nil, bundle: nil)
+        presentStyle = .horizental
         dismissStyle = .right
         topicDetailVC.dismissStyle = .none
         topicCommentVC.dismissStyle = .none

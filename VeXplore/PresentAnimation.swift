@@ -94,7 +94,8 @@ class SwipeDismissInteractiveTransition: UIPercentDrivenInteractiveTransition, U
 class BouncePresentTransition: NSObject, UIViewControllerAnimatedTransitioning
 {
     private let presentDuration = 0.6
-    
+    fileprivate var presentStyle: TransitionPresentStyle = .vertical
+
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval
     {
         return presentDuration
@@ -107,7 +108,13 @@ class BouncePresentTransition: NSObject, UIViewControllerAnimatedTransitioning
         {
             let containerView = transitionContext.containerView
             let finalFrame = transitionContext.finalFrame(for: toVC)
-            toVC.view.frame = finalFrame.offsetBy(dx: 0, dy: containerView.bounds.height)
+            switch presentStyle
+            {
+            case .vertical:
+                toVC.view.frame = finalFrame.offsetBy(dx: 0, dy: containerView.bounds.height)
+            case .horizental:
+                toVC.view.frame = finalFrame.offsetBy(dx: containerView.bounds.width, dy: 0)
+            }
             containerView.addSubview(toVC.view)
             UIView.animate(withDuration: presentDuration, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 3, options: .curveEaseOut, animations: {
                 fromVC.view.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
@@ -173,6 +180,11 @@ class SwipeDismissTransition: NSObject, UIViewControllerAnimatedTransitioning
     
 }
 
+enum TransitionPresentStyle: Int
+{
+    case vertical
+    case horizental
+}
 
 enum TransitionDismissStyle: Int
 {
@@ -186,6 +198,7 @@ class SwipeTransitionViewController: UIViewController, UIViewControllerTransitio
     private let presentTransition = BouncePresentTransition()
     private var dismissTransition: SwipeDismissTransition!
     private var swipeDismissInteractiveTransition: SwipeDismissInteractiveTransition!
+    var presentStyle: TransitionPresentStyle = .vertical
     var dismissStyle: TransitionDismissStyle = .down
     var programaticScrollEnabled = true
 
@@ -204,6 +217,7 @@ class SwipeTransitionViewController: UIViewController, UIViewControllerTransitio
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning?
     {
+        presentTransition.presentStyle = presentStyle
         return presentTransition
     }
     
