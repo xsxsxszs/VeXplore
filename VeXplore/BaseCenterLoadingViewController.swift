@@ -22,11 +22,6 @@ class BaseCenterLoadingViewController: SwipeTransitionViewController, SquareLoad
     lazy var centerLoadingView: SquaresLoadingView = {
         let view = SquaresLoadingView(loadingStyle: LoadingStyle.bottom)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.frame = CGRect(x: 0, y: self.view.frame.height * 0.5 - R.Constant.LoadingViewHeight, width: self.view.frame.width, height: R.Constant.LoadingViewHeight)
-        view.autoresizingMask = [
-            .flexibleWidth,
-            .flexibleTopMargin
-        ]
         view.delegate = self
         
         return view
@@ -39,6 +34,9 @@ class BaseCenterLoadingViewController: SwipeTransitionViewController, SquareLoad
 
         view.addSubview(tableView)
         view.addSubview(centerLoadingView)
+        centerLoadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        centerLoadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        centerLoadingView.widthAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
         centerLoadingView.initSquaresPosition()
         beginLoading()
     }

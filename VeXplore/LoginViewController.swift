@@ -102,11 +102,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate
     
     private lazy var centerLoadingView: SquaresLoadingView = {
         let view = SquaresLoadingView(loadingStyle: .bottom)
-        view.frame = CGRect(x: 0, y: self.view.frame.height * 0.5 - R.Constant.LoadingViewHeight, width: self.view.frame.width, height: R.Constant.LoadingViewHeight)
-        view.autoresizingMask = [
-            .flexibleWidth,
-            .flexibleTopMargin
-        ]
+        view.translatesAutoresizingMaskIntoConstraints = false
         view.isHidden = true
         
         return view
@@ -139,8 +135,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate
         backgroundView.addSubview(usernameContainerView)
         backgroundView.addSubview(passwordContainerView)
         backgroundView.addSubview(loginBtn)
-        backgroundView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-48-[usernameContainerView]-48-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        backgroundView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-48-[passwordContainerView]-48-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        backgroundView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-48@999-[usernameContainerView]-48@999-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        usernameContainerView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor).isActive = true
+        usernameContainerView.leadingAnchor.constraint(equalTo: passwordContainerView.leadingAnchor).isActive = true
+        usernameContainerView.trailingAnchor.constraint(equalTo: passwordContainerView.trailingAnchor).isActive = true
+        usernameContainerView.widthAnchor.constraint(lessThanOrEqualToConstant: 480.0).isActive = true
         backgroundView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[usernameContainerView][passwordContainerView]-44-[loginBtn(44)]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
         loginBtn.widthAnchor.constraint(equalToConstant: 112.0).isActive = true
         passwordContainerView.bottomAnchor.constraint(equalTo: backgroundView.centerYAnchor).isActive = true
@@ -154,6 +153,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroundView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
         closeBtn.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
         closeBtn.heightAnchor.constraint(equalTo: closeBtn.widthAnchor).isActive = true
+        centerLoadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        centerLoadingView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        centerLoadingView.widthAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
         
         usernameContainerView.transform = CGAffineTransform(translationX: 0, y: 200)
         usernameContainerView.alpha = 0.0

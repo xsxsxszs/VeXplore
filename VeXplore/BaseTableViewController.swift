@@ -13,27 +13,27 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
     lazy var tableHeaderView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: self.tableView.frame.width, height: 0))
         view.autoresizingMask = .flexibleWidth
+        
         return view
     }()
     
     lazy var tableFooterView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: self.tableView.frame.width, height: 0))
         view.autoresizingMask = .flexibleWidth
+        
         return view
     }()
     
     lazy var topLoadingView: SquaresLoadingView = {
         let view = SquaresLoadingView(loadingStyle: LoadingStyle.top)
-        view.frame = CGRect(x: 0, y: -R.Constant.LoadingViewHeight, width: self.tableView.frame.width, height: R.Constant.LoadingViewHeight)
-        view.autoresizingMask = .flexibleWidth
+        view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
     }()
     
     lazy var bottomLoadingView: SquaresLoadingView = {
         let view = SquaresLoadingView(loadingStyle: LoadingStyle.bottom)
-        view.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.width, height: R.Constant.LoadingViewHeight)
-        view.autoresizingMask = .flexibleWidth
+        view.translatesAutoresizingMaskIntoConstraints = false
         view.delegate = self
         
         return view
@@ -112,6 +112,18 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
         tableHeaderView.addSubview(topLoadingView)
         tableHeaderView.addSubview(topMessageLabel)
         tableFooterView.addSubview(bottomLoadingView)
+        let bindings = [
+            "topLoadingView": topLoadingView,
+            "bottomLoadingView": bottomLoadingView
+        ]
+        tableHeaderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topLoadingView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        topLoadingView.bottomAnchor.constraint(equalTo: tableHeaderView.bottomAnchor).isActive = true
+        topLoadingView.heightAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
+        
+        tableFooterView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLoadingView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        bottomLoadingView.topAnchor.constraint(equalTo: tableFooterView.topAnchor).isActive = true
+        bottomLoadingView.heightAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
+        
         tableView.addSubview(centerMessageLabel)
         tableView.addSubview(topReminderLabel)
         view.addSubview(tableView)

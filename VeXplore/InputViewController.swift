@@ -87,11 +87,11 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
         inputContainerView.addSubview(loadingCancelBtn)
         inputContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroudView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
         inputContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroudView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        inputContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[centerLoadingView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
         loadingCancelBtn.centerXAnchor.constraint(equalTo: inputContainerView.cancelBtn.centerXAnchor).isActive = true
         loadingCancelBtn.centerYAnchor.constraint(equalTo: inputContainerView.cancelBtn.centerYAnchor).isActive = true
         loadingCancelBtn.widthAnchor.constraint(equalTo: inputContainerView.cancelBtn.widthAnchor).isActive = true
         loadingCancelBtn.heightAnchor.constraint(equalTo: inputContainerView.cancelBtn.heightAnchor).isActive = true
+        centerLoadingView.centerXAnchor.constraint(equalTo: inputContainerView.centerXAnchor).isActive = true
         centerLoadingView.centerYAnchor.constraint(equalTo: inputContainerView.centerYAnchor).isActive = true
         centerLoadingView.heightAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
         

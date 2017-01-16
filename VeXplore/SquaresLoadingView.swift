@@ -19,14 +19,28 @@ protocol SquareLoadingViewDelegate: class
 
 class SquaresLoadingView: UIView
 {
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
+    private var size: CGFloat! {
+        didSet
+        {
+            contentViewSize.constant = size
+        }
+    }
+    
     private let squaresLengthSize = 3
     private let duration: Double = 0.8
     private let gapRate: CGFloat = 0.25 // gapSize is gapRate * squareSize
     private var style: LoadingStyle = .top
-    private var size: CGFloat!
     private var squareSize: CGFloat!
     private var gapSize: CGFloat!
     private var motionDistance: CGFloat!
+    private var contentViewSize: NSLayoutConstraint!
     private var squares = [CALayer]()
     private var squaresOffsetX = [CGFloat]()
     private var squaresOffsetY = [CGFloat]()
@@ -44,6 +58,13 @@ class SquaresLoadingView: UIView
     override init(frame: CGRect)
     {
         super.init(frame: frame)
+        addSubview(contentView)
+        contentView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        contentView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        contentView.widthAnchor.constraint(equalTo: contentView.heightAnchor).isActive = true
+        contentViewSize = NSLayoutConstraint.init(item: contentView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 0.0)
+        addConstraint(contentViewSize)
+        
         commonInit()
     }
     
@@ -59,7 +80,7 @@ class SquaresLoadingView: UIView
             let square = CALayer()
             square.backgroundColor = UIColor.black.cgColor
             squares.append(square)
-            layer.addSublayer(square)
+            contentView.layer.addSublayer(square)
         }
         let tap = UITapGestureRecognizer(target: self, action: #selector(reloading))
         addGestureRecognizer(tap)
@@ -84,11 +105,13 @@ class SquaresLoadingView: UIView
             let square = CALayer()
             square.backgroundColor = UIColor.black.cgColor
             squares.append(square)
-            layer.addSublayer(square)
+            contentView.layer.addSublayer(square)
         }
         
         isLoading = false
         size = min(frame.width, frame.height)
+        size = size > 0 ? size : R.Constant.LoadingViewHeight
+        
         /**
          * For squaresLengthSize = 3, there are 4 gaps and 2 square placeholder in both sides.
          * So there are 5 suqares and 4 gaps in total.
@@ -110,8 +133,6 @@ class SquaresLoadingView: UIView
         squaresOffsetY.removeAll()
         squaresOpacity.removeAll()
         
-        let startX = (frame.width - size) / 2.0
-        let startY = (frame.height - size) / 2.0
         for row in 0..<squaresLengthSize
         {
             for column in 0..<squaresLengthSize
@@ -120,13 +141,13 @@ class SquaresLoadingView: UIView
                 var offsetY: CGFloat!
                 if row&1 == 1 // even line
                 {
-                    offsetX = startX + motionDistance + motionDistance * CGFloat(squaresLengthSize - 1 - column)
+                    offsetX = motionDistance + motionDistance * CGFloat(squaresLengthSize - 1 - column)
                 }
                 else
                 {
-                    offsetX = startX + motionDistance + motionDistance * CGFloat(column)
+                    offsetX = motionDistance + motionDistance * CGFloat(column)
                 }
-                offsetY = startY + motionDistance * CGFloat(row + 1)
+                offsetY = motionDistance * CGFloat(row + 1)
                 squaresOffsetX.append(offsetX)
                 squaresOffsetY.append(offsetY)
                 let indexFloat = Float(squaresLengthSize * row + column + 1)
@@ -141,7 +162,7 @@ class SquaresLoadingView: UIView
             square.setAffineTransform(.identity)
             if position == -1
             {
-                square.frame = CGRect(x: startX + motionDistance, y:startY, width: squareSize, height: squareSize)
+                square.frame = CGRect(x: motionDistance, y: 0, width: squareSize, height: squareSize)
                 square.opacity = 0
             }
             else

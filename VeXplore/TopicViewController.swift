@@ -38,6 +38,7 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
     private var unfavorite = false
     private var enableReplying = false
     private weak var presentingVC: UIViewController?
+    private var currentIndex: Int = 0
     
     init()
     {
@@ -98,15 +99,32 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
         
         addChildViewController(topicDetailVC)
         topicDetailVC.didMove(toParentViewController: self)
-        topicDetailVC.view.frame = CGRect(x: 0, y: 0, width: contentScrollView.bounds.width, height: contentScrollView.bounds.height)
+        topicDetailVC.view.translatesAutoresizingMaskIntoConstraints = false
         contentScrollView.addSubview(topicDetailVC.view)
 
         addChildViewController(topicCommentVC)
         topicCommentVC.didMove(toParentViewController: self)
-        topicCommentVC.view.frame = CGRect(x: contentScrollView.bounds.width, y: 0, width: contentScrollView.bounds.width, height: contentScrollView.bounds.height)
+        topicCommentVC.view.translatesAutoresizingMaskIntoConstraints = false
         contentScrollView.addSubview(topicCommentVC.view)
         
-        contentScrollView.contentSize = CGSize(width: 2 * view.frame.width, height: 0)
+        let bindings: [String: Any] = [
+            "detailView": topicDetailVC.view,
+            "commentView": topicCommentVC.view
+        ]
+        
+        contentScrollView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[detailView][commentView]|", options: [.alignAllTop, .alignAllBottom], metrics: nil, views: bindings))
+        topicDetailVC.view.widthAnchor.constraint(equalTo: contentScrollView.widthAnchor).isActive = true
+        topicCommentVC.view.widthAnchor.constraint(equalTo: contentScrollView.widthAnchor).isActive = true
+        topicDetailVC.view.heightAnchor.constraint(equalTo: contentScrollView.heightAnchor).isActive = true
+        topicDetailVC.view.topAnchor.constraint(equalTo: contentScrollView.topAnchor).isActive = true
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator)
+    {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { (_) in
+            self.showPage(atIndex: self.currentIndex, animated: false)
+        }, completion: nil)
     }
     
     // MARK: - TopicDetailViewControllerDelegate
@@ -247,7 +265,8 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
     
     func segmentedControlValueChanged(sender: SegmentControl)
     {
-        showPage(atIndex: sender.selectedIndex, animated: true)
+        currentIndex = sender.selectedIndex
+        showPage(atIndex: currentIndex, animated: true)
     }
     
     // MARK: - UIScrollViewDelegate
@@ -263,18 +282,18 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView)
     {
-        let index = Int(scrollView.contentOffset.x / scrollView.frame.width)
-        showPage(atIndex: index, animated: true)
+        currentIndex = Int(scrollView.contentOffset.x / scrollView.frame.width)
+        showPage(atIndex: currentIndex, animated: true)
         scrollView.panGestureRecognizer.isEnabled = true
     }
     
     override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView)
     {
         super.scrollViewDidEndDecelerating(scrollView)
-        let index = Int(scrollView.contentOffset.x / scrollView.frame.width)
+        currentIndex = Int(scrollView.contentOffset.x / scrollView.frame.width)
         if scrollView.contentOffset.x >= 0, scrollView.contentOffset.x + scrollView.frame.width <= scrollView.contentSize.width
         {
-            showPage(atIndex: index, animated: true)
+            showPage(atIndex: currentIndex, animated: true)
         }
         scrollView.panGestureRecognizer.isEnabled = true
     }

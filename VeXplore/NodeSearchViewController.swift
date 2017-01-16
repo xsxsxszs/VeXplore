@@ -27,6 +27,46 @@ class SortedNodeGroupModel: NSObject
 }
 
 
+class NodeSearchCell: UITableViewCell
+{
+    lazy var contentLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = R.Font.Medium
+        label.textColor = UIColor.darkGray
+        
+        return label
+    }()
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?)
+    {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        contentView.addSubview(contentLabel)
+        let bindings = ["contentLabel": contentLabel]
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[contentLabel]-18-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[contentLabel]-10-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        
+        contentView.backgroundColor = .white
+        preservesSuperviewLayoutMargins = false
+        layoutMargins = .zero
+        selectionStyle = .none
+    }
+    
+    required init?(coder aDecoder: NSCoder)
+    {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse()
+    {
+        super.prepareForReuse()
+        contentLabel.font = R.Font.Medium
+    }
+    
+}
+
+
 class NodeSearchViewController: SearchViewController
 {
     private var nodes: [NodeModel] = [] {
@@ -67,6 +107,7 @@ class NodeSearchViewController: SearchViewController
         tableView.sectionIndexBackgroundColor = .clear
         tableView.estimatedSectionHeaderHeight = R.Constant.EstimatedSectionHeaderHeight
         tableView.sectionHeaderHeight = UITableViewAutomaticDimension
+        tableView.register(NodeSearchCell.self, forCellReuseIdentifier: String(describing: NodeSearchCell.self))
     }
     
     override func viewDidAppear(_ animated: Bool)
@@ -205,10 +246,9 @@ class NodeSearchViewController: SearchViewController
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UITableViewCell.self), for: indexPath)
-        cell.selectionStyle = .none
-        let node = isSearching ?  searchResultNodes[indexPath.section].nodes[indexPath.row] : groupedNodes[indexPath.section].nodes[indexPath.row]
-        cell.textLabel?.text = node.nodeName
+        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: NodeSearchCell.self), for: indexPath) as! NodeSearchCell
+        let node = isSearching ? searchResultNodes[indexPath.section].nodes[indexPath.row] : groupedNodes[indexPath.section].nodes[indexPath.row]
+        cell.contentLabel.text = node.nodeName
         return cell
     }
     

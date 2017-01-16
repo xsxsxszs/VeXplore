@@ -33,7 +33,6 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: String(describing: UITableViewCell.self))
         tableView.register(SectionHeaderView.self, forHeaderFooterViewReuseIdentifier: String(describing: SectionHeaderView.self))
 
         return tableView

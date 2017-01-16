@@ -51,6 +51,7 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
     override func viewDidLoad()
     {
         super.viewDidLoad()
+        navigationController?.navigationBar.isTranslucent = false
         navigationItem.title = R.String.Homepage
 
         view.addSubview(tabsScrollView)
@@ -78,6 +79,26 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
         extendedLayoutIncludesOpaqueBars = true
         contentScrollView.backgroundColor = .white
         setup()
+    }
+    
+    override func viewDidAppear(_ animated: Bool)
+    {
+        super.viewDidAppear(animated)
+        if let currentIndex = self.tabs.index(of: self.currentTab)
+        {
+            self.showPage(atIndex: currentIndex, animated: false)
+        }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator)
+    {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { (_) in
+            if let currentIndex = self.tabs.index(of: self.currentTab)
+            {
+                self.showPage(atIndex: currentIndex, animated: false)
+            }
+        }, completion: nil)
     }
     
     @objc
@@ -127,19 +148,34 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
     
     private func setupTabs()
     {
-        var offsetX: CGFloat = 0.0
-        for _ in 0..<tabs.count
+        var previousView: UIView?
+        for index in 0..<tabs.count
         {
             let topicListVC = HomePageTopicListViewController()
+            topicListVC.view.translatesAutoresizingMaskIntoConstraints = false
             topicListVC.dismissStyle = .none
             addChildViewController(topicListVC)
             tabsVC.append(topicListVC)
             topicListVC.didMove(toParentViewController: self)
             
-            let frame = CGRect(x: offsetX, y: 0, width: contentScrollView.bounds.width, height: contentScrollView.bounds.height)
-            topicListVC.view.frame = frame
             contentScrollView.addSubview(topicListVC.view)
-            offsetX += contentScrollView.bounds.width
+            topicListVC.view.widthAnchor.constraint(equalTo: contentScrollView.widthAnchor).isActive = true
+            topicListVC.view.heightAnchor.constraint(equalTo: contentScrollView.heightAnchor).isActive = true
+            topicListVC.view.topAnchor.constraint(equalTo: contentScrollView.topAnchor).isActive = true
+
+            if let previousView = previousView
+            {
+                topicListVC.view.leadingAnchor.constraint(equalTo: previousView.trailingAnchor).isActive = true
+            }
+            else
+            {
+                topicListVC.view.leadingAnchor.constraint(equalTo: contentScrollView.leadingAnchor).isActive = true
+            }
+            if index == tabs.count - 1
+            {
+                topicListVC.view.trailingAnchor.constraint(equalTo: contentScrollView.trailingAnchor).isActive = true
+            }
+            previousView = topicListVC.view
         }
     }
     
@@ -159,7 +195,7 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
     private func setupContentScrollViewAndShowPage(atIndex index: Int)
     {
         contentScrollView.contentSize = CGSize(width: CGFloat(tabs.count) * view.frame.width, height: 0)
-        showPage(at: index, animated: false)
+        showPage(atIndex: index, animated: false)
     }
     
     // MARK: - HorizontalTabsViewDelegate
@@ -175,14 +211,14 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
     
     func horizontalTabsView(_ horizontalTabsView: HorizontalTabsView, didSelectItemAt index: Int)
     {
-        showPage(at: index, animated: true)
+        showPage(atIndex: index, animated: true)
     }
 
     // MARK: - UIScrollViewDelegate
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView)
     {
         let index = Int(scrollView.contentOffset.x / scrollView.frame.width)
-        showPage(at: index, animated: true)
+        showPage(atIndex: index, animated: true)
         scrollView.panGestureRecognizer.isEnabled = true
     }
     
@@ -191,7 +227,7 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
         let index = Int(scrollView.contentOffset.x / scrollView.frame.width)
         if scrollView.contentOffset.x >= 0 && scrollView.contentOffset.x + scrollView.frame.width <= scrollView.contentSize.width
         {
-            showPage(at: index, animated: true)
+            showPage(atIndex: index, animated: true)
         }
         scrollView.panGestureRecognizer.isEnabled = true
     }
@@ -204,7 +240,7 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
         }
     }
     
-    func showPage(at index: Int, animated: Bool)
+    func showPage(atIndex index: Int, animated: Bool)
     {
         let indexPath = IndexPath(row: index, section: 0)
         tabsScrollView.selectItem(at: indexPath, animated: animated, scrollPosition: .centeredHorizontally)
