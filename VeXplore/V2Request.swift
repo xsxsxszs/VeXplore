@@ -516,16 +516,16 @@ struct V2Request
             case bing
         }
         
-        static func getResults(withKey key: String, searchType: SearchType, completionHandler: @escaping (ValueResponse<[TopicItemModel]>) -> Void) -> Request?
+        static func getResults(withKey key: String, searchType: SearchType = .bing, startIndex: Int = 0, completionHandler: @escaping (ValueResponse<[TopicItemModel]>) -> Void) -> Request?
         {
             var urlString: String!
             switch searchType
             {
             case .google:
-                urlString = "https://www.google.com/search?q=site:v2ex.com/t " + key
+                urlString = "https://www.google.com/search?q=site:v2ex.com/t " + key + "&first=\(startIndex)"
                 break
             case .bing:
-                urlString = "http://cn.bing.com/search?q=site:v2ex.com/t " + key
+                urlString = "http://cn.bing.com/search?q=site:v2ex.com/t " + key + "&first=\(startIndex + 1)"
             }
             guard let url = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else{
                 return nil
@@ -552,7 +552,6 @@ struct V2Request
             }
             return request
         }
-        
     }
     
     

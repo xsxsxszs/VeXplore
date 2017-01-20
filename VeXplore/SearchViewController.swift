@@ -31,8 +31,6 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
-        tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
-        tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(SectionHeaderView.self, forHeaderFooterViewReuseIdentifier: String(describing: SectionHeaderView.self))
 
         return tableView
@@ -82,10 +80,21 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
     }
     
     // MARK: - UITableViewDelegate
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    {
+        return UITableViewAutomaticDimension
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         // override this method in subclass
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView)
+    {
+        // override this method in subclass
+    }
+
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
     {

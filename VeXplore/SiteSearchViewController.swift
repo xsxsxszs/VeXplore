@@ -14,8 +14,30 @@ private enum SiteSearchResultSection: Int
     case topics
 }
 
-class SiteSearchViewController: SearchViewController
+class SiteSearchViewController: SearchViewController, SquareLoadingViewDelegate
 {
+    lazy var tableFooterView: UIView = {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: self.tableView.frame.width, height: 0))
+        view.autoresizingMask = .flexibleWidth
+        
+        return view
+    }()
+    
+    lazy var bottomLoadingView: SquaresLoadingView = {
+        let view = SquaresLoadingView(loadingStyle: LoadingStyle.bottom)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.delegate = self
+        
+        return view
+    }()
+    
+    private var enableBottomLoading = false
+    private var isBottomLoading = false
+    private var isBottomLoadingFail = false
+    
+    
+    private var searchKey: String?
+    private var page: Int = 0
     private var searchResults = [TopicItemModel]()
     private var memberProfile: ProfileModel?
     private var bingRequest: Request?
@@ -26,6 +48,14 @@ class SiteSearchViewController: SearchViewController
         super.viewDidLoad()
         navigationItem.title = R.String.MemberAndTopicsSearch
         
+        tableFooterView.addSubview(bottomLoadingView)
+        let bindings = ["bottomLoadingView": bottomLoadingView]
+        tableFooterView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLoadingView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        bottomLoadingView.topAnchor.constraint(equalTo: tableFooterView.topAnchor).isActive = true
+        bottomLoadingView.heightAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
+        view.addSubview(tableView)
+        tableView.tableFooterView = tableFooterView
+        
         tableView.register(TopicSearchResultCell.self, forCellReuseIdentifier: String(describing: TopicSearchResultCell.self))
         searchBox.searchField.returnKeyType = .google
         searchBox.searchField.placeholder = R.String.SiteSearchPlaceholder
@@ -35,8 +65,11 @@ class SiteSearchViewController: SearchViewController
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
         textField.resignFirstResponder()
-        if let searchKey = textField.text, searchKey.isEmpty == false
+        searchKey = textField.text
+        if let searchKey = searchKey, searchKey.isEmpty == false
         {
+            page = 0
+            tableView.tableFooterView = nil
             var topicSearching = true
             var memberSearching = true
             bingRequest?.cancel()
@@ -51,8 +84,12 @@ class SiteSearchViewController: SearchViewController
                 
                 if response.success, let result = response.value
                 {
+                    weakSelf.page += 1
+                    weakSelf.enableBottomLoading = true
                     weakSelf.searchResults = result
+                    weakSelf.tableView.setContentOffset(.zero, animated: false)
                     weakSelf.tableView.reloadData()
+                    weakSelf.loadMoreIfNeed()
                     weakSelf.googleRequest = V2Request.Search.getResults(withKey: searchKey, searchType: .google) { (response) in
                         if response.success, let result = response.value
                         {
@@ -98,6 +135,8 @@ class SiteSearchViewController: SearchViewController
         guard let searchKey = textField.text, searchKey.isEmpty == false else{
             searchResults.removeAll()
             memberProfile = nil
+            enableBottomLoading = false
+            tableView.tableFooterView = nil
             tableView.reloadData()
             return
         }
@@ -138,6 +177,32 @@ class SiteSearchViewController: SearchViewController
     }
     
     // MARK: - UITableViewDelegate
+    lazy private var heightCell: TopicSearchResultCell = {
+        let cell = TopicSearchResultCell()
+        cell.bounds = self.tableView.bounds
+        cell.autoresizingMask = [.flexibleWidth]
+        
+        return cell
+    }()
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    {
+        heightCell.prepareForReuse()
+        let siteSearchResultSection = SiteSearchResultSection(rawValue: indexPath.section)!
+        switch siteSearchResultSection
+        {
+        case .user:
+            heightCell.cellTitleLabel.text = R.String.User
+            heightCell.topicTitleLabel.text = memberProfile?.username
+        case .topics:
+            heightCell.cellTitleLabel.text = R.String.Topic
+            heightCell.topicTitleLabel.text = searchResults[indexPath.row].topicTitle
+        }
+        heightCell.setNeedsLayout()
+        heightCell.layoutIfNeeded()
+        let height = ceil(heightCell.contentView.systemLayoutSizeFitting(UILayoutFittingCompressedSize).height)
+        return height
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         let siteSearchResultSection = SiteSearchResultSection(rawValue: indexPath.section)!
@@ -161,6 +226,88 @@ class SiteSearchViewController: SearchViewController
                 topicVC.topicId = topicId
                 DispatchQueue.main.async(execute: {
                     self.bouncePresent(navigationVCWith: topicVC, completion: nil)
+                })
+            }
+        }
+    }
+
+    // MARK: - UIScrollViewDelegate
+    override func scrollViewDidScroll(_ scrollView: UIScrollView)
+    {
+        super.scrollViewDidScroll(scrollView)
+        loadMoreIfNeed()
+    }
+    
+    private func loadMoreIfNeed()
+    {
+        // loading if content is not enough to fill tableview frame
+        if enableBottomLoading && tableView.contentSize.height < tableView.frame.height && !isBottomLoading && !isBottomLoadingFail
+        {
+            beginBottomLoading()
+        }
+        // Bottom loading if enabled
+        if enableBottomLoading && tableView.contentSize.height > tableView.frame.height && !isBottomLoading && !isBottomLoadingFail
+        {
+            tableFooterView.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: R.Constant.LoadingViewHeight)
+            tableView.tableFooterView = tableFooterView
+            if tableView.contentOffset.y + tableView.frame.height > tableView.contentSize.height - (tableView.tableFooterView?.bounds.height ?? 0)
+            {
+                beginBottomLoading()
+            }
+        }
+    }
+
+    // MARK: - Bottom Loading
+    private func beginBottomLoading()
+    {
+        bottomLoadingView.isHidden = false
+        bottomLoadingView.initSquaresNormalPostion()
+        bottomLoadingView.beginLoading()
+        isBottomLoading = true
+        bottomLoadingRequest()
+    }
+    
+    // MARK: - SquareLoadingViewDelegate
+    func didTriggeredReloading()
+    {
+        beginBottomLoading()
+    }
+    
+    func bottomLoadingRequest()
+    {
+        if let searchKey = searchKey
+        {
+            bingRequest = V2Request.Search.getResults(withKey: searchKey, startIndex: page * 10) { [weak self] (response) in
+                guard let weakSelf = self else {
+                    return
+                }
+                
+                weakSelf.bottomLoadingView.stopLoading(withSuccess: response.success, completion: { (success) in
+                    
+                    weakSelf.isBottomLoading = false
+                    if success, let result = response.value
+                    {
+                        weakSelf.page += 1
+                        for topicItemModel in result
+                        {
+                            if weakSelf.searchResults.contains(where: {$0.topicId == topicItemModel.topicId}) == false
+                            {
+                                weakSelf.searchResults.append(topicItemModel)
+                            }
+                        }
+                        weakSelf.isBottomLoadingFail = false
+                        weakSelf.tableView.reloadData()
+                        if result.count < 10
+                        {
+                            weakSelf.tableView.tableFooterView = nil
+                            weakSelf.enableBottomLoading = false
+                        }
+                        weakSelf.loadMoreIfNeed()
+                    }
+                    else
+                    {
+                        weakSelf.isBottomLoadingFail = true
+                    }
                 })
             }
         }

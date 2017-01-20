@@ -56,7 +56,7 @@ class TopicDetailModel: NSObject
         {
             isFavorite = true
         }
-        if let token = rootNode.xPath(".//a[@class='op'][1]").first?["href"]
+        if let token = rootNode.xPath(".//a[@class='op'][1][text()='加入收藏' or text()='取消收藏']").first?["href"]
         {
             let array = token.components(separatedBy: "?t=")
             if array.count == 2

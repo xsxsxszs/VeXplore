@@ -77,4 +77,10 @@ class TopicSearchResultCell: UITableViewCell
         topicTitleLabel.font = R.Font.Medium
     }
     
+    override func layoutSubviews()
+    {
+        super.layoutSubviews()
+        contentView.layoutSubviews()
+        topicTitleLabel.preferredMaxLayoutWidth = topicTitleLabel.bounds.width
+    }
 }

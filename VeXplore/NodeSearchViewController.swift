@@ -106,6 +106,7 @@ class NodeSearchViewController: SearchViewController
         tableView.sectionIndexColor = .hrefColor
         tableView.sectionIndexBackgroundColor = .clear
         tableView.estimatedSectionHeaderHeight = R.Constant.EstimatedSectionHeaderHeight
+        tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
         tableView.sectionHeaderHeight = UITableViewAutomaticDimension
         tableView.register(NodeSearchCell.self, forCellReuseIdentifier: String(describing: NodeSearchCell.self))
     }
