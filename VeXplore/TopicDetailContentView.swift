@@ -46,20 +46,24 @@ class TopicDetailContentView: UIView
             html = customizeHtml(html)
             if let htmlDoc = HTMLDoc(htmlString: html)
             {
+                // If there is no image in this topic, just load the content.
+                // Otherwise, write the content to a file. Grant the webView to access image cache.
+                guard let imageNodes = htmlDoc.xPath(".//img"), imageNodes.count > 0 else {
+                    contentWebView.loadHTMLString(html, baseURL: nil)
+                    return
+                }
+                
                 // add "https:" for "src" attribute starts with "//" in img nodes
-                if let imageNodes = htmlDoc.xPath(".//img")
+                let originalSrcArray = imageNodes.map { $0["src"] }
+                for originalSrc in originalSrcArray
                 {
-                    let originalSrcArray = imageNodes.map { $0["src"] }
-                    for originalSrc in originalSrcArray
+                    if let originalSrc = originalSrc, originalSrc.isEmpty == false
                     {
-                        if let originalSrc = originalSrc, originalSrc.isEmpty == false
-                        {
-                            let httpsSrc = originalSrc.hasPrefix("//") ? R.String.Https + originalSrc : originalSrc
-                            imgSrcArray.append(httpsSrc)
-                            let keyString = " image_cache_key=\"" + httpsSrc
-                            let cachedSrc = Bundle.main.resourcePath! + "/" + R.String.ImagePlaceholder + "\"" + keyString
-                            html = html.replacingOccurrences(of: originalSrc, with: cachedSrc)
-                        }
+                        let httpsSrc = originalSrc.hasPrefix("//") ? R.String.Https + originalSrc : originalSrc
+                        imgSrcArray.append(httpsSrc)
+                        let keyString = " image_cache_key=\"" + httpsSrc
+                        let cachedSrc = Bundle.main.resourcePath! + "/" + R.String.ImagePlaceholder + "\"" + keyString
+                        html = html.replacingOccurrences(of: originalSrc, with: cachedSrc)
                     }
                 }
                 
