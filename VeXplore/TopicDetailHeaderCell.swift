@@ -231,4 +231,11 @@ class TopicDetailHeaderCell: UITableViewCell
         delegate?.favoriteBtnTapped()
     }
     
+    override func layoutSubviews()
+    {
+        super.layoutSubviews()
+        contentView.layoutSubviews()
+        topicTitleLabel.preferredMaxLayoutWidth = topicTitleLabel.bounds.width
+    }
+    
 }

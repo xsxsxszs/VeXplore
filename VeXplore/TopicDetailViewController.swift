@@ -165,8 +165,8 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
     }
     
     // MARK: - UITableViewDelegate
-    lazy private var heightCell: TopicCell = {
-        let cell = TopicCell()
+    lazy private var heightCell: TopicDetailHeaderCell = {
+        let cell = TopicDetailHeaderCell()
         cell.bounds = self.tableView.bounds
         cell.autoresizingMask = [.flexibleWidth]
         
@@ -177,7 +177,7 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
         heightCell.prepareForReuse()
         heightCell.topicTitleLabel.text = topicDetailModel.topicTitle
         heightCell.userNameLabel.text = R.String.Placeholder
-        heightCell.lastReplayDateAndUserLabel.text = R.String.Placeholder
+        heightCell.dateLabel.text = R.String.Placeholder
         heightCell.setNeedsLayout()
         heightCell.layoutIfNeeded()
         let height = ceil(heightCell.contentView.systemLayoutSizeFitting(UILayoutFittingCompressedSize).height)

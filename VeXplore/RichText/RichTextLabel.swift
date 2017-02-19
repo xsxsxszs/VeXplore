@@ -85,6 +85,7 @@ class RichTextLabel: UIView
             if let url = url, getHighlightText(at: point) == url
             {
                 highlightTapAction?(url)
+                return
             }
         }
         super.touchesEnded(touches, with: event)

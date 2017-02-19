@@ -573,29 +573,22 @@ struct V2Request
             return request
         }
         
-        static func getFavoriteTopics(withPage page: Int = 1, completionHandler: @escaping (ValueResponse<([TopicItemModel], String, String, String, Int)>) -> Void)
+        static func getFavoriteTopics(withPage page: Int = 1, completionHandler: @escaping (ValueResponse<([TopicItemModel], Int)>) -> Void)
         {
             let url = R.String.BaseUrl + "/my/topics?p=\(page)"
             Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) -> Void in
                 if response.result.isSuccess, response.request?.url?.absoluteString != response.response?.url?.absoluteString
                 {
-                    let response = ValueResponse<([TopicItemModel], String, String, String, Int)>(success: false, message: [R.String.NeedLoginError])
+                    let response = ValueResponse<([TopicItemModel], Int)>(success: false, message: [R.String.NeedLoginError])
                     completionHandler(response)
                     return
                 }
                 
                 var resultArray:[TopicItemModel] = []
                 var maxPage = 1
-                var favoriteNodesNum = R.String.Zero
-                var favoriteTopicsNum = R.String.Zero
-                var followingsNum = R.String.Zero
                 if let htmlDoc = response.result.value
                 {
-                    favoriteNodesNum = htmlDoc.xPath(".//a[@href='/my/nodes']/span[@class='bigger']")?.first?.content ?? R.String.Zero
-                    favoriteTopicsNum = htmlDoc.xPath(".//a[@href='/my/topics']/span[@class='bigger']")?.first?.content ?? R.String.Zero
-                    followingsNum = htmlDoc.xPath(".//a[@href='/my/following']/span[@class='bigger']")?.first?.content ?? R.String.Zero
-                    
-                    if let aRootNode = htmlDoc.xPath(".//*[@id='Main']/div[@class='box']/div[@class='cell item']")
+                    if let aRootNode = htmlDoc.xPath(".//div[@class='cell item']")
                     {
                         for aNode in aRootNode
                         {
@@ -612,7 +605,7 @@ struct V2Request
                     }
                 }
                 
-                let response = ValueResponse<([TopicItemModel], String, String, String, Int)>(value: (resultArray, favoriteNodesNum, favoriteTopicsNum, followingsNum, maxPage), success: response.result.isSuccess)
+                let response = ValueResponse<([TopicItemModel], Int)>(value: (resultArray, maxPage), success: response.result.isSuccess)
                 completionHandler(response)
             }
         }
@@ -650,7 +643,7 @@ struct V2Request
         static func getFollowings(completion completionHandler: @escaping (ValueResponse<[(String, String)]>) -> Void)
         {
             let url = R.String.BaseUrl + "/my/following"
-            Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) -> Void in
+            Networking.request(url, headers: SharedR.Dict.DesktopClientHeaders).responseParsableHtml { (response) -> Void in
                 if response.result.isSuccess, response.request?.url?.absoluteString != response.response?.url?.absoluteString
                 {
                     let response = ValueResponse<[(String, String)]>(success: false, message: [R.String.NeedLoginError])

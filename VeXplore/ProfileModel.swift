@@ -28,6 +28,9 @@ class ProfileModel: NSObject
     private(set) var topicsNum: Int = 0
     private(set) var repliesNum: Int = 0
     private(set) var hasMoreReplies = false
+    private(set) var favoriteNodesNum: String?
+    private(set) var favoriteTopicsNum: String?
+    private(set) var followingsNum: String?
     
     init(rootNode: HTMLNode)
     {
@@ -53,6 +56,9 @@ class ProfileModel: NSObject
         topicsNum = rootNode.xPath(".//div[@class='cell item']").count
         repliesNum = rootNode.xPath(".//*[@class='dock_area']").count
         hasMoreReplies = rootNode.xPath(".//*[contains(text(),'创建的更多回复')]").count > 0
+        favoriteNodesNum = rootNode.xPath(".//a[@href='/my/nodes']/span[@class='bigger']").first?.content ?? R.String.Zero
+        favoriteTopicsNum = rootNode.xPath(".//a[@href='/my/topics']/span[@class='bigger']").first?.content ?? R.String.Zero
+        followingsNum = rootNode.xPath(".//a[@href='/my/following']/span[@class='bigger']").first?.content ?? R.String.Zero
     }
     
     func encodeWithCoder(_ aCoder: NSCoder)
@@ -76,6 +82,9 @@ class ProfileModel: NSObject
         aCoder.encode(followUrl, forKey: "followUrl")
         aCoder.encode(blockUrl, forKey: "blockUrl")
         aCoder.encode(topicHidden, forKey: "topicHidden")
+        aCoder.encode(favoriteNodesNum, forKey: "favoriteNodesNum")
+        aCoder.encode(favoriteTopicsNum, forKey: "favoriteTopicsNum")
+        aCoder.encode(followingsNum, forKey: "followingsNum")
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -100,6 +109,9 @@ class ProfileModel: NSObject
         followUrl = aDecoder.decodeObject(forKey: "followUrl") as? String
         blockUrl = aDecoder.decodeObject(forKey: "blockUrl") as? String
         topicHidden = aDecoder.decodeBool(forKey: "topicHidden")
+        favoriteNodesNum = aDecoder.decodeObject(forKey: "favoriteNodesNum") as? String
+        favoriteTopicsNum = aDecoder.decodeObject(forKey: "favoriteTopicsNum") as? String
+        followingsNum = aDecoder.decodeObject(forKey: "followingsNum") as? String
     }
     
 }

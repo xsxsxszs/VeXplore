@@ -83,4 +83,5 @@ class TopicSearchResultCell: UITableViewCell
         contentView.layoutSubviews()
         topicTitleLabel.preferredMaxLayoutWidth = topicTitleLabel.bounds.width
     }
+    
 }

@@ -24,9 +24,6 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
         return barButtonItem
     }()
     
-    private var favoriteNodesNum = R.String.Zero
-    private var favoriteTopicsNum = R.String.Zero
-    private var followingsNum = R.String.Zero
     private var needRefreshProfile = false
     private let inputVC = TopicCreatingViewController()
     private var cacheSize: String?
@@ -41,18 +38,12 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
     override func encode(with aCoder: NSCoder)
     {
         aCoder.encode(userProfile, forKey: "userProfile")
-        aCoder.encode(favoriteNodesNum, forKey: "favoriteNodesNum")
-        aCoder.encode(favoriteTopicsNum, forKey: "favoriteTopicsNum")
-        aCoder.encode(followingsNum, forKey: "followingsNum")
     }
     
     required convenience init?(coder aDecoder: NSCoder)
     {
         self.init()
         userProfile = aDecoder.decodeObject(forKey: "userProfile") as? ProfileModel
-        favoriteNodesNum = aDecoder.decodeObject(forKey: "favoriteNodesNum") as! String
-        favoriteTopicsNum = aDecoder.decodeObject(forKey: "favoriteTopicsNum") as! String
-        followingsNum = aDecoder.decodeObject(forKey: "followingsNum") as! String
     }
     
     override func viewDidLoad()
@@ -62,7 +53,6 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
         
         profileTableView.register(MyFavoriteCell.self, forCellReuseIdentifier: String(describing: MyFavoriteCell.self))
         navigationItem.leftBarButtonItem = settingBtn
-        refreshProfile()
         
         NotificationCenter.default.addObserver(self, selector: #selector(profileDidChanged), name: NSNotification.Name.Profile.NeedRefresh, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshProfile), name: NSNotification.Name.Profile.Refresh, object: nil)
@@ -86,12 +76,7 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
             firstResponder.becomeFirstResponder()
             return
         }
-        if needRefreshProfile || userProfile == nil
-        {
-            refreshProfile()
-        }
-        refreshFavorites() // need to request favorites data sepearately
-        
+        refreshProfile()
         ImageCache.default.calculateDiskCacheSize { (size) in
             let cacheSize = String(format:"%.1f", Float(size)/1024.0/1024.0)
             self.cacheSize = String(format: R.String.CacheSize, cacheSize)
@@ -171,40 +156,6 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
         }
     }
     
-    private func refreshFavorites()
-    {
-        guard User.shared.isLogin == true else{
-            return
-        }
-        
-        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        V2Request.Profile.getFavoriteTopics { [weak self] (response) in
-            guard let weakSelf = self else {
-                return
-            }
-            
-            if response.message.count > 0 && response.message[0] == R.String.NeedLoginError
-            {
-                User.shared.logout()
-            }
-            else if response.success, let result = response.value
-            {
-                weakSelf.favoriteNodesNum = result.1
-                weakSelf.favoriteTopicsNum = result.2
-                weakSelf.followingsNum = result.3
-                if weakSelf.userProfile != nil
-                {
-                    weakSelf.profileTableView.reloadSections(IndexSet(integer: ProfileSection.favorite.rawValue), with: .none)
-                }
-            }
-            UIApplication.shared.isNetworkActivityIndicatorVisible = false
-            if let diskCachePath = cachePathString(withFilename: weakSelf.classForCoder.description())
-            {
-                NSKeyedArchiver.archiveRootObject(weakSelf, toFile: diskCachePath)
-            }
-        }
-    }
-    
     private func resetProfileView()
     {
         userProfile = nil
@@ -267,11 +218,11 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
             return cell
         case .favorite:
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: MyFavoriteCell.self), for: indexPath) as! MyFavoriteCell
-            if userProfile != nil
+            if let userProfile = userProfile
             {
-                cell.topicsView.numLabel.text = favoriteTopicsNum
-                cell.nodesView.numLabel.text = favoriteNodesNum
-                cell.followingView.numLabel.text = followingsNum
+                cell.topicsView.numLabel.text = userProfile.favoriteTopicsNum
+                cell.nodesView.numLabel.text = userProfile.favoriteNodesNum
+                cell.followingView.numLabel.text = userProfile.followingsNum
                 cell.delegate = self
             }
             return cell
@@ -374,7 +325,7 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
     // MARK: - MyFavoriteCellDelegate
     func favoriteTopicsTapped()
     {
-        guard favoriteTopicsNum != R.String.Zero else{
+        guard let userProfile = userProfile, let favoriteTopicsNum = userProfile.favoriteTopicsNum, favoriteTopicsNum != R.String.Zero else{
             return
         }
         let favoriteTopicVC = FavoriteTopicsViewController()
@@ -387,7 +338,7 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
     
     func favoriteNodesTapped()
     {
-        guard favoriteNodesNum != R.String.Zero else{
+        guard let userProfile = userProfile, let favoriteNodesNum = userProfile.favoriteNodesNum, favoriteNodesNum != R.String.Zero else{
             return
         }
         let favoriteNodesVC = FavoriteNodesViewController()
@@ -398,7 +349,7 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
     
     func myFollowingsTapped()
     {
-        guard followingsNum != R.String.Zero else{
+        guard let userProfile = userProfile, let followingsNum = userProfile.followingsNum, followingsNum != R.String.Zero else{
             return
         }
         let myFollowingVC = MyFollowingsViewController()

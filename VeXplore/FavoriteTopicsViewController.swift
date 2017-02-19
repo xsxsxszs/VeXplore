@@ -40,7 +40,7 @@ class FavoriteTopicsViewController: TopicListViewController
                 if success, let value = response.value
                 {
                     weakSelf.topicList = value.0
-                    weakSelf.totalPageNum = value.4
+                    weakSelf.totalPageNum = value.1
                     weakSelf.currentPage = 2
                     if weakSelf.currentPage > weakSelf.totalPageNum
                     {
