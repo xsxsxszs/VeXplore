@@ -18,7 +18,6 @@ class FavoriteTopicsViewController: TopicListViewController
         
         enableBottomLoading = false
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
-        closeBtn.tintColor = .middleGray
         navigationItem.leftBarButtonItem = closeBtn
     }
     

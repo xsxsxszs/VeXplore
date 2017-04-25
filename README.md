@@ -2,8 +2,8 @@
 Third-party app for V2EX. Developed using Swift.
 
 ## Download
-[VeXplore (no ads)](https://itunes.apple.com/us/app/vexplore/id1119508407?ls=1&mt=8)  
-[VeXplore Free (ads)](https://itunes.apple.com/us/app/vexplore-free/id1191058321?ls=1&mt=8)
+[VeXplore (Charged)](https://itunes.apple.com/us/app/vexplore/id1119508407?ls=1&mt=8)  
+[VeXplore Lite (Free)](https://itunes.apple.com/us/app/vexplore-free/id1191058321?ls=1&mt=8)
 
 ## Screenshots
 ![](http://p1.bpimg.com/567571/46253251e99f2b6d.png) | ![](http://p1.bpimg.com/567571/b70de1d3f2660b2b.png)
@@ -26,15 +26,17 @@ Third-party app for V2EX. Developed using Swift.
 ---
 ![](http://p1.bpimg.com/567571/411db1d7e2e6fb2e.png) | ![](http://p1.bpimg.com/567571/e50eee5633c2cb2f.png)
 ---
-![](http://p1.bpimg.com/567571/bb94016d3899b8f2.png) | ![](http://p1.bpimg.com/567571/a3cc8681fdf13454.png)
+![](http://i1.piimg.com/567571/b7f825e636e5851b.png) | ![](http://p1.bpimg.com/567571/a3cc8681fdf13454.png)
 ---
 ![](http://p1.bpimg.com/567571/4826ca414cd3dd12.png) | ![](http://p1.bpimg.com/567571/4fea7b367df01ba0.png)
 
 ## Build Requirements
-* Xcode 8.0+
+* Xcode 8.3+
 * iOS 9.0+
 * Open "VeXplore.xcodeproj"
 * Run
 
 ## Contact
 Any questions about this project, feel free to contact me via wmywbyt.cj@gmail.com.
+
+

@@ -235,8 +235,10 @@ class AnimatedSearchButton: UIButton, CAAnimationDelegate
         }
     }
     
-    private let normalColor: UIColor = .middleGray
-    private let highlightColor: UIColor = .lightPink
+    private let normalColor: UIColor = .desc
+    var highlightColor: UIColor {
+        return .highlight
+    }
     private var shapeLayer = CAShapeLayer()
     private var sequenceOfAnimations = [CAAnimation]()
     private let durantion = 0.4

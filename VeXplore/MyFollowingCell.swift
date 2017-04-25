@@ -12,7 +12,7 @@ class MyFollowingCell: UITableViewCell
         let view = AvatarImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
-        view.tintColor = .darkGray
+        view.tintColor = .body
         
         return view
     }()
@@ -21,7 +21,7 @@ class MyFollowingCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Medium
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -29,7 +29,7 @@ class MyFollowingCell: UITableViewCell
     private lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -46,14 +46,14 @@ class MyFollowingCell: UITableViewCell
             "contentLabel": contentLabel,
             "bottomLine": bottomLine
             ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView(40@999)]-8-[contentLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[avatarImageView]-8-[bottomLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView(40@999)]-8-[contentLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[avatarImageView]-8-[bottomLine(0.5)]|", metrics: nil, views: bindings))
         contentLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor).isActive = true
         bottomLine.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor).isActive = true
         bottomLine.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
         
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .background
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none

@@ -24,7 +24,7 @@ class RecentPageViewController: UIViewController, UIScrollViewDelegate, DataPick
         view.showsHorizontalScrollIndicator = false
         view.isPagingEnabled = true
         view.bounces = true
-        view.backgroundColor = .white
+        view.backgroundColor = .background
         
         return view
     }()
@@ -41,8 +41,6 @@ class RecentPageViewController: UIViewController, UIScrollViewDelegate, DataPick
     private var targetPage = 1
     private let pickerCircleTimes = 4
     private var totalPage = R.Constant.TopicPageMax
-    private let downImage = R.Image.ArrowRight
-    private let confirmImage = R.Image.Confirm
     
     override func viewDidLoad()
     {
@@ -55,18 +53,14 @@ class RecentPageViewController: UIViewController, UIScrollViewDelegate, DataPick
             "pagePicker": pagePicker,
             "contentScrollView": contentScrollView
             ]
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentScrollView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[pagePicker]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[pagePicker][contentScrollView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentScrollView]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[pagePicker]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[pagePicker][contentScrollView]|", metrics: nil, views: bindings))
         
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
-        closeBtn.tintColor = .middleGray
-        let pageNumItem: UIBarButtonItem = UIBarButtonItem(customView: pageNumView)
-        navigationItem.leftBarButtonItem = pageNumItem
+        let pageNumItem = UIBarButtonItem(customView: pageNumView)
+        let pageSelectBtn = UIBarButtonItem(image: R.Image.ArrowRight, style: .plain, target: self, action: #selector(pageSelectBtnTapped))
         navigationItem.leftBarButtonItems = [closeBtn, pageNumItem]
-        
-        let pageSelectBtn = UIBarButtonItem(image: downImage, style: .plain, target: self, action: #selector(pageSelectBtnTapped))
-        pageSelectBtn.tintColor = .middleGray
         navigationItem.rightBarButtonItem = pageSelectBtn
         
         pagePicker.scrollingTask = {
@@ -124,14 +118,13 @@ class RecentPageViewController: UIViewController, UIScrollViewDelegate, DataPick
         view.bringSubview(toFront: pagePicker)
         if pagePicker.isExpanded
         {
-            navigationItem.rightBarButtonItem?.image = downImage
-            navigationItem.rightBarButtonItem?.tintColor = .middleGray
+            navigationItem.rightBarButtonItem?.image = R.Image.ArrowRight
             selectPage(targetPage)
         }
         else
         {
-            navigationItem.rightBarButtonItem?.image = confirmImage
-            navigationItem.rightBarButtonItem?.tintColor = .lightPink
+            navigationItem.rightBarButtonItem?.image = R.Image.Confirm
+            navigationItem.rightBarButtonItem?.tintColor = .highlight
             pagePicker.setSelectedItem(currentPage - 1 + totalPage * 2, animate: false)
             targetPage = (pagePicker.selectedItem! + 1) % totalPage
         }
@@ -289,8 +282,7 @@ class RecentPageViewController: UIViewController, UIScrollViewDelegate, DataPick
             pagePicker.showOrHide(true, completion: {() -> Void in
                 self.pagePicker.setSelectedItem(self.currentPage - 1 + self.totalPage * 2, animate: false)
             })
-            navigationItem.rightBarButtonItem?.image = downImage
-            navigationItem.rightBarButtonItem?.tintColor = .middleGray
+            navigationItem.rightBarButtonItem?.image = R.Image.ArrowRight
         }
     }
     

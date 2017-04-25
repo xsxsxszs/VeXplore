@@ -49,7 +49,7 @@ class MyFavoriteCell: UITableViewCell
     private lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -71,14 +71,17 @@ class MyFavoriteCell: UITableViewCell
             "bottomLine": bottomLine
         ]
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[nodesView][topicsView][followingView]|", options: [.alignAllTop, .alignAllBottom], metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[nodesView]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[nodesView]-8-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", metrics: nil, views: bindings))
         nodesView.widthAnchor.constraint(equalTo: followingView.widthAnchor).isActive = true
         topicsView.widthAnchor.constraint(equalTo: followingView.widthAnchor).isActive = true
 
-        contentView.backgroundColor = .white
         selectionStyle = .none
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -95,6 +98,13 @@ class MyFavoriteCell: UITableViewCell
         delegate = nil
     }
     
+    @objc
+    private func refreshColorScheme()
+    {
+        bottomLine.backgroundColor = .border
+        contentView.backgroundColor = .background
+    }
+
     // MARK: - Actions
     @objc
     private func nodesViewTapped()

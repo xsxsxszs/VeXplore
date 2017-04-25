@@ -16,7 +16,18 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
         return view
     }()
     
-    lazy var contentScrollView: UIScrollView = {
+    // automaticallyAdjustsScrollViewInsets defaults to false
+    // set navigationController?.navigationBar.isTranslucent = false
+    // -[UINavigationController navigationBarDidChangeOpacity:]
+    // -[UINavigationController _layoutTopViewController]
+    // -[UINavigationController _layoutViewController:]
+    // -[UINavigationController _computeAndApplyScrollContentInsetDeltaForViewController:]
+    // -[UIViewController _setNavigationControllerContentInsetAdjustment:]
+    // -[UIScrollView _isAutomaticContentOffsetAdjustmentEnabled]
+    // will invoke contentSlideView
+    // To be safe, avoid using contentSlideView
+    // change contentSlideView -> contentSlideView
+    lazy var contentSlideView: UIScrollView = {
         let view = UIScrollView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.delegate = self
@@ -29,7 +40,6 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
     
     private lazy var recentBtn: UIBarButtonItem = {
         let recentBtn = UIBarButtonItem(image: R.Image.Time, style: .plain, target: self, action:  #selector(recentBtnTapped))
-        recentBtn.tintColor = .middleGray
         
         return recentBtn
     }()
@@ -51,34 +61,35 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        navigationController?.navigationBar.isTranslucent = false
+        automaticallyAdjustsScrollViewInsets = false
         navigationItem.title = R.String.Homepage
 
         view.addSubview(tabsScrollView)
-        view.addSubview(contentScrollView)
+        view.addSubview(contentSlideView)
         let bindings: [String: Any] = [
             "top": topLayoutGuide,
             "tabsScrollView": tabsScrollView,
-            "contentScrollView": contentScrollView
+            "contentSlideView": contentSlideView
         ]
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tabsScrollView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[top][tabsScrollView(34)][contentScrollView]|", options: [.alignAllLeading, .alignAllTrailing], metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tabsScrollView]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[top][tabsScrollView(34)][contentSlideView]|", options: [.alignAllLeading, .alignAllTrailing], metrics: nil, views: bindings))
         
         if User.shared.isLogin
         {
             navigationItem.leftBarButtonItem = recentBtn
         }
         let sortBtn = UIBarButtonItem(image: R.Image.Sort, style: .plain, target: self, action:  #selector(sortBtnTapped))
-        sortBtn.tintColor = .middleGray
         navigationItem.rightBarButtonItem = sortBtn
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(didLogout), name: NSNotification.Name.User.DidLogout, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didLogin), name: NSNotification.Name.User.DidLogin, object: nil)
         
         edgesForExtendedLayout = .bottom
         extendedLayoutIncludesOpaqueBars = true
-        contentScrollView.backgroundColor = .white
+        
+        refreshColorScheme()
         setup()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didLogout), name: NSNotification.Name.User.DidLogout, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didLogin), name: NSNotification.Name.User.DidLogin, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool)
@@ -99,6 +110,13 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
                 self.showPage(atIndex: currentIndex, animated: false)
             }
         }, completion: nil)
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        navigationController?.navigationBar.setupNavigationbar()
+        contentSlideView.backgroundColor = .background
     }
     
     @objc
@@ -143,7 +161,7 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
         {
             index = savedIndex
         }
-        setupContentScrollViewAndShowPage(atIndex: index)
+        setupcontentSlideViewAndShowPage(atIndex: index)
     }
     
     private func setupTabs()
@@ -158,10 +176,10 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
             tabsVC.append(topicListVC)
             topicListVC.didMove(toParentViewController: self)
             
-            contentScrollView.addSubview(topicListVC.view)
-            topicListVC.view.widthAnchor.constraint(equalTo: contentScrollView.widthAnchor).isActive = true
-            topicListVC.view.heightAnchor.constraint(equalTo: contentScrollView.heightAnchor).isActive = true
-            topicListVC.view.topAnchor.constraint(equalTo: contentScrollView.topAnchor).isActive = true
+            contentSlideView.addSubview(topicListVC.view)
+            topicListVC.view.widthAnchor.constraint(equalTo: contentSlideView.widthAnchor).isActive = true
+            topicListVC.view.heightAnchor.constraint(equalTo: contentSlideView.heightAnchor).isActive = true
+            topicListVC.view.topAnchor.constraint(equalTo: contentSlideView.topAnchor).isActive = true
 
             if let previousView = previousView
             {
@@ -169,11 +187,11 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
             }
             else
             {
-                topicListVC.view.leadingAnchor.constraint(equalTo: contentScrollView.leadingAnchor).isActive = true
+                topicListVC.view.leadingAnchor.constraint(equalTo: contentSlideView.leadingAnchor).isActive = true
             }
             if index == tabs.count - 1
             {
-                topicListVC.view.trailingAnchor.constraint(equalTo: contentScrollView.trailingAnchor).isActive = true
+                topicListVC.view.trailingAnchor.constraint(equalTo: contentSlideView.trailingAnchor).isActive = true
             }
             previousView = topicListVC.view
         }
@@ -192,9 +210,9 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
         setupTabs()
     }
     
-    private func setupContentScrollViewAndShowPage(atIndex index: Int)
+    private func setupcontentSlideViewAndShowPage(atIndex index: Int)
     {
-        contentScrollView.contentSize = CGSize(width: CGFloat(tabs.count) * view.frame.width, height: 0)
+        contentSlideView.contentSize = CGSize(width: CGFloat(tabs.count) * view.frame.width, height: 0)
         showPage(atIndex: index, animated: false)
     }
     
@@ -244,8 +262,8 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
     {
         let indexPath = IndexPath(row: index, section: 0)
         tabsScrollView.selectItem(at: indexPath, animated: animated, scrollPosition: .centeredHorizontally)
-        let offsetX = contentScrollView.bounds.width * CGFloat(index)
-        contentScrollView.setContentOffset(CGPoint(x: offsetX, y: 0.0), animated: animated)
+        let offsetX = contentSlideView.bounds.width * CGFloat(index)
+        contentSlideView.setContentOffset(CGPoint(x: offsetX, y: 0.0), animated: animated)
         
         // save current tab
         currentTab = tabs[index]
@@ -276,7 +294,7 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
             resetTabs()
             tabsScrollView.reloadData()
             let index = tabs.index(of: currentTab) ?? 0
-            setupContentScrollViewAndShowPage(atIndex: index)
+            setupcontentSlideViewAndShowPage(atIndex: index)
         }
     }
     

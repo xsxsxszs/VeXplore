@@ -12,7 +12,7 @@ class SettingCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Medium
-        label.textColor = .darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -29,8 +29,8 @@ class SettingCell: UITableViewCell
     lazy var rightSwitch: UISwitch = {
         let switcher = UISwitch()
         switcher.translatesAutoresizingMaskIntoConstraints = false
-        switcher.tintColor = UIColor.lightPink.withAlphaComponent(0.8)
-        switcher.onTintColor = UIColor.lightPink.withAlphaComponent(0.8)
+        switcher.tintColor = UIColor.highlight.withAlphaComponent(0.8)
+        switcher.onTintColor = UIColor.highlight.withAlphaComponent(0.8)
         switcher.isHidden = true
         
         return switcher
@@ -39,7 +39,7 @@ class SettingCell: UITableViewCell
     private lazy var line: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -47,11 +47,19 @@ class SettingCell: UITableViewCell
     lazy var longLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         view.isHidden = true
         
         return view
     }()
+    
+    var enable: Bool = true {
+        didSet
+        {
+            alpha = enable ? 1.0 : 0.3
+            rightSwitch.isUserInteractionEnabled = enable
+        }
+    }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
@@ -69,22 +77,25 @@ class SettingCell: UITableViewCell
             "line": line,
             "longLine": longLine
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[leftLabel]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[rightLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[rightSwitch]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[longLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-15-[leftLabel]-15-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[line(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[longLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[leftLabel]", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[rightLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[rightSwitch]-12-|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[longLine]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-15-[leftLabel]-15-|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[line(0.5)]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[longLine(0.5)]|", metrics: nil, views: bindings))
         rightLabel.centerYAnchor.constraint(equalTo: leftLabel.centerYAnchor).isActive = true
         rightSwitch.centerYAnchor.constraint(equalTo: leftLabel.centerYAnchor).isActive = true
         line.leadingAnchor.constraint(equalTo: leftLabel.leadingAnchor).isActive = true
         line.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         
-        contentView.backgroundColor = .white
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -101,6 +112,20 @@ class SettingCell: UITableViewCell
         rightSwitch.isHidden = true
         leftLabel.font = R.Font.Medium
         rightLabel.font = R.Font.Medium
+        enable = true
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        leftLabel.textColor = .body
+        rightLabel.textColor = .gray
+        rightSwitch.tintColor = UIColor.highlight.withAlphaComponent(0.8)
+        rightSwitch.onTintColor = UIColor.highlight.withAlphaComponent(0.8)
+        line.backgroundColor = .border
+        longLine.backgroundColor = .border
+        backgroundColor = .background
+        tintColor = .red
     }
 
 }

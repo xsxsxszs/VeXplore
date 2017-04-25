@@ -27,11 +27,7 @@ class NodeModel: NSObject
     
     init(rootNode: HTMLNode)
     {
-        if var content = rootNode.content, let range = content.range(of: "\n ")
-        {
-            content.replaceSubrange(range, with: R.String.Empty)
-            nodeName = content
-        }
+        nodeName = rootNode.content
         if var href = rootNode["href"], let range = href.range(of: "/go/")
         {
             href.replaceSubrange(range, with: R.String.Empty)

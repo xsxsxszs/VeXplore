@@ -12,7 +12,7 @@ class SectionHeaderView: UITableViewHeaderFooterView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.VeryLarge
-        label.textColor = .darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -23,20 +23,31 @@ class SectionHeaderView: UITableViewHeaderFooterView
 
         contentView.addSubview(contentLabel)
         let bindings = ["contentLabel": contentLabel]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-14-[contentLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-2-[contentLabel]-2-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-14-[contentLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-2-[contentLabel]-2-|", metrics: nil, views: bindings))
 
         backgroundView = {
             let view = UIView(frame: bounds)
-            view.backgroundColor = UIColor.lightGray.withAlphaComponent(0.8)
+            view.backgroundColor = UIColor.border.withAlphaComponent(0.8)
             
             return view
         }()
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
     {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        contentLabel.textColor = .body
+        backgroundView?.backgroundColor = UIColor.border.withAlphaComponent(0.8)
     }
     
 }

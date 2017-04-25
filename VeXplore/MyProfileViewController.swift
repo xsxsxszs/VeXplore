@@ -12,14 +12,12 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
 {
     private lazy var logoutBtn: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: R.Image.Logout, style: .plain, target: self, action: #selector(logoutBtnTapped))
-        barButtonItem.tintColor = .middleGray
         
         return barButtonItem
     }()
     
     private lazy var settingBtn: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: R.Image.Setting, style: .plain, target: self, action: #selector(settingBtnTapped))
-        barButtonItem.tintColor = .middleGray
 
         return barButtonItem
     }()
@@ -110,7 +108,6 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
             self.refreshProfile()
             self.navigationItem.rightBarButtonItem = self.logoutBtn
         }
-        
         navigationController?.present(loginVC, animated: true, completion: nil)
     }
     
@@ -245,7 +242,7 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
                     cell.contentLabel.text = String(format: R.String.AllTopicsMoreThan, userProfile?.topicsNum ?? 0)
                 }
                 cell.iconImageView.image = R.Image.Topics
-                cell.iconImageView.tintColor = .darkGray
+                cell.iconImageView.tintColor = .body
                 return cell
             case .replies:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: PersonalInfoCell.self), for: indexPath) as! PersonalInfoCell
@@ -259,7 +256,7 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
                 }
                 cell.longLine.isHidden = false
                 cell.iconImageView.image = R.Image.Replies
-                cell.iconImageView.tintColor = .darkGray
+                cell.iconImageView.tintColor = .body
                 return cell
             }
         case .personInfo:
@@ -276,7 +273,7 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
                 {
                     let personInfo = personInfos[indexPath.row - 1]
                     cell.iconImageView.image = R.Dict.PersonInfoIcons[personInfo.type]
-                    cell.iconImageView.tintColor = .darkGray
+                    cell.iconImageView.tintColor = .body
                     cell.contentLabel.text = personInfo.text
                 }
                 cell.longLine.isHidden = (indexPath.row != personInfos.count)
@@ -365,14 +362,9 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
             return
         }
         
-        if motion == .motionShake
+        if motion == .motionShake, UserDefaults.isShakeEnabled
         {
-            let preferences = UserDefaults.standard
-            let enableShake = preferences.object(forKey: R.Key.EnableShake) as? NSNumber
-            if enableShake?.boolValue != false
-            {
-                present(inputVC, animated: true, completion: nil)
-            }
+            present(inputVC, animated: true, completion: nil)
         }
     }
     

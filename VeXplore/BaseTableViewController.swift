@@ -43,7 +43,7 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .borderGray
+        label.textColor = .border
         label.isHidden = true
         
         return label
@@ -53,7 +53,7 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.isHidden = true
         
         return label
@@ -63,7 +63,7 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.isHidden = true
         
         return label
@@ -75,7 +75,8 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
-        
+        tableView.backgroundColor = .background
+
         return tableView
     }()
     
@@ -107,8 +108,7 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        navigationController?.navigationBar.isTranslucent = false
-
+        
         tableHeaderView.addSubview(topLoadingView)
         tableHeaderView.addSubview(topMessageLabel)
         tableFooterView.addSubview(bottomLoadingView)
@@ -116,11 +116,11 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
             "topLoadingView": topLoadingView,
             "bottomLoadingView": bottomLoadingView
         ]
-        tableHeaderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topLoadingView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        tableHeaderView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topLoadingView]|", metrics: nil, views: bindings))
         topLoadingView.bottomAnchor.constraint(equalTo: tableHeaderView.bottomAnchor).isActive = true
         topLoadingView.heightAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
         
-        tableFooterView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLoadingView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        tableFooterView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLoadingView]|", metrics: nil, views: bindings))
         bottomLoadingView.topAnchor.constraint(equalTo: tableFooterView.topAnchor).isActive = true
         bottomLoadingView.heightAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
         
@@ -137,6 +137,20 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
         tableView.tableHeaderView = tableHeaderView
         topLoadingView.initSquaresPosition()
         bottomLoadingView.initSquaresPosition()
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        navigationController?.navigationBar.setupNavigationbar()
+        topReminderLabel.textColor = .border
+        topMessageLabel.textColor = .desc
+        centerMessageLabel.textColor = .desc
+        tableView.backgroundColor = .background
     }
     
     // MARK: - UITableViewDataSource

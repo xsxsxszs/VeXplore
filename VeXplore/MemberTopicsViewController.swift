@@ -12,7 +12,7 @@ class MemberTopicsViewController: BaseTableViewController
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: R.Constant.defaulViewtSize, height: R.Constant.defaulViewtSize))
         label.textAlignment = .right
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -29,9 +29,8 @@ class MemberTopicsViewController: BaseTableViewController
         
         tableView.register(MemberTopicCell.self, forCellReuseIdentifier: String(describing: MemberTopicCell.self))
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
-        closeBtn.tintColor = .middleGray
+        let pageNumItem = UIBarButtonItem(customView: pageNumView)
         navigationItem.leftBarButtonItem = closeBtn
-        let pageNumItem: UIBarButtonItem = UIBarButtonItem(customView: pageNumView)
         navigationItem.rightBarButtonItem = pageNumItem
         enableBottomLoading = false
     }

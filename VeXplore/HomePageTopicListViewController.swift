@@ -8,7 +8,7 @@
 
 class HomePageTopicListViewController: TopicListViewController
 {
-    private let TabbarHiddenDuration = 0.25
+    private let TabBarHiddenDuration = 0.25
     var tabId = "tech"
     var isInitiated = false
     var lastOffsetY: CGFloat = 0.0
@@ -18,8 +18,8 @@ class HomePageTopicListViewController: TopicListViewController
         super.viewDidLoad()
         tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
     }
-    
-    func loadCache()
+
+    private func loadCache()
     {
         let cacheKey = String(format: R.Key.HomePageTopicList, tabId)
         if let diskCachePath = cachePathString(withFilename: cacheKey),
@@ -71,7 +71,7 @@ class HomePageTopicListViewController: TopicListViewController
     {
         super.scrollViewDidScroll(scrollView)
      
-        if enableTabarHidden && scrollView.contentSize.height >= scrollView.frame.height
+        if UserDefaults.isTabBarHiddenEnabled && scrollView.contentSize.height >= scrollView.frame.height
         {
             var inset = tableView.contentInset
             if inset.bottom != 0.0
@@ -90,7 +90,7 @@ class HomePageTopicListViewController: TopicListViewController
             }
         }
         
-        guard isInitiated && enableTabarHidden else {
+        guard isInitiated && UserDefaults.isTabBarHiddenEnabled else {
             return
         }
 
@@ -98,21 +98,21 @@ class HomePageTopicListViewController: TopicListViewController
         {
             if scrollView.contentSize.height < scrollView.frame.height
             {
-                UIView.animate(withDuration: TabbarHiddenDuration, animations: {
+                UIView.animate(withDuration: TabBarHiddenDuration, animations: {
                     self.tabBarController?.tabBar.transform = .identity
                 })
                 return
             }
             if scrollView.contentOffset.y < 0
             {
-                UIView.animate(withDuration: TabbarHiddenDuration, animations: {
+                UIView.animate(withDuration: TabBarHiddenDuration, animations: {
                     self.tabBarController?.tabBar.transform = .identity
                 })
                 return
             }
             if scrollView.contentOffset.y + scrollView.frame.height > scrollView.contentSize.height
             {
-                UIView.animate(withDuration: TabbarHiddenDuration, animations: {
+                UIView.animate(withDuration: TabBarHiddenDuration, animations: {
                     self.tabBarController?.tabBar.transform = CGAffineTransform(translationX: 0, y: tabarFrame.height)
                 })
                 return
@@ -121,13 +121,13 @@ class HomePageTopicListViewController: TopicListViewController
             let scrollOffsetY = scrollView.contentOffset.y - lastOffsetY
             if scrollOffsetY > 2
             {
-                UIView.animate(withDuration: TabbarHiddenDuration, animations: {
+                UIView.animate(withDuration: TabBarHiddenDuration, animations: {
                     self.tabBarController?.tabBar.transform = CGAffineTransform(translationX: 0, y: tabarFrame.height)
                 })
             }
             if scrollOffsetY < -2
             {
-                UIView.animate(withDuration: TabbarHiddenDuration, animations: {
+                UIView.animate(withDuration: TabBarHiddenDuration, animations: {
                     self.tabBarController?.tabBar.transform = .identity
                 })
             }

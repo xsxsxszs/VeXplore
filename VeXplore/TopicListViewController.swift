@@ -12,10 +12,10 @@ class TopicListViewController: BaseTableViewController
     {
         super.viewDidLoad()
         tableView.register(TopicCell.self, forCellReuseIdentifier: String(describing: TopicCell.self))
-        NotificationCenter.default.addObserver(self, selector: #selector(handleFontSizeDidChanged), name: NSNotification.Name.Setting.FontSizeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFontsizeDidChanged), name: NSNotification.Name.Setting.FontsizeDidChange, object: nil)
     }
     
-    func handleFontSizeDidChanged()
+    func handleFontsizeDidChanged()
     {
         tableView.reloadData()
     }

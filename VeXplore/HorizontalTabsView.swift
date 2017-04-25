@@ -19,9 +19,9 @@ class HorizontalTabCell: UICollectionViewCell
         let label = UILabel(frame: self.contentView.bounds)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        label.textColor = .darkGray
+        label.textColor = .body
         label.font = R.Font.StaticMedium
-        label.highlightedTextColor = .lightPink
+        label.highlightedTextColor = .highlight
         
         return label
     }()
@@ -29,7 +29,7 @@ class HorizontalTabCell: UICollectionViewCell
     private lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .darkGray
+        view.backgroundColor = .body
         view.isHidden = true
         
         return view
@@ -38,7 +38,7 @@ class HorizontalTabCell: UICollectionViewCell
     private lazy var leftLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .border
         view.isHidden = true
 
         return view
@@ -47,7 +47,7 @@ class HorizontalTabCell: UICollectionViewCell
     private lazy var rightLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .border
         view.isHidden = true
 
         return view
@@ -63,7 +63,7 @@ class HorizontalTabCell: UICollectionViewCell
                 bottomLine.isHidden = false
                 contentView.layoutIfNeeded()
                 UIView.animate(withDuration: 0.25, animations: {
-                    self.contentView.backgroundColor = .white
+                    self.contentView.backgroundColor = .background
                     self.bottomLineWidth.isActive = false
                     self.bottomLineWidth = self.bottomLine.widthAnchor.constraint(equalTo: self.contentView.widthAnchor)
                     self.bottomLineWidth.isActive = true
@@ -77,7 +77,7 @@ class HorizontalTabCell: UICollectionViewCell
             {
                 contentView.layoutIfNeeded()
                 UIView.animate(withDuration: 0.25, animations: {
-                    self.contentView.backgroundColor = .offWhite
+                    self.contentView.backgroundColor = .subBackground
                     self.bottomLineWidth.isActive = false
                     self.bottomLineWidth = self.bottomLine.widthAnchor.constraint(equalToConstant: 0.0)
                     self.bottomLineWidth.isActive = true
@@ -104,16 +104,20 @@ class HorizontalTabCell: UICollectionViewCell
             "leftLine": leftLine,
             "rightLine": rightLine
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[label]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(2)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[leftLine(0.5)]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[leftLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[rightLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[rightLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[label]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(2)]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[leftLine(0.5)]", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[leftLine]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[rightLine(0.5)]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[rightLine]|", metrics: nil, views: bindings))
         label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         bottomLine.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
         bottomLineWidth = bottomLine.widthAnchor.constraint(equalToConstant: 0.0)
         bottomLineWidth.isActive = true
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -127,10 +131,20 @@ class HorizontalTabCell: UICollectionViewCell
         leftLine.isHidden = true
         rightLine.isHidden = true
         bottomLine.isHidden = true
-        contentView.backgroundColor = .offWhite
+        contentView.backgroundColor = .subBackground
         label.isHighlighted = false
     }
     
+    @objc
+    private func refreshColorScheme()
+    {
+        label.textColor = .body
+        label.highlightedTextColor = .highlight
+        bottomLine.backgroundColor = .body
+        leftLine.backgroundColor = .border
+        rightLine.backgroundColor = .border
+        contentView.backgroundColor = .subBackground
+    }
 }
 
 
@@ -154,11 +168,14 @@ class HorizontalTabsView: UICollectionView, UICollectionViewDataSource, UICollec
         translatesAutoresizingMaskIntoConstraints = false
         showsVerticalScrollIndicator = false
         showsHorizontalScrollIndicator = false
-        backgroundColor = .offWhite
         register(HorizontalTabCell.self, forCellWithReuseIdentifier: String(describing: HorizontalTabCell.self))
         dataSource = self
         delegate = self
         allowsMultipleSelection = false
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -173,6 +190,12 @@ class HorizontalTabsView: UICollectionView, UICollectionViewDataSource, UICollec
         var newContentInset = contentInset
         newContentInset.left = leftInset
         contentInset = newContentInset
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        backgroundColor = .subBackground
     }
     
     // MARK: - UICollectionViewDataSource

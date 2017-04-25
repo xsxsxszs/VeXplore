@@ -23,7 +23,7 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
     weak var delegate: TopicDetailViewControllerDelegate?
     weak var inputVC: TopicReplyingViewController!
     var webViewReloadCount: UInt8 = 0
-    
+
     override func viewDidLoad()
     {
         contentView.contentWebView.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
@@ -89,16 +89,14 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
                         }, completion: { (_) in
                             if User.shared.isLogin
                             {
-                                let preferences = UserDefaults.standard
-                                if preferences.bool(forKey: R.Key.EnablePullReply)
+                                if UserDefaults.isPullReplyEnabled
                                 {
                                     weakSelf.topReminderLabel.text = R.String.PullToReplyTopic
                                     weakSelf.topReminderLabel.isHidden = false
                                 }
                                 else
                                 {
-                                    let enableShake = preferences.object(forKey: R.Key.EnableShake) as? NSNumber
-                                    if enableShake?.boolValue != false
+                                    if UserDefaults.isShakeEnabled
                                     {
                                         weakSelf.topReminderLabel.text = R.String.ShakeToRepleyTopic
                                         weakSelf.topReminderLabel.isHidden = false
@@ -159,7 +157,7 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
         {
             cell.favoriteContainerView.isHidden = false
         }
-        cell.likeImageView.tintColor = topicDetailModel.isFavorite ? .lightPink : .middleGray
+        cell.likeImageView.tintColor = topicDetailModel.isFavorite ? .highlight : .desc
         cell.delegate = self
         return cell
     }
@@ -257,6 +255,7 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
     // MARK: - WKNavigationDelegate
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
     {
+        // load image from cache
         if let list = navigationAction.request.url?.absoluteString.components(separatedBy: "/special_tag_for_image_tap_vexplore/"),
             list.count == 6,
             let offsetX = Float(list[1]),
@@ -290,22 +289,17 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
             }
         }
         
-        // load from local
-        if navigationAction.navigationType == .other
-        {
-            decisionHandler(.allow)
-            return
-        }
-        else if navigationAction.navigationType == .linkActivated
+        // handle customized url navigation
+        if navigationAction.navigationType == .linkActivated
         {
             if let url = navigationAction.request.url?.absoluteString, URLAnalyzer.Analyze(url: url, handleViewController: self) == true
             {
                 decisionHandler(.cancel)
+                return
             }
-            decisionHandler(.allow)
-            return
         }
-        decisionHandler(.cancel)
+        
+        decisionHandler(.allow)
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)
@@ -371,8 +365,7 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
         if enableTopLoading == false, User.shared.isLogin
         {
             let offset = -scrollView.contentOffset.y
-            let preferences = UserDefaults.standard
-            if offset > R.Constant.LoadingViewHeight, preferences.bool(forKey: R.Key.EnablePullReply)
+            if offset > R.Constant.LoadingViewHeight, UserDefaults.isPullReplyEnabled
             {
                 inputVC.topicId = topicId
                 present(inputVC, animated: true, completion: nil)

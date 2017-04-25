@@ -75,12 +75,13 @@ struct R
         static let CurrentTab = "vexplore.userDefaults.key.currentTab"
         static let EnableShake = "vexplore.userDefaults.key.enableShake"
         static let EnablePullReply = "vexplore.userDefaults.key.enablePullReply"
-        static let EnableTabbarHidden = "vexplore.userDefaults.key.enableTabbarHidden"
-        static let EnableOwnerRepliesHighlighted = "vexplore.userDefaults.key.enableOwnerRepliesHighlighted"
+        static let EnableTabBarHidden = "vexplore.userDefaults.key.enableTabBarHidden"
+        static let EnableHighlightOwnerReplies = "vexplore.userDefaults.key.EnableHighlightOwnerReplies"
         static let DynamicTitleFontScale = "vexplore.userDefaults.key.dynamicTitleFontScale"
         static let AllNodesEtag = "vexplore.userDefaults.key.allNodesEtag"
         static let HomePageTopicList = "vexplore.topicList.homePage.key.%@"
         static let LastCacheVersion = "vexplore.userDefaults.key.lastCacheVersion"
+        static let EnableNightMode = "vexplore.userDefaults.key.enableNightMode"
     }
     
     struct String
@@ -95,7 +96,7 @@ struct R
         static let ForumActivity = "社区动态"
         static let PersonalBio = "个人简介"
         static let NotLogin = "未登录"
-        static let NeedLoginToViewThisNode = "需要登录才能查看该节点"
+        static let NeedLoginToViewThisNode = "您尚未登录或无权限查看该节点"
         static let NeedLoginToViewThisTopic = "需要登录才能查看该主题"
         static let SwipeToDoMore = "左滑执行更多操作"
         static let NoRepliesNow = "暂无任何评论"
@@ -161,19 +162,22 @@ struct R
         static let EmailNotSetAlert = "您尚未启用系统邮箱服务，点击 “确定” 复制邮箱地址至剪贴板。"
         static let ImageCacheCleaning = "图片缓存清理中..."
         static let ImageCacheCleaningCompleted = "图片缓存清理完毕"
+        static let NotSupportedForFreeVersion = "免费版暂不能使用此功能"
         static let MyGmail = "wmywbyt.cj@gmail.com"
         static let GeneralSetting = "通用设置"
         static let CleanImageCache = "清理图片缓存"
         static let ShakeToCallInputView = "摇一摇发帖或回复"
         static let PullToReplyInTopicView = "主题页面下拉回复"
         static let HighlightOwnerReplies = "楼主回复高亮"
-        static let HomepageHideTabbarWhenScroll = "首页滚动隐藏底部菜单"
+        static let HomepageHideTabBarWhenScroll = "首页滚动隐藏底部菜单"
+        static let NightMode = "夜间模式"
         static let TopicTitleFont = "主题列表标题字体"
         static let FontSettingTitle = "标题字体放大比例"
         static let Sccale = "x %@"
         static let Feedback = "意见反馈"
         static let ContactDeveloper = "联系作者"
         static let RatingApp = "评价App"
+        static let OpenSource = "开源地址"
         static let CacheSize = "%@ MB"
         static let AtSomeone = "@%@ "
         static let CommentIndex = "%@ 楼"
@@ -191,7 +195,8 @@ struct R
         static let BaseUrl = "https://www.v2ex.com"
         static let Https = "https:"
         static let ErrorDomain = "in.jimmyis.vexplore.Error"
-        static let AppStoreUrl = "https://itunes.apple.com/us/app/vexplore-free/id1191058321?ls=1&mt=8"
+        static let AppStoreUrl = "https://itunes.apple.com/us/app/vexplore/id1119508407?ls=1&mt=8"
+        static let OpenSourceUrl = "https://github.com/xsxsxszs/VeXplore"
     }
     
     struct Constant
@@ -278,8 +283,7 @@ struct R
 
         var StaticMedium: UIFont { return UIFont.systemFont(ofSize: 14.0) }
         var DynamicMedium: UIFont {
-            let preferences = UserDefaults.standard
-            let fontScaleString = preferences.string(forKey: R.Key.DynamicTitleFontScale) ?? "1.0"
+            let fontScaleString = UserDefaults.fontScaleString
             let fontScale = CGFloat(fontScaleString.doubleValue)
             let scaledFontSize = round(R.Font.Medium.pointSize * fontScale)
             let font = R.Font.Medium.withSize(scaledFontSize)

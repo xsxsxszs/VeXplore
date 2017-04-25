@@ -47,7 +47,7 @@ class BaseProfileViewController: SwipeTransitionViewController, UITableViewDataS
         tableView.register(PersonalInfoCell.self, forCellReuseIdentifier: String(describing: PersonalInfoCell.self))
         tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.backgroundColor = .white
+        tableView.backgroundColor = .background
         tableView.separatorStyle = .none
         
         return tableView
@@ -61,17 +61,25 @@ class BaseProfileViewController: SwipeTransitionViewController, UITableViewDataS
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        navigationController?.navigationBar.isTranslucent = false
         
         view.addSubview(profileTableView)
         let bindings: [String: Any] = [
             "profileTableView": profileTableView,
             "top": topLayoutGuide
         ]
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profileTableView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[top][profileTableView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profileTableView]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[top][profileTableView]|", metrics: nil, views: bindings))
         
-        view.backgroundColor = .white
+        refreshColorScheme()
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        navigationController?.navigationBar.setupNavigationbar()
+        profileTableView.backgroundColor = .background
+        view.backgroundColor = .background
     }
     
     func numberOfPersonalInfoCell() -> Int

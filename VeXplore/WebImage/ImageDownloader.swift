@@ -124,7 +124,7 @@ class ImageDownloader: NSObject, URLSessionDataDelegate
         }
         
         guard error == nil else {
-            completionCallbacksWithFailure(error: error as! NSError, url: url)
+            completionCallbacksWithFailure(error: error! as NSError, url: url)
             return
         }
         

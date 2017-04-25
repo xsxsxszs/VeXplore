@@ -33,7 +33,6 @@ class ReplyActivity: UIActivity
         return .action
     }
     
-    
     override func canPerform(withActivityItems activityItems: [Any]) -> Bool
     {
         return true

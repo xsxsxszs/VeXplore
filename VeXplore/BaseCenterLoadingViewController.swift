@@ -15,6 +15,7 @@ class BaseCenterLoadingViewController: SwipeTransitionViewController, SquareLoad
         tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.isHidden = true
+        tableView.backgroundColor = .background
         
         return tableView
     }()
@@ -30,7 +31,7 @@ class BaseCenterLoadingViewController: SwipeTransitionViewController, SquareLoad
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.setupNavigationbar()
 
         view.addSubview(tableView)
         view.addSubview(centerLoadingView)

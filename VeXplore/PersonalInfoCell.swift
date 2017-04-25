@@ -20,7 +20,7 @@ class PersonalInfoCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Medium
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -28,7 +28,7 @@ class PersonalInfoCell: UITableViewCell
     private lazy var line: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -36,7 +36,7 @@ class PersonalInfoCell: UITableViewCell
     lazy var longLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         view.isHidden = true
         
         return view
@@ -56,20 +56,23 @@ class PersonalInfoCell: UITableViewCell
             "line": line,
             "longLine": longLine
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[iconImageView(20)]-12-[contentLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[longLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[contentLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[line(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[longLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[iconImageView(20)]-12-[contentLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[longLine]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[contentLabel]-8-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[line(0.5)]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[longLine(0.5)]|", metrics: nil, views: bindings))
         iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         iconImageView.heightAnchor.constraint(equalTo: iconImageView.widthAnchor).isActive = true
         line.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor).isActive = true
         line.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
 
-        contentView.backgroundColor = .white
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -83,6 +86,15 @@ class PersonalInfoCell: UITableViewCell
         line.isHidden = false
         longLine.isHidden = true
         contentLabel.font = R.Font.Medium
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        contentLabel.textColor = .desc
+        line.backgroundColor = .border
+        longLine.backgroundColor = .border
+        contentView.backgroundColor = .background
     }
     
 }

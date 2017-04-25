@@ -13,7 +13,7 @@ class ProfileActionView: UIView
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -23,7 +23,7 @@ class ProfileActionView: UIView
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.font = R.Font.Small
-        label.textColor = .gray
+        label.textColor = .note
         
         return label
     }()
@@ -31,7 +31,7 @@ class ProfileActionView: UIView
     lazy var verticalLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .gray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -48,13 +48,15 @@ class ProfileActionView: UIView
             "textLabel": textLabel,
             "verticalLine": verticalLine
         ]
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[numLabel][textLabel]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[verticalLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[verticalLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[numLabel]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textLabel]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[numLabel][textLabel]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[verticalLine(0.5)]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[verticalLine]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[numLabel]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textLabel]|", metrics: nil, views: bindings))
         
-        backgroundColor = .white
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -67,6 +69,15 @@ class ProfileActionView: UIView
         numLabel.font = R.Font.Small
         numLabel.text = R.String.Zero
         textLabel.font = R.Font.Small
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        numLabel.textColor = .desc
+        textLabel.textColor = .note
+        verticalLine.backgroundColor = .border
+        backgroundColor = .background
     }
     
 }

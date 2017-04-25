@@ -13,7 +13,7 @@ class TabsSettingTabCell: UITableViewCell
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         view.image = R.Image.Lock
-        view.tintColor = .middleGray
+        view.tintColor = .desc
         view.isHidden = true
         
         return view
@@ -35,7 +35,7 @@ class TabsSettingTabCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Large
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -43,7 +43,7 @@ class TabsSettingTabCell: UITableViewCell
     private lazy var line: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -51,7 +51,7 @@ class TabsSettingTabCell: UITableViewCell
     lazy var longLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         view.isHidden = true
         
         return view
@@ -73,11 +73,11 @@ class TabsSettingTabCell: UITableViewCell
             "line": line,
             "longLine": longLine
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[titleLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-4-[lockImageView(20)]-8-[titleLabel]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[line(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[longLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[longLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[titleLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-4-[lockImageView(20)]-8-[titleLabel]-|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[line(0.5)]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[longLine]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[longLine(0.5)]|", metrics: nil, views: bindings))
         lockImageView.heightAnchor.constraint(equalTo: lockImageView.widthAnchor).isActive = true
         lockImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         invisibleImageView.widthAnchor.constraint(equalTo: lockImageView.widthAnchor).isActive = true
@@ -88,7 +88,7 @@ class TabsSettingTabCell: UITableViewCell
         line.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor).isActive = true
         
         selectionStyle = .none
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .background
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -114,7 +114,7 @@ class TabsSettingTabCell: UITableViewCell
         longLine.isHidden = true
         titleLabel.font = R.Font.Large
         contentView.alpha = 1.0
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .background
     }
     
 }
@@ -126,7 +126,7 @@ class TabsSettingHeaderCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -135,7 +135,7 @@ class TabsSettingHeaderCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.VerySmall
-        label.textColor = .darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -143,7 +143,7 @@ class TabsSettingHeaderCell: UITableViewCell
     private lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -160,13 +160,13 @@ class TabsSettingHeaderCell: UITableViewCell
             "titleLabel": titleLabel,
             "bottomLine": bottomLine
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[titleLabel]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[descLabel]-10-[titleLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[titleLabel]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[descLabel]-10-[titleLabel]-8-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", metrics: nil, views: bindings))
         descLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
 
-        contentView.backgroundColor = .offWhite
+        contentView.backgroundColor = .subBackground
         selectionStyle = .none
     }
     
@@ -192,7 +192,7 @@ class TabsSettingPlaceholderCell: UITableViewCell
     {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
-        contentView.backgroundColor = .offWhite
+        contentView.backgroundColor = .subBackground
     }
     
     required init?(coder aDecoder: NSCoder)

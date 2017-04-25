@@ -48,7 +48,7 @@ class TabsSettingTableView: UITableView, UIGestureRecognizerDelegate
         moveGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
         moveGesture.delegate = self
         addGestureRecognizer(moveGesture)
-        backgroundColor = .offWhite
+        backgroundColor = .subBackground
         separatorStyle = .none
     }
     
@@ -130,7 +130,7 @@ class TabsSettingTableView: UITableView, UIGestureRecognizerDelegate
             self.snapshotOfMovingCell.frame = finalFrame
             self.snapshotOfMovingCell.alpha = 1.0
             self.snapshotOfMovingCell.transform = CGAffineTransform.identity
-            self.snapshotOfMovingCell.backgroundColor = .white
+            self.snapshotOfMovingCell.backgroundColor = .background
             }, completion: { (finished) in
                 if finished
                 {

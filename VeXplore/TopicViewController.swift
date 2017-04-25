@@ -60,17 +60,16 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
         
         view.addSubview(contentScrollView)
         let bindings = ["contentScrollView": contentScrollView]
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentScrollView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contentScrollView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentScrollView]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contentScrollView]|", metrics: nil, views: bindings))
   
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
-        closeBtn.tintColor = .middleGray
         navigationItem.leftBarButtonItem = closeBtn
         segmentedControl.frame = CGRect(x: 0, y: 0, width: 120, height: 26)
         navigationItem.titleView = segmentedControl
         
-        contentScrollView.backgroundColor = .white
-        view.backgroundColor = .offWhite
+        contentScrollView.backgroundColor = .background
+        view.backgroundColor = .subBackground
         setup()
     }
     
@@ -132,7 +131,6 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
     func showMoreIcon()
     {
         let moreBtn = UIBarButtonItem(image: R.Image.More, style: .plain, target: self, action: #selector(moreBtnTapped))
-        moreBtn.tintColor = .middleGray
         navigationItem.rightBarButtonItem = moreBtn
         
         enableReplying = true
@@ -332,15 +330,10 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
             return
         }
         
-        if motion == .motionShake
+        if motion == .motionShake, UserDefaults.isShakeEnabled
         {
-            let preferences = UserDefaults.standard
-            let enableShake = preferences.object(forKey: R.Key.EnableShake) as? NSNumber
-            if enableShake?.boolValue != false
-            {
-                inputVC.topicId = topicId
-                present(inputVC, animated: true, completion: nil)
-            }
+            inputVC.topicId = topicId
+            present(inputVC, animated: true, completion: nil)
         }
     }
 

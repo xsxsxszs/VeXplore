@@ -29,9 +29,9 @@ class TopicDetailContentView: UIView
         
         addSubview(contentWebView)
         let bindings = ["contentWebView": contentWebView]
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentWebView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contentWebView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        backgroundColor = .white
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentWebView]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contentWebView]|", metrics: nil, views: bindings))
+        backgroundColor = .background
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -119,7 +119,7 @@ class TopicDetailContentView: UIView
     {
         let htmlHeader = "<html><head><title>VeXplore_Customize_Title</title><meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0' name='viewport'>"
         let script = try! String(contentsOfFile: Bundle.main.path(forResource: "ImageClick", ofType: "js")!, encoding: .utf8)
-        let style = "<style>" + CSSStyle.shared.CSS() + "</style><script>" + script + "</script></head>"
+        let style = "<style>" + CSSStyle.default + "</style><script>" + script + "</script></head>"
         let customizedHtml =  htmlHeader + style  + html + "</html>"
         return customizedHtml
     }

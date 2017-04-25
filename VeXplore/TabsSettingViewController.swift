@@ -23,8 +23,8 @@ class TabsSettingViewController: UITableViewController, TabsSettingTableViewDele
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        navigationController?.navigationBar.isTranslucent = false
         navigationItem.title = R.String.TabsSorting
+        navigationController?.navigationBar.setupNavigationbar()
 
         data = [
             [R.String.ShowedTabsTitle],
@@ -46,12 +46,9 @@ class TabsSettingViewController: UITableViewController, TabsSettingTableViewDele
             return tableView
         }()
         
-        let returnImage = R.Image.Close
-        let confirmImage = R.Image.Confirm
-        let returnBtn = UIBarButtonItem(image: returnImage, style: .plain, target: self, action: #selector(cancelBtnTapped))
-        let saveBtn = UIBarButtonItem(image: confirmImage, style: .plain, target: self, action: #selector(saveBtnTapped))
-        returnBtn.tintColor = .middleGray
-        saveBtn.tintColor = .lightPink
+        let returnBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(cancelBtnTapped))
+        let saveBtn = UIBarButtonItem(image: R.Image.Confirm, style: .plain, target: self, action: #selector(saveBtnTapped))
+        saveBtn.tintColor = .highlight
         navigationItem.leftBarButtonItem = returnBtn
         navigationItem.rightBarButtonItem = saveBtn
     }

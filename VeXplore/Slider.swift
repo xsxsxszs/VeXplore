@@ -25,7 +25,7 @@ class Slider: UIView
     private lazy var hLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .gray
+        view.backgroundColor = .note
         
         return view
     }()
@@ -55,7 +55,7 @@ class Slider: UIView
                     let vLine: UIView = {
                         let view = UIView()
                         view.translatesAutoresizingMaskIntoConstraints = false
-                        view.backgroundColor = .gray
+                        view.backgroundColor = .note
                         
                         return view
                     }()
@@ -68,7 +68,7 @@ class Slider: UIView
                         let label = UILabel()
                         label.translatesAutoresizingMaskIntoConstraints = false
                         label.font = R.Font.ExtraSmall
-                        label.textColor = .gray
+                        label.textColor = .note
                         label.text = text
                         
                         return label
@@ -83,19 +83,20 @@ class Slider: UIView
         }
     }
     
-    var selectedIndex: Int? {
+    var selectedIndex: Int = -1 {
         didSet
         {
-            let selectedView = stackView.arrangedSubviews[selectedIndex!]
+            guard stackView.arrangedSubviews.count > selectedIndex else {
+                return
+            }
+            let selectedView = stackView.arrangedSubviews[selectedIndex]
             layoutIfNeeded()
-            UIView.animate(withDuration: 0.25, animations: {
+            UIView.animate(withDuration: 0.25) {
                 self.circleCenterX.isActive = false
                 self.circleCenterX = self.circle.centerXAnchor.constraint(equalTo: selectedView.centerXAnchor, constant: 0.0)
                 self.circleCenterX.isActive = true
                 self.layoutIfNeeded()
-                }, completion: { (_) in
-                    self.delegate?.didSelect(at: self.selectedIndex!)
-            })
+            }
         }
     }
     
@@ -143,6 +144,7 @@ class Slider: UIView
                 }
             }
             selectedIndex = pointIndex
+            delegate?.didSelect(at: selectedIndex)
         }
     }
     
@@ -161,6 +163,7 @@ class Slider: UIView
                 }
             }
             selectedIndex = pointIndex
+            delegate?.didSelect(at: selectedIndex)
         }
     }
     
@@ -192,8 +195,8 @@ class CircleView: UIView
                 circleLayer!.shadowColor = UIColor.black.cgColor
                 circleLayer!.shadowOpacity = 0.3
                 circleLayer?.shadowOffset = CGSize(width: 0, height: 0.1 * radius)
-                circleLayer!.strokeColor = UIColor.borderGray.cgColor
-                circleLayer!.fillColor = UIColor.white.cgColor
+                circleLayer!.strokeColor = UIColor.border.cgColor
+                circleLayer!.fillColor = UIColor.background.cgColor
                 layer.addSublayer(circleLayer!)
             }
         }

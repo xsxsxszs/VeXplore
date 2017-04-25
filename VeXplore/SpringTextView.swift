@@ -12,7 +12,7 @@ class SpringTextView: UIView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.StaticMedium
-        label.textColor = .lightPink
+        label.textColor = .highlight
         
         return label
     }()
@@ -21,7 +21,7 @@ class SpringTextView: UIView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.StaticMedium
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.text = R.String.CurrentPage
         
         return label
@@ -36,7 +36,7 @@ class SpringTextView: UIView
             "animateLabel": animateLabel,
             "staticLabel": staticLabel
         ]
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[staticLabel][animateLabel]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[staticLabel][animateLabel]", metrics: nil, views: bindings))
         addConstraint(NSLayoutConstraint(item: animateLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0))
         addConstraint(NSLayoutConstraint(item: staticLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0.0))
     }

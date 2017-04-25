@@ -12,7 +12,7 @@ class TopicDetailHeaderCell: UITableViewCell
         let view = AvatarImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleToFill
-        view.tintColor = .darkGray
+        view.tintColor = .body
         view.isUserInteractionEnabled = true
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(avatarTapped)))
         
@@ -23,7 +23,7 @@ class TopicDetailHeaderCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -33,7 +33,7 @@ class TopicDetailHeaderCell: UITableViewCell
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Medium
         label.numberOfLines = 0
-        label.textColor = .darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -41,10 +41,10 @@ class TopicDetailHeaderCell: UITableViewCell
     lazy var nodeNameBtn: UIButton = {
         let btn = UIButton()
         btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.layer.borderColor = UIColor.middleGray.cgColor
+        btn.layer.borderColor = UIColor.desc.cgColor
         btn.layer.borderWidth = 1
         btn.layer.cornerRadius = 3
-        btn.setTitleColor(.middleGray, for: .normal)
+        btn.setTitleColor(.desc, for: .normal)
         btn.titleLabel?.font = R.Font.ExtraSmall
         btn.contentEdgeInsets = UIEdgeInsets(top: 1, left: 3, bottom: 1, right: 3)
         btn.addTarget(self, action: #selector(nodeTapped), for: .touchUpInside)
@@ -55,7 +55,7 @@ class TopicDetailHeaderCell: UITableViewCell
     lazy var commentImageView: UIImageView = {
         let view = UIImageView()
         view.image = R.Image.Comment
-        view.tintColor = .middleGray
+        view.tintColor = .desc
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         
@@ -66,7 +66,7 @@ class TopicDetailHeaderCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.text = R.String.Zero
         
         return label
@@ -76,7 +76,7 @@ class TopicDetailHeaderCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .borderGray
+        label.textColor = .border
         label.textAlignment = .left
         label.setContentHuggingPriority(UILayoutPriorityDefaultLow, for: .horizontal)
         label.setContentCompressionResistancePriority(UILayoutPriorityDefaultLow, for: .horizontal)
@@ -98,7 +98,7 @@ class TopicDetailHeaderCell: UITableViewCell
     lazy var likeImageView: UIImageView = {
         let view = UIImageView()
         view.image = R.Image.Like
-        view.tintColor = .middleGray
+        view.tintColor = .desc
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         
@@ -109,7 +109,7 @@ class TopicDetailHeaderCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.textAlignment = .right
         label.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
         label.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .horizontal)
@@ -121,7 +121,7 @@ class TopicDetailHeaderCell: UITableViewCell
     lazy var separatorLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -149,8 +149,8 @@ class TopicDetailHeaderCell: UITableViewCell
         
         favoriteContainerView.addSubview(likeImageView)
         favoriteContainerView.addSubview(favoriteNumLabel)
-        favoriteContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[likeImageView]-1-[favoriteNumLabel]-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        favoriteContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[likeImageView]-1-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        favoriteContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[likeImageView]-1-[favoriteNumLabel]-|", metrics: nil, views: bindings))
+        favoriteContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[likeImageView]-1-|", metrics: nil, views: bindings))
         favoriteNumLabel.centerYAnchor.constraint(equalTo: likeImageView.centerYAnchor).isActive = true
         
         contentView.addSubview(avatarImageView)
@@ -162,13 +162,13 @@ class TopicDetailHeaderCell: UITableViewCell
         contentView.addSubview(dateLabel)
         contentView.addSubview(favoriteContainerView)
         contentView.addSubview(separatorLine)
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[nodeNameBtn]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[commentImageView]-1-[repliesNumberLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[nodeNameBtn]", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[commentImageView]-1-[repliesNumberLabel]-8-|", metrics: nil, views: bindings))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[userNameLabel]-6-[topicTitleLabel]-6-[dateLabel]-4-|", options: [.alignAllLeading], metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[dateLabel]-(>=0)-[favoriteContainerView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[avatarImageView]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[separatorLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[separatorLine(1)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[dateLabel]-(>=0)-[favoriteContainerView]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[avatarImageView]", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[separatorLine]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[separatorLine(1)]|", metrics: nil, views: bindings))
         avatarImageView.widthAnchor.constraint(equalToConstant: R.Constant.AvatarSize).isActive = true
         avatarImageView.heightAnchor.constraint(equalToConstant: R.Constant.AvatarSize).isActive = true
         userNameLabel.topAnchor.constraint(equalTo: avatarImageView.topAnchor).isActive = true
@@ -179,7 +179,7 @@ class TopicDetailHeaderCell: UITableViewCell
         topicTitleLabel.trailingAnchor.constraint(equalTo: repliesNumberLabel.trailingAnchor).isActive = true
         likeImageView.centerYAnchor.constraint(equalTo: dateLabel.centerYAnchor).isActive = true
 
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .background
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none

@@ -8,8 +8,9 @@
 import NotificationCenter
 import SharedKit
 
-@objc (TodayViewController)
-
+// Due to Swift module, NSExtensionPrincipalClass should be $(PRODUCT_NAME).TodayViewController
+// Or you can use TodayViewController as NSExtensionPrincipalClass, and rename the class expose to Objc by using: 
+// @objc (TodayViewController)
 class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataSource, UITableViewDelegate
 {
     private let rowHeight: CGFloat = 37.0
@@ -33,8 +34,8 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         view.addSubview(tableView)
         let bindings: [String: Any] = ["tableView": tableView]
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tableView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[tableView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tableView]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[tableView]|", metrics: nil, views: bindings))
     }
 
     override func viewDidAppear(_ animated: Bool)

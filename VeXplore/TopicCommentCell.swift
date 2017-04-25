@@ -19,7 +19,7 @@ class TopicCommentCell: SwipCell
         let view = AvatarImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleToFill
-        view.tintColor = .darkGray
+        view.tintColor = .body
         view.isUserInteractionEnabled = true
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(avatarTapped)))
         
@@ -41,7 +41,7 @@ class TopicCommentCell: SwipCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
         label.setContentCompressionResistancePriority(UILayoutPriorityDefaultLow, for: .vertical)
         
@@ -52,7 +52,7 @@ class TopicCommentCell: SwipCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .borderGray
+        label.textColor = .border
         label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
         label.setContentCompressionResistancePriority(UILayoutPriorityDefaultLow, for: .vertical)
 
@@ -62,7 +62,7 @@ class TopicCommentCell: SwipCell
     lazy var likeImageView: UIImageView = {
         let view = UIImageView()
         view.image = R.Image.Like
-        view.tintColor = .middleGray
+        view.tintColor = .desc
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
 
@@ -73,7 +73,7 @@ class TopicCommentCell: SwipCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .middleGray
+        label.textColor = .desc
 
         return label
     }()
@@ -82,7 +82,7 @@ class TopicCommentCell: SwipCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.text = R.String.Zero
 
         return label
@@ -99,7 +99,7 @@ class TopicCommentCell: SwipCell
     lazy var separatorLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -132,11 +132,11 @@ class TopicCommentCell: SwipCell
             "commentLabel": commentLabel,
             "separatorLine": separatorLine,
             ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[likeImageView]-1-[likeNumLabel]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[commentIndexLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[avatarImageView]-2-[ownerLabel]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[likeImageView]-1-[likeNumLabel]", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[commentIndexLabel]-8-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[avatarImageView]-2-[ownerLabel]", metrics: nil, views: bindings))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[userNameLabel]-4-[commentLabel]-8-[dateLabel]-4-|", options: [.alignAllLeading], metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[separatorLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[separatorLine(0.5)]|", metrics: nil, views: bindings))
         avatarImageView.widthAnchor.constraint(equalToConstant: R.Constant.AvatarSize).isActive = true
         avatarImageView.heightAnchor.constraint(equalToConstant: R.Constant.AvatarSize).isActive = true
         commentLabel.leadingAnchor.constraint(equalTo: userNameLabel.leadingAnchor).isActive = true
@@ -170,10 +170,10 @@ class TopicCommentCell: SwipCell
         dateLabel.font = R.Font.ExtraSmall
         likeNumLabel.font = R.Font.ExtraSmall
         commentIndexLabel.font = R.Font.ExtraSmall
-        likeImageView.tintColor = .middleGray
+        likeImageView.tintColor = .desc
         ownerLabel.font = R.Font.ExtraSmall
         ownerLabel.isHidden = true
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .background
     }
     
     @objc
@@ -229,7 +229,7 @@ class TopicCommentCell: SwipCell
     {
         let iconView: UIImageView = {
             let view = UIImageView()
-            view.tintColor = .middleGray
+            view.tintColor = .desc
             view.translatesAutoresizingMaskIntoConstraints = false
             view.contentMode = .scaleAspectFit
             
@@ -241,16 +241,16 @@ class TopicCommentCell: SwipCell
         {
         case .reply:
             iconView.image = R.Image.Reply
-            iconView.tintColor = .middleGray
+            iconView.tintColor = .desc
         case .thank:
             iconView.image = R.Image.Thank
             if let commentModel = commentModel
             {
-                iconView.tintColor = commentModel.isThanked ? .lightPink : .middleGray
+                iconView.tintColor = commentModel.isThanked ? .highlight : .desc
             }
         case .hide:
             iconView.image = R.Image.Hide
-            iconView.tintColor = .middleGray
+            iconView.tintColor = .desc
         }
 
         return iconView

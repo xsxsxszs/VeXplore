@@ -20,7 +20,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
     private lazy var line: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -31,6 +31,9 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .background
+        tableView.sectionIndexBackgroundColor = .background
+        tableView.sectionIndexColor = .href
         tableView.register(SectionHeaderView.self, forHeaderFooterViewReuseIdentifier: String(describing: SectionHeaderView.self))
 
         return tableView
@@ -39,7 +42,6 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        navigationController?.navigationBar.isTranslucent = false
 
         view.addSubview(searchBox)
         view.addSubview(line)
@@ -49,13 +51,26 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
             "line": line,
             "tableView": tableView
         ]
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[searchBox]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[line]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tableView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-4-[searchBox]-4-[line(0.5)][tableView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[searchBox]-12-|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[line]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tableView]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-4-[searchBox]-4-[line(0.5)][tableView]|", metrics: nil, views: bindings))
 
-        view.backgroundColor = .offWhite
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
+    }
+    
+    @objc
+    func refreshColorScheme()
+    {
+        navigationController?.navigationBar.setupNavigationbar()
+        line.backgroundColor = .border
+        tableView.backgroundColor = .background
+        tableView.sectionIndexBackgroundColor = .background
+        tableView.sectionIndexColor = .href
+        view.backgroundColor = .subBackground
     }
     
     @objc

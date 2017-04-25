@@ -139,7 +139,7 @@ class TopicItemModel: BaseTopicItemModel
             let array = date.components(separatedBy: "•")
             if array.count == 4
             {
-                lastReplyDate = array[3].trimmingCharacters(in: .whitespaces)
+                lastReplyDate = array[3].trimmingCharacters(in: .whitespacesAndNewlines)
             }
         }
         lastReplyUserName = favoritesRootNode.xPath("./table/tr/td[3]/span[2]/strong[2]/a[1]").first?.content

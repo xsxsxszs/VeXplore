@@ -25,9 +25,9 @@ class TopicCreatingViewController: InputViewController, NodeSelectDelegate
     {
         super.resetTextViews()
         inputContainerView.titleTextView.placeholderText = String(format: R.String.TitleCharactersLessThan, R.Constant.TopicTitleCharactersMax)
-        inputContainerView.titleTextView.placeholderTextColor = .borderGray
+        inputContainerView.titleTextView.placeholderTextColor = .border
         inputContainerView.contentTextView.placeholderText = String(format: R.String.ContentCharactersLessThan, R.Constant.TopicContentCharactersMax)
-        inputContainerView.contentTextView.placeholderTextColor = .borderGray
+        inputContainerView.contentTextView.placeholderTextColor = .border
         recorededResponder = nil
         nodeId = R.String.Empty
     }
@@ -64,7 +64,7 @@ class TopicCreatingViewController: InputViewController, NodeSelectDelegate
     {
         if let nodeName = node.nodeName, let nodeId = node.nodeId
         {
-            let title = NSAttributedString(string: nodeName, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.lightPink])
+            let title = NSAttributedString(string: nodeName, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight])
             inputContainerView.nodeBtn.setAttributedTitle(title, for: .normal)
             self.nodeId = nodeId
             inputContainerView.isPostEnabled = (inputContainerView.titleTextView.text.isEmpty == false)

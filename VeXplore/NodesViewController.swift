@@ -27,7 +27,7 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
         view.translatesAutoresizingMaskIntoConstraints = false
         view.showsVerticalScrollIndicator = false
         view.showsHorizontalScrollIndicator = false
-        view.backgroundColor = .white
+        view.backgroundColor = .background
         view.dataSource = self
         view.delegate = self
         view.allowsMultipleSelection = false
@@ -43,17 +43,22 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        navigationController?.navigationBar.isTranslucent = false
         navigationItem.title = R.String.Nodes
 
         view.addSubview(collectionView)
         let bindings = ["collectionView": collectionView]
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[collectionView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[collectionView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[collectionView]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[collectionView]|", metrics: nil, views: bindings))
         view.bringSubview(toFront: centerLoadingView)
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: searchButton)
+        let searchBtn = UIBarButtonItem(customView: searchButton)
+        navigationItem.rightBarButtonItem = searchBtn
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
+        
         searchVC.getAllNodesIfNeed()
     }
     
@@ -66,6 +71,13 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
     required init?(coder aDecoder: NSCoder)
     {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        navigationController?.navigationBar.setupNavigationbar()
+        collectionView.backgroundColor = .background
     }
     
     @objc
@@ -230,7 +242,7 @@ class NodeCollectionViewCell: UICollectionViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -241,12 +253,15 @@ class NodeCollectionViewCell: UICollectionViewCell
         
         contentView.addSubview(nodeNameLabel)
         let bindings = ["nodeNameLabel": nodeNameLabel]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-6-[nodeNameLabel]-6-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-3-[nodeNameLabel]-3-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-6-[nodeNameLabel]-6-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-3-[nodeNameLabel]-3-|", metrics: nil, views: bindings))
         
-        layer.borderColor = UIColor.darkGray.cgColor
         layer.borderWidth = 1
         layer.cornerRadius = 5
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -260,6 +275,13 @@ class NodeCollectionViewCell: UICollectionViewCell
         nodeNameLabel.font = R.Font.Small
     }
     
+    @objc
+    private func refreshColorScheme()
+    {
+        nodeNameLabel.textColor = .desc
+        layer.borderColor = UIColor.border.cgColor
+    }
+    
 }
 
 
@@ -269,7 +291,7 @@ class NodeCollectionReusableView: UICollectionReusableView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Medium
-        label.textColor = .darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -280,10 +302,12 @@ class NodeCollectionReusableView: UICollectionReusableView
         
         addSubview(nodeGroupNameLabel)
         let bindings = ["nodeGroupNameLabel": nodeGroupNameLabel,]
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[nodeGroupNameLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[nodeGroupNameLabel]-12-|", metrics: nil, views: bindings))
         nodeGroupNameLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
-        backgroundColor = .offWhite
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -295,6 +319,13 @@ class NodeCollectionReusableView: UICollectionReusableView
     {
         super.prepareForReuse()
         nodeGroupNameLabel.font = R.Font.Medium
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        nodeGroupNameLabel.textColor = .body
+        backgroundColor = .subBackground
     }
     
 }

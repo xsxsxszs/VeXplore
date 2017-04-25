@@ -12,7 +12,7 @@ class SettingHeaderCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.textAlignment = .left
         
         return label
@@ -21,7 +21,7 @@ class SettingHeaderCell: UITableViewCell
     lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -36,15 +36,18 @@ class SettingHeaderCell: UITableViewCell
             "titleLabel": titleLabel,
             "bottomLine": bottomLine
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[titleLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-24-[titleLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[titleLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-24-[titleLabel]-8-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", metrics: nil, views: bindings))
         
-        contentView.backgroundColor = .offWhite
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -58,4 +61,12 @@ class SettingHeaderCell: UITableViewCell
         titleLabel.font = R.Font.Small
     }
     
+    @objc
+    private func refreshColorScheme()
+    {
+        titleLabel.textColor = .desc
+        bottomLine.backgroundColor = .border
+        contentView.backgroundColor = .subBackground
+    }
+
 }

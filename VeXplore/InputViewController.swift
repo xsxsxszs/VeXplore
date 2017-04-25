@@ -12,7 +12,7 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
     lazy var backgroudView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .offWhite
+        view.backgroundColor = .subBackground
         view.alpha = 0.8
         view.isHidden = true
         
@@ -22,7 +22,7 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
     lazy var inputContainerView: InputContainerView = {
         let view = InputContainerView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = .background
         view.titleTextView.delegate = self
         view.contentTextView.delegate = self
         view.cancelBtn.addTarget(self, action: #selector(closeBtnTapped), for: .touchUpInside)
@@ -44,9 +44,8 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
     lazy var loadingCancelBtn: UIButton = {
         let btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        let image = R.Image.RoundClose
-        btn.setImage(image, for: .normal)
-        btn.tintColor = .darkGray
+        btn.setImage(R.Image.RoundClose, for: .normal)
+        btn.tintColor = .body
         btn.addTarget(self, action: #selector(cancelBtnTapped), for: .touchUpInside)
         btn.isHidden = true
         
@@ -85,8 +84,8 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
         inputContainerView.addSubview(backgroudView)
         inputContainerView.addSubview(centerLoadingView)
         inputContainerView.addSubview(loadingCancelBtn)
-        inputContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroudView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        inputContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroudView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        inputContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroudView]|", metrics: nil, views: bindings))
+        inputContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroudView]|", metrics: nil, views: bindings))
         loadingCancelBtn.centerXAnchor.constraint(equalTo: inputContainerView.cancelBtn.centerXAnchor).isActive = true
         loadingCancelBtn.centerYAnchor.constraint(equalTo: inputContainerView.cancelBtn.centerYAnchor).isActive = true
         loadingCancelBtn.widthAnchor.constraint(equalTo: inputContainerView.cancelBtn.widthAnchor).isActive = true
@@ -96,12 +95,22 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
         centerLoadingView.heightAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
         
         view.addSubview(inputContainerView)
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8@999-[inputContainerView]-8@999-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(8@998)-[inputContainerView]-(8@999)-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8@999-[inputContainerView]-8@999-|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(8@998)-[inputContainerView]-(8@999)-|", metrics: nil, views: bindings))
         inputContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         inputContainerView.centerYAnchor.constraint(lessThanOrEqualTo: view.centerYAnchor).isActive = true
         
+        refreshColorScheme()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        backgroudView.backgroundColor = .subBackground
+        inputContainerView.backgroundColor = .background
     }
     
     func resetTextViews()
@@ -112,7 +121,7 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
         inputContainerView.isPostEnabled = false
         inputContainerView.titleTextView.text = R.String.Empty
         inputContainerView.contentTextView.text = R.String.Empty
-        inputContainerView.nodeBtn.setAttributedTitle(NSAttributedString(string: R.String.ChooseNode, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.lightPink]), for: .normal)
+        inputContainerView.nodeBtn.setAttributedTitle(NSAttributedString(string: R.String.ChooseNode, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight]), for: .normal)
     }
     
     @objc
@@ -195,9 +204,8 @@ class InputContainerView: UIView
     lazy var cancelBtn: UIButton = {
         let btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        let image = R.Image.RoundClose
-        btn.setImage(image, for: .normal)
-        btn.tintColor = .middleGray
+        btn.setImage(R.Image.RoundClose, for: .normal)
+        btn.tintColor = .desc
         
         return btn
     }()
@@ -205,9 +213,8 @@ class InputContainerView: UIView
     lazy var postBtn: UIButton = {
         let btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        let image = R.Image.Send
-        btn.setImage(image, for: .normal)
-        btn.tintColor = .borderGray
+        btn.setImage(R.Image.Send, for: .normal)
+        btn.tintColor = .border
         btn.isEnabled = false
         
         return btn
@@ -216,7 +223,7 @@ class InputContainerView: UIView
     lazy var topLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -224,7 +231,7 @@ class InputContainerView: UIView
     lazy var middleLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -232,7 +239,7 @@ class InputContainerView: UIView
     lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -240,7 +247,7 @@ class InputContainerView: UIView
     private lazy var imageBtnIcon: UIImageView = {
         let view = UIImageView()
         view.image = R.Image.ImageIcon
-        view.tintColor = .borderGray
+        view.tintColor = .border
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         
@@ -259,7 +266,7 @@ class InputContainerView: UIView
     lazy var nodeBtn: UIButton = {
         let btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        let title = NSAttributedString(string: R.String.ChooseNode, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.lightPink])
+        let title = NSAttributedString(string: R.String.ChooseNode, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight])
         btn.setAttributedTitle(title, for: .normal)
         btn.isHidden = true
         
@@ -270,7 +277,7 @@ class InputContainerView: UIView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .borderGray
+        label.textColor = .border
         label.text = R.String.CopyUrlAfterUploadingImage
         label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
         
@@ -282,8 +289,8 @@ class InputContainerView: UIView
         view.font = R.Font.Medium
         view.textContainerInset = UIEdgeInsetsMake(4, 6, 4, 6)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.tintColor = .lightPink
-        view.textColor = .darkGray
+        view.tintColor = .highlight
+        view.textColor = .body
         view.autocorrectionType = .no
         let style = NSMutableParagraphStyle()
         style.lineHeightMultiple = 1.1
@@ -297,8 +304,8 @@ class InputContainerView: UIView
         view.font = R.Font.Medium
         view.textContainerInset = UIEdgeInsetsMake(8, 6, 8, 6)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.tintColor = .lightPink
-        view.textColor = .darkGray
+        view.tintColor = .highlight
+        view.textColor = .body
         view.autocorrectionType = .no
         let style = NSMutableParagraphStyle()
         style.lineHeightMultiple = 1.1
@@ -311,7 +318,7 @@ class InputContainerView: UIView
         didSet
         {
             postBtn.isEnabled = isPostEnabled
-            postBtn.tintColor = isPostEnabled ? .lightPink : .borderGray
+            postBtn.tintColor = isPostEnabled ? .highlight : .border
         }
     }
     
@@ -319,8 +326,8 @@ class InputContainerView: UIView
         didSet
         {
             imageBtn.isEnabled = isImageBtnEnabled
-            imageBtnIcon.tintColor = isImageBtnEnabled ? .middleGray : .borderGray
-            bottomLabel.textColor = isImageBtnEnabled ? .middleGray : .borderGray
+            imageBtnIcon.tintColor = isImageBtnEnabled ? .desc : .border
+            bottomLabel.textColor = isImageBtnEnabled ? .desc : .border
         }
     }
     
@@ -356,16 +363,16 @@ class InputContainerView: UIView
             "nodeBtn": nodeBtn,
             "bottomLabel": bottomLabel
         ]
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[cancelBtn(41)]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[postBtn(41)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[middleLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentTextView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[titleTextView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[postBtn][topLine(0.5)][titleTextView][middleLine(0.5)][contentTextView][bottomLine(0.5)]-10-[imageBtnIcon]-10-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[imageBtnIcon(25)]-8-[bottomLabel]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[nodeBtn]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[cancelBtn(41)]", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[postBtn(41)]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topLine]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[middleLine]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentTextView]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[titleTextView]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[postBtn][topLine(0.5)][titleTextView][middleLine(0.5)][contentTextView][bottomLine(0.5)]-10-[imageBtnIcon]-10-|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[imageBtnIcon(25)]-8-[bottomLabel]", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[nodeBtn]-8-|", metrics: nil, views: bindings))
         cancelBtn.heightAnchor.constraint(equalTo: cancelBtn.widthAnchor).isActive = true
         postBtn.heightAnchor.constraint(equalTo: postBtn.widthAnchor).isActive = true
         cancelBtn.centerYAnchor.constraint(equalTo: postBtn.centerYAnchor).isActive = true
@@ -388,6 +395,10 @@ class InputContainerView: UIView
         layer.shadowOpacity = 0.7
         layer.shadowOffset = CGSize.zero
         layer.shadowPath = UIBezierPath(rect: layer.bounds).cgPath
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -404,7 +415,27 @@ class InputContainerView: UIView
         titleTextView.setNeedsDisplay()
         contentTextView.setNeedsDisplay()
         let nodeName = nodeBtn.attributedTitle(for: .normal)?.string ?? R.String.ChooseNode
-        nodeBtn.setAttributedTitle(NSAttributedString(string: nodeName, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.lightPink]), for: .normal)
+        nodeBtn.setAttributedTitle(NSAttributedString(string: nodeName, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight]), for: .normal)
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        titleLabel.textColor = .gray
+        cancelBtn.tintColor = .desc
+        postBtn.tintColor = .border
+        topLine.backgroundColor = .border
+        middleLine.backgroundColor = .border
+        bottomLine.backgroundColor = .border
+        imageBtnIcon.tintColor = .border
+        imageBtn.backgroundColor = .clear
+        let title = NSAttributedString(string: R.String.ChooseNode, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight])
+        nodeBtn.setAttributedTitle(title, for: .normal)
+        bottomLabel.textColor = .border
+        titleTextView.tintColor = .highlight
+        titleTextView.textColor = .body
+        contentTextView.tintColor = .highlight
+        contentTextView.textColor = .body
     }
     
 }

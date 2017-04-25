@@ -113,7 +113,7 @@ class ImageViewingController: UIViewController, UIScrollViewDelegate, UIGestureR
         doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(doubleTap(_:)))
         doubleTapGestureRecognizer.numberOfTapsRequired = 2
         doubleTapGestureRecognizer.delegate = self
-        longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress))
+        longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
         longPressGestureRecognizer.delegate = self
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(singleTap))
         singleTapGestureRecognizer.require(toFail: doubleTapGestureRecognizer)
@@ -233,10 +233,13 @@ class ImageViewingController: UIViewController, UIScrollViewDelegate, UIGestureR
     }
     
     @objc
-    private func longPress()
+    private func longPress(_ sender: UILongPressGestureRecognizer)
     {
-        let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
-        present(activityViewController, animated: true, completion: nil)
+        if sender.state == .began
+        {
+            let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+            present(activityViewController, animated: true, completion: nil)
+        }
     }
     
     @objc

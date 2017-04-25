@@ -30,8 +30,6 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate
     {
         super.viewDidLoad()
         
-        let preferences = UserDefaults.standard
-        enableTabarHidden = preferences.bool(forKey: R.Key.EnableTabbarHidden)
         buildUI()
         delegate = self
     }
@@ -77,12 +75,16 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate
         profileNav.tabBarItem = UITabBarItem(title: nil, image: R.Image.Profile, selectedImage: R.Image.Profile)
         
         viewControllers = [homeNav, nodesNav, searchNav, notificationNav, profileNav]
-        for tabBarItem in tabBar.items!
-        {
-            tabBarItem.imageInsets = UIEdgeInsetsMake(6, 0, -6, 0)
-        }
-        tabBar.tintColor = .lightPink
-        tabBar.isTranslucent = false
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        tabBar.setupTabBar()
     }
     
     func setNotificationNum(_ number: Int)
@@ -110,5 +112,5 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate
         }
         return true
     }
-
+    
 }

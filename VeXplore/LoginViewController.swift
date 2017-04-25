@@ -40,7 +40,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate
         let textFiled = LoginPageTextField()
         textFiled.translatesAutoresizingMaskIntoConstraints = false
         textFiled.clearButtonMode = .always
-        textFiled.textColor = .darkGray
+        textFiled.textColor = .body
         textFiled.returnKeyType = .next
         textFiled.delegate = self
         textFiled.placeholder = R.String.Username
@@ -53,7 +53,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate
         textFiled.translatesAutoresizingMaskIntoConstraints = false
         textFiled.isSecureTextEntry = true
         textFiled.clearButtonMode = .always
-        textFiled.textColor = .darkGray
+        textFiled.textColor = .body
         textFiled.returnKeyType = .done
         textFiled.delegate = self
         textFiled.placeholder = R.String.Password
@@ -65,7 +65,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate
         let btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
         btn.addTarget(self, action: #selector(loginBtnTapped), for: .touchUpInside)
-        let normalLoginText = NSMutableAttributedString(string: R.String.Login, attributes: [NSFontAttributeName: R.Font.VeryLarge, NSForegroundColorAttributeName: UIColor.darkGray])
+        let normalLoginText = NSMutableAttributedString(string: R.String.Login, attributes: [NSFontAttributeName: R.Font.VeryLarge, NSForegroundColorAttributeName: UIColor.body])
         let disabledLoginText = NSMutableAttributedString(string: R.String.Login, attributes: [NSFontAttributeName: R.Font.VeryLarge, NSForegroundColorAttributeName: UIColor.gray])
         btn.setAttributedTitle(normalLoginText, for: .normal)
         btn.setAttributedTitle(disabledLoginText, for: .disabled)
@@ -81,9 +81,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate
     private lazy var closeBtn: UIButton = {
         let btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        let iamge = R.Image.Close
-        btn.setImage(iamge, for: .normal)
-        btn.tintColor = .middleGray
+        btn.setImage(R.Image.Close, for: .normal)
+        btn.tintColor = .desc
         btn.addTarget(self, action: #selector(closeBtnTapped), for: .touchUpInside)
         
         return btn
@@ -91,8 +90,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate
     
     private lazy var onePasswordBtn: UIButton = {
         let btn = UIButton(type: .custom)
-        let iamge = R.Image.Onepassword
-        btn.setImage(iamge, for: .normal)
+        btn.setImage(R.Image.Onepassword, for: .normal)
         btn.tintColor = .gray
         btn.frame = CGRect(x: 0, y: 0, width: 27, height: 27)
         btn.addTarget(self, action: #selector(searchFromOnePassword(_:)), for: .touchUpInside)
@@ -127,20 +125,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate
         
         usernameContainerView.addSubview(usernameTextFiled)
         passwordContainerView.addSubview(passwordTextFiled)
-        usernameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[usernameTextFiled]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        passwordContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[passwordTextFiled]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        usernameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[usernameTextFiled(34)]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        passwordContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[passwordTextFiled(34)]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        usernameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[usernameTextFiled]|", metrics: nil, views: bindings))
+        passwordContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[passwordTextFiled]|", metrics: nil, views: bindings))
+        usernameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[usernameTextFiled(34)]-12-|", metrics: nil, views: bindings))
+        passwordContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[passwordTextFiled(34)]-12-|", metrics: nil, views: bindings))
 
         backgroundView.addSubview(usernameContainerView)
         backgroundView.addSubview(passwordContainerView)
         backgroundView.addSubview(loginBtn)
-        backgroundView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-48@999-[usernameContainerView]-48@999-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        backgroundView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-48@999-[usernameContainerView]-48@999-|", metrics: nil, views: bindings))
         usernameContainerView.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor).isActive = true
         usernameContainerView.leadingAnchor.constraint(equalTo: passwordContainerView.leadingAnchor).isActive = true
         usernameContainerView.trailingAnchor.constraint(equalTo: passwordContainerView.trailingAnchor).isActive = true
         usernameContainerView.widthAnchor.constraint(lessThanOrEqualToConstant: 480.0).isActive = true
-        backgroundView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[usernameContainerView][passwordContainerView]-44-[loginBtn(44)]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        backgroundView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[usernameContainerView][passwordContainerView]-44-[loginBtn(44)]", metrics: nil, views: bindings))
         loginBtn.widthAnchor.constraint(equalToConstant: 112.0).isActive = true
         passwordContainerView.bottomAnchor.constraint(equalTo: backgroundView.centerYAnchor).isActive = true
         loginBtn.centerXAnchor.constraint(equalTo: backgroundView.centerXAnchor).isActive = true
@@ -148,9 +146,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate
         view.addSubview(backgroundView)
         view.addSubview(centerLoadingView)
         view.addSubview(closeBtn)
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[closeBtn(50)]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroundView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroundView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[closeBtn(50)]", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[backgroundView]|", metrics: nil, views: bindings))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[backgroundView]|", metrics: nil, views: bindings))
         closeBtn.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
         closeBtn.heightAnchor.constraint(equalTo: closeBtn.widthAnchor).isActive = true
         centerLoadingView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -168,7 +166,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate
             passwordTextFiled.rightViewMode = .always
         }
         
-        view.backgroundColor = .white
+        view.backgroundColor = .background
         NotificationCenter.default.addObserver(self, selector: #selector(textFieldTextDidChange), name: NSNotification.Name.UITextFieldTextDidChange, object: usernameTextFiled)
         NotificationCenter.default.addObserver(self, selector: #selector(textFieldTextDidChange), name: NSNotification.Name.UITextFieldTextDidChange, object: passwordTextFiled)
         NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
@@ -179,7 +177,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate
     {
         usernameTextFiled.font = R.Font.Medium
         passwordTextFiled.font = R.Font.Medium
-        let normalLoginText = NSMutableAttributedString(string: R.String.Login, attributes: [NSFontAttributeName: R.Font.VeryLarge, NSForegroundColorAttributeName: UIColor.darkGray])
+        let normalLoginText = NSMutableAttributedString(string: R.String.Login, attributes: [NSFontAttributeName: R.Font.VeryLarge, NSForegroundColorAttributeName: UIColor.body])
         let disabledLoginText = NSMutableAttributedString(string: R.String.Login, attributes: [NSFontAttributeName: R.Font.VeryLarge, NSForegroundColorAttributeName: UIColor.gray])
         loginBtn.setAttributedTitle(normalLoginText, for: .normal)
         loginBtn.setAttributedTitle(disabledLoginText, for: .disabled)

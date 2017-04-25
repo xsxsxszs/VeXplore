@@ -46,8 +46,8 @@ class SwipCell: UITableViewCell
         addGestureRecognizer(tapGestureRecognizer)
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
-        contentView.backgroundColor = .white
-        backgroundColor = .offWhite
+        contentView.backgroundColor = .background
+        backgroundColor = .subBackground
         selectionStyle = .none
     }
     

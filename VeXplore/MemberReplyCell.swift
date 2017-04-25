@@ -12,7 +12,7 @@ class MemberReplyCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
         
         return label
@@ -22,7 +22,7 @@ class MemberReplyCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -33,7 +33,7 @@ class MemberReplyCell: UITableViewCell
         label.font = R.Font.Medium
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.textColor = .darkGray
+        label.textColor = .body
         label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
         label.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
         
@@ -43,7 +43,7 @@ class MemberReplyCell: UITableViewCell
     lazy var commentLabel: RichTextLabel = {
         let label = RichTextLabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.backgroundColor = .lightYellow
+        label.backgroundColor = .refBackground
         
         return label
     }()
@@ -51,7 +51,7 @@ class MemberReplyCell: UITableViewCell
     private lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -72,16 +72,16 @@ class MemberReplyCell: UITableViewCell
             "commentLabel": commentLabel,
             "bottomLine": bottomLine,
             ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[indexLabel]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[dateLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[titleLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[commentLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[bottomLine]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[indexLabel]-10-[titleLabel]-10-[commentLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[indexLabel]", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[dateLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[titleLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[commentLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[bottomLine]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[indexLabel]-10-[titleLabel]-10-[commentLabel]-8-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", metrics: nil, views: bindings))
         dateLabel.centerYAnchor.constraint(equalTo: indexLabel.centerYAnchor).isActive = true
         
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .background
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none

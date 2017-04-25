@@ -12,7 +12,7 @@ class LoginPageTextField: UITextField
         let view = BendingLine()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .clear
-        view.lineColor = .middleGray
+        view.lineColor = .desc
         
         return view
     }()
@@ -23,7 +23,7 @@ class LoginPageTextField: UITextField
         
         addSubview(bendingLine)
         let bindings = ["bendingLine": bendingLine]
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bendingLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bendingLine]|", metrics: nil, views: bindings))
         bendingLine.topAnchor.constraint(equalTo: bottomAnchor).isActive = true
         bendingLine.heightAnchor.constraint(equalToConstant: 8.0).isActive = true
         

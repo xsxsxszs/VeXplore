@@ -34,7 +34,7 @@ class MemberFollowBlockCell: UITableViewCell
     private lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -54,11 +54,11 @@ class MemberFollowBlockCell: UITableViewCell
             "bottomLine": bottomLine
             ]
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[followView][blockView]|", options: [.alignAllTop, .alignAllBottom], metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[blockView]-8-[bottomLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[blockView]-8-[bottomLine(0.5)]|", metrics: nil, views: bindings))
         followView.widthAnchor.constraint(equalTo: blockView.widthAnchor).isActive = true
         
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .background
         selectionStyle = .none
     }
     

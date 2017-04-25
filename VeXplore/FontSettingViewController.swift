@@ -8,6 +8,7 @@
 
 class FontSettingViewController: UIViewController, SliderDelegate
 {
+    private var fontScaleString = UserDefaults.fontScaleString
     private lazy var slider: Slider = {
         let slider = Slider(frame: self.view.bounds)
         slider.options = R.Array.FontSettingScales
@@ -24,18 +25,11 @@ class FontSettingViewController: UIViewController, SliderDelegate
         return cell
     }()
     
-    weak var settingVC: SettingViewController?
-    
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        navigationController?.navigationBar.isTranslucent = false
         title = R.String.FontSettingTitle
-        
-        if let settingVC = settingVC
-        {
-            slider.selectedIndex = slider.options?.index(of: settingVC.fontScaleString)
-        }
+        navigationController?.navigationBar.setupNavigationbar()
         
         view.addSubview(slider)
         view.addSubview(topicCellView)
@@ -43,14 +37,19 @@ class FontSettingViewController: UIViewController, SliderDelegate
             "slider": slider,
             "topicCellView": topicCellView,
             ]
-        NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[slider]-20-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topicCellView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "V:|-25-[slider]-25-[topicCellView]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[slider]-20-|", metrics: nil, views: bindings))
+        NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "H:|[topicCellView]|", metrics: nil, views: bindings))
+        NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "V:|-25-[slider]-25-[topicCellView]", metrics: nil, views: bindings))
         
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
-        closeBtn.tintColor = .middleGray
+        let confirmBtn = UIBarButtonItem(image: R.Image.Confirm, style: .plain, target: self, action: #selector(confirmBtnTapped))
+        confirmBtn.tintColor = .highlight
         navigationItem.leftBarButtonItem = closeBtn
-        view.backgroundColor = .offWhite
+        navigationItem.rightBarButtonItem = confirmBtn
+
+        view.backgroundColor = .subBackground
+        slider.selectedIndex = slider.options?.index(of: fontScaleString) ?? 0
+
         NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
     
@@ -66,6 +65,14 @@ class FontSettingViewController: UIViewController, SliderDelegate
     {
        _ = navigationController?.popViewController(animated: true)
     }
+    
+    @objc
+    private func confirmBtnTapped()
+    {
+        UserDefaults.fontScaleString = fontScaleString
+        NotificationCenter.default.post(name: Notification.Name.Setting.FontsizeDidChange, object: nil)
+        _ = navigationController?.popViewController(animated: true)
+    }
 
     // MARK: - SliderDelegate
     func didSelect(at index: Int)
@@ -74,8 +81,7 @@ class FontSettingViewController: UIViewController, SliderDelegate
         let scaledFontSize = round(R.Font.Medium.pointSize * fontScale)
         let font = R.Font.Medium.withSize(scaledFontSize)
         topicCellView.topicTitleLabel.font = font
-        settingVC?.fontScaleString = slider.options![index]
-        settingVC?.tableView.reloadData()
+        fontScaleString = slider.options![index]
     }
     
 }
@@ -95,7 +101,7 @@ class TopicCellView: UIView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.text = R.String.WangXizhi
 
         return label
@@ -106,7 +112,7 @@ class TopicCellView: UIView
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Medium
         label.numberOfLines = 0
-        label.textColor = .darkGray
+        label.textColor = .body
         label.text = R.String.PrefaceOfLantingExcerpt
         return label
     }()
@@ -115,7 +121,7 @@ class TopicCellView: UIView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.text = R.String.PrefaceOfLanting
 
         return label
@@ -124,7 +130,7 @@ class TopicCellView: UIView
     private lazy var nodeNameContainerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.borderColor = UIColor.middleGray.cgColor
+        view.layer.borderColor = UIColor.desc.cgColor
         view.layer.borderWidth = 1
         view.layer.cornerRadius = 3
         
@@ -134,7 +140,7 @@ class TopicCellView: UIView
     private lazy var commentImageView: UIImageView = {
         let view = UIImageView()
         view.image = R.Image.Comment
-        view.tintColor = .middleGray
+        view.tintColor = .desc
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         
@@ -145,7 +151,7 @@ class TopicCellView: UIView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.text = R.String.Zero
         
         return label
@@ -155,7 +161,7 @@ class TopicCellView: UIView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .borderGray
+        label.textColor = .note
         label.text = R.String.PrefaceOfLantingPublicTime
 
         return label
@@ -164,7 +170,7 @@ class TopicCellView: UIView
     private lazy var separatorLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -186,8 +192,8 @@ class TopicCellView: UIView
         ]
         
         nodeNameContainerView.addSubview(nodeNameLabel)
-        nodeNameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-3-[nodeNameLabel]-3-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        nodeNameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-1-[nodeNameLabel]-1-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        nodeNameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-3-[nodeNameLabel]-3-|", metrics: nil, views: bindings))
+        nodeNameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-1-[nodeNameLabel]-1-|", metrics: nil, views: bindings))
         
         addSubview(avatarImageView)
         addSubview(userNameLabel)
@@ -197,8 +203,8 @@ class TopicCellView: UIView
         addSubview(topicTitleLabel)
         addSubview(lastReplayDateAndUserLabel)
         addSubview(separatorLine)
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[nodeNameContainerView]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[commentImageView]-1-[repliesNumberLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[nodeNameContainerView]", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[commentImageView]-1-[repliesNumberLabel]-8-|", metrics: nil, views: bindings))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[userNameLabel]-6-[topicTitleLabel]-6-[lastReplayDateAndUserLabel]-4-[separatorLine(0.5)]|", options: [.alignAllLeading], metrics: nil, views: bindings))
         avatarImageView.topAnchor.constraint(equalTo: topAnchor, constant: 8).isActive = true
         avatarImageView.widthAnchor.constraint(equalToConstant: R.Constant.AvatarSize).isActive = true
@@ -211,7 +217,7 @@ class TopicCellView: UIView
         topicTitleLabel.trailingAnchor.constraint(equalTo: repliesNumberLabel.trailingAnchor).isActive = true
         lastReplayDateAndUserLabel.trailingAnchor.constraint(equalTo: repliesNumberLabel.trailingAnchor).isActive = true
         
-        backgroundColor = .white
+        backgroundColor = .background
     }
     
     required init?(coder aDecoder: NSCoder)

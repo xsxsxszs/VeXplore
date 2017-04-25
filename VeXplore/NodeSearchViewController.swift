@@ -33,7 +33,7 @@ class NodeSearchCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Medium
-        label.textColor = UIColor.darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -44,13 +44,16 @@ class NodeSearchCell: UITableViewCell
         
         contentView.addSubview(contentLabel)
         let bindings = ["contentLabel": contentLabel]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[contentLabel]-18-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[contentLabel]-10-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-18-[contentLabel]-18-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-10-[contentLabel]-10-|", metrics: nil, views: bindings))
         
-        contentView.backgroundColor = .white
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -62,6 +65,13 @@ class NodeSearchCell: UITableViewCell
     {
         super.prepareForReuse()
         contentLabel.font = R.Font.Medium
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        contentLabel.textColor = .body
+        contentView.backgroundColor = .background
     }
     
 }
@@ -103,8 +113,6 @@ class NodeSearchViewController: SearchViewController
         super.viewDidLoad()
         searchBox.searchField.returnKeyType = .done
         refreshAllNodes()
-        tableView.sectionIndexColor = .hrefColor
-        tableView.sectionIndexBackgroundColor = .clear
         tableView.estimatedSectionHeaderHeight = R.Constant.EstimatedSectionHeaderHeight
         tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
         tableView.sectionHeaderHeight = UITableViewAutomaticDimension

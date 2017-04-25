@@ -19,7 +19,6 @@ class MyFollowingsViewController: BaseCenterLoadingViewController
         tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
-        closeBtn.tintColor = .middleGray
         navigationItem.leftBarButtonItem = closeBtn
     }
     

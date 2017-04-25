@@ -11,7 +11,7 @@ class BendingLine: UIView
     private var shapeLayer = CAShapeLayer()
     private var lineLayer = CAShapeLayer()
     var upAnimationFillColor: UIColor = .clear
-    var lineColor: UIColor = .borderGray
+    var lineColor: UIColor = .border
     
     // MARK - Public
     func animateLineUp(withDuration duration: Double)
@@ -54,7 +54,7 @@ class BendingLine: UIView
             let animation = CAKeyframeAnimation(keyPath: "strokeColor")
             animation.repeatCount = 1.0
             animation.values = [
-                UIColor.lightPink.cgColor,
+                UIColor.highlight.cgColor,
                 lineColor.cgColor
             ]
             animation.calculationMode = kCAAnimationCubic
@@ -112,7 +112,7 @@ class BendingLine: UIView
             animation.repeatCount = 1.0
             animation.values = [
                 lineColor.cgColor,
-                UIColor.lightPink.cgColor
+                UIColor.highlight.cgColor
             ]
             animation.calculationMode = kCAAnimationCubic
             animation.timingFunctions = [CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseOut)]
@@ -148,7 +148,7 @@ class BendingLine: UIView
             let shapeLayer = CAShapeLayer()
             shapeLayer.frame = bounds
             shapeLayer.lineWidth = 1
-            shapeLayer.strokeColor = UIColor.lightPink.cgColor
+            shapeLayer.strokeColor = UIColor.highlight.cgColor
             shapeLayer.fillColor = UIColor.clear.cgColor
             shapeLayer.path = normalLinePathRef()
             

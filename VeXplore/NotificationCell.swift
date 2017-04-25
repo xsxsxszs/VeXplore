@@ -12,7 +12,7 @@ class NotificationCell: SwipCell
         let view = AvatarImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleToFill
-        view.tintColor = .darkGray
+        view.tintColor = .body
         view.isUserInteractionEnabled = true
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(avatarTapped)))
         
@@ -33,7 +33,7 @@ class NotificationCell: SwipCell
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Medium
         label.numberOfLines = 0
-        label.textColor = .darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -43,8 +43,8 @@ class NotificationCell: SwipCell
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
         label.numberOfLines = 0
-        label.textColor = .middleGray
-        label.backgroundColor = .lightYellow
+        label.textColor = .desc
+        label.backgroundColor = .refBackground
         
         return label
     }()
@@ -52,7 +52,7 @@ class NotificationCell: SwipCell
     private lazy var separatorLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -87,11 +87,11 @@ class NotificationCell: SwipCell
             "commentLabel": commentLabel,
             "separatorLine": separatorLine
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[dateLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[dateLabel]-8-|", metrics: nil, views: bindings))
         contentView.addConstraint(NSLayoutConstraint(item: topicTitleLabel, attribute: .leading, relatedBy: .equal, toItem: dateLabel, attribute: .leading, multiplier: 1.0, constant: 0.0))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[dateLabel]-6-[topicTitleLabel]-6-[commentLabel]-4-|", options: [.alignAllLeading, .alignAllTrailing], metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[avatarImageView]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[separatorLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[avatarImageView]", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[separatorLine(0.5)]|", metrics: nil, views: bindings))
         avatarImageView.widthAnchor.constraint(equalToConstant: R.Constant.AvatarSize).isActive = true
         avatarImageView.heightAnchor.constraint(equalToConstant: R.Constant.AvatarSize).isActive = true
         dateLabel.topAnchor.constraint(equalTo: avatarImageView.topAnchor).isActive = true
@@ -157,7 +157,7 @@ class NotificationCell: SwipCell
     {
         let iconView: UIImageView = {
             let view = UIImageView(image: R.Image.Delete)
-            view.tintColor = .middleGray
+            view.tintColor = .desc
             view.translatesAutoresizingMaskIntoConstraints = false
             view.contentMode = .scaleAspectFit
             

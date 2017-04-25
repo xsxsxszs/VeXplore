@@ -20,7 +20,7 @@ class BaseTopicCommentModel: NSObject
             if node.tag == "text", let content = node.content
             {
                 let clearedContent = content.stringByRemovingNewLinesAndWhitespace()
-                commentAttributedString.append(NSMutableAttributedString(string: clearedContent, attributes: [NSFontAttributeName: R.Font.Medium, NSForegroundColorAttributeName: UIColor.middleGray]))
+                commentAttributedString.append(NSMutableAttributedString(string: clearedContent, attributes: [NSFontAttributeName: R.Font.Medium, NSForegroundColorAttributeName: UIColor.desc]))
                 commentAttributedString.set(lineSpacing: 1)
             }
             else if node.tag == "img", var imageURL = node["src"]
@@ -46,7 +46,7 @@ class BaseTopicCommentModel: NSObject
                 {
                     let contentWithSpace = content + " " // add space after @ someone
                     let attr = NSMutableAttributedString(string: contentWithSpace, attributes: [NSFontAttributeName: R.Font.Medium])
-                    attr.setHighlightText(withColor: .hrefColor, url: url)
+                    attr.setHighlightText(withColor: .href, url: url)
                     commentAttributedString.append(attr)
                 }
             }
@@ -60,11 +60,11 @@ class BaseTopicCommentModel: NSObject
             }
             else if node.tag == "br"
             {
-                commentAttributedString.append(NSMutableAttributedString(string: "\n",  attributes: [NSForegroundColorAttributeName: UIColor.middleGray]))
+                commentAttributedString.append(NSMutableAttributedString(string: "\n",  attributes: [NSForegroundColorAttributeName: UIColor.desc]))
             }
             else if let content = node.content
             {
-                commentAttributedString.append(NSMutableAttributedString(string: content,  attributes: [NSForegroundColorAttributeName: UIColor.middleGray]))
+                commentAttributedString.append(NSMutableAttributedString(string: content,  attributes: [NSForegroundColorAttributeName: UIColor.desc]))
             }
         }
         return commentAttributedString

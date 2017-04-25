@@ -33,11 +33,9 @@ class NodeTopicListViewController: TopicListViewController
         if User.shared.isLogin
         {
             let favoriteBtn = UIBarButtonItem(image: R.Image.Favorite, style: .plain, target: self, action: #selector(favoriteBtnTapped))
-            favoriteBtn.tintColor = .middleGray
             navigationItem.rightBarButtonItem = favoriteBtn
         }
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
-        closeBtn.tintColor = .middleGray
         navigationItem.leftBarButtonItem = closeBtn
     }
     
@@ -57,7 +55,7 @@ class NodeTopicListViewController: TopicListViewController
                 if response.success
                 {
                     self.isFavorite = !self.isFavorite
-                    self.navigationItem.rightBarButtonItem?.tintColor = self.isFavorite ? .lightPink : .middleGray
+                    self.navigationItem.rightBarButtonItem?.tintColor = self.isFavorite ? .highlight : .desc
                     if let favoriteNodesVC = self.favoriteNodesVC, self.isFavorite == false
                     {
                         favoriteNodesVC.nodeToDelete = self.nodeId
@@ -94,7 +92,7 @@ class NodeTopicListViewController: TopicListViewController
                     }
                     if weakSelf.isFavorite
                     {
-                        weakSelf.navigationItem.rightBarButtonItem?.tintColor = .lightPink
+                        weakSelf.navigationItem.rightBarButtonItem?.tintColor = .highlight
                     }
                     weakSelf.currentPage = 2
                     if weakSelf.currentPage > weakSelf.totalPageNum
@@ -124,7 +122,6 @@ class NodeTopicListViewController: TopicListViewController
                         weakSelf.topMessageLabel.text = R.String.NeedLoginToViewThisNode
                         weakSelf.topMessageLabel.isHidden = false
                         weakSelf.topLoadingView.isHidden = true
-                        User.shared.logout()
                     }
                     else
                     {

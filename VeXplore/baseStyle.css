@@ -10,7 +10,7 @@ h2 {
     line-height: 1.2;
     margin: 20px 0px 20px 0px;
     padding: 0px 0px 8px 0px;
-    border-bottom: 1px solid #e2e2e2;
+    border-bottom: 1px solid H2_BORDER_BOTTOM_COLOR_PLACEHOLDER;
 }
 
 h3 {
@@ -80,7 +80,7 @@ p {
 a:link, a:visited, a:active {
     text-decoration: none;
     word-break: break-all;
-    color: #00314F;
+    color: HREF_COLOR_PLACEHOLDER;
     text-decoration: underline;
 }
 
@@ -91,17 +91,17 @@ body {
     word-wrap: break-word;
     max-height: 20em;
     padding: 5px;
-    color: #333333;
-    background-color:#FFFFFF;
+    color: BODY_COLOR_PLACEHOLDER;
+    background-color: BODY_BACKGROUND_COLOR_PLACEHOLDER;
 }
 
 .subtle {
     padding: 5px;
-    color:#333333;
-    background-color:#FFFFF8;
+    color: BODY_COLOR_PLACEHOLDER;
+    background-color: SUBTITLE_BACKGROUND_COLOR_PLACEHOLDER;
 }
 
 .subtle .fade {
-    color:#999999;
-    background-color:#F8F8F8;
+    color: SUBTITLE_FADE_COLOR_PLACEHOLDER;
+    background-color: SUBTITLE_FADE_BACKGROUND_COLOR_PLACEHOLDER;
 }

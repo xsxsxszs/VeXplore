@@ -24,7 +24,7 @@ class DataPickerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         view.translatesAutoresizingMaskIntoConstraints = false
         view.showsVerticalScrollIndicator = false
         view.showsHorizontalScrollIndicator = false
-        view.backgroundColor = .white
+        view.backgroundColor = .background
         view.register(DataPickerCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: DataPickerCollectionViewCell.self))
         view.dataSource = self
         view.delegate = self
@@ -52,7 +52,7 @@ class DataPickerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
     private lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -68,7 +68,7 @@ class DataPickerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
     private lazy var bendingLine: BendingLine = {
         let view = BendingLine()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -94,18 +94,18 @@ class DataPickerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
             "bendingLine": bendingLine,
             "pickerContainerView": pickerContainerView
         ]
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[collectionView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[pickerContainerView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[pickerContainerView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bendingLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bendingLine(8)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[collectionView]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[pickerContainerView]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[pickerContainerView]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bendingLine]|", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bendingLine(8)]|", metrics: nil, views: bindings))
         collectionView.topAnchor.constraint(equalTo: pickerContainerView.topAnchor).isActive = true
         collectionView.heightAnchor.constraint(equalToConstant: R.Constant.DataPickerHeight).isActive = true
         pickerContainerHeight = NSLayoutConstraint(item: pickerContainerView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 1.0)
         pickerContainerHeight.isActive = true
         
         clipsToBounds = false
-        backgroundColor = .white
+        backgroundColor = .background
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -242,7 +242,7 @@ class DataPickerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         return cell
     }
     
-    //MARK: - UICollectionViewDelegate
+    //MARK: - UICollectionViewDelegateFlowLayout
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
     {
         return CGSize(width: collectionView.bounds.width, height: R.Constant.DataPickerCellHeight)
@@ -326,9 +326,9 @@ class DataPickerCollectionViewCell: UICollectionViewCell
 {
     fileprivate lazy var label: UILabel = {
         let label = UILabel(frame: self.contentView.bounds)
-        label.textColor = .darkGray
+        label.textColor = .body
         label.textAlignment = .center
-        label.highlightedTextColor = .lightPink
+        label.highlightedTextColor = .highlight
         label.font = R.Font.StaticMedium
         label.lineBreakMode = .byTruncatingTail
         label.autoresizingMask = [
@@ -409,7 +409,7 @@ class DataPickerCollectionViewLayout: UICollectionViewFlowLayout
             transform = CATransform3DRotate(transform, currentAngle, -1, 0, 0)
             transform = CATransform3DTranslate(transform, 0, 0, height)
             attributes.transform3D = transform
-            attributes.alpha = abs(Double(currentAngle)) < M_PI_2 ? 1.0 : 0.0
+            attributes.alpha = abs(Double(currentAngle)) < .pi/2 ? 1.0 : 0.0
             return attributes
         }
         return nil

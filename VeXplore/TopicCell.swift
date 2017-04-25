@@ -12,7 +12,7 @@ class TopicCell: UITableViewCell
         let view = AvatarImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleToFill
-        view.tintColor = .darkGray
+        view.tintColor = .body
         view.isUserInteractionEnabled = true
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(avatarTapped)))
         
@@ -23,7 +23,7 @@ class TopicCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
 
         return label
     }()
@@ -33,7 +33,7 @@ class TopicCell: UITableViewCell
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.DynamicMedium
         label.numberOfLines = 0
-        label.textColor = .darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -41,10 +41,10 @@ class TopicCell: UITableViewCell
     lazy var nodeNameBtn: UIButton = {
         let btn = UIButton()
         btn.translatesAutoresizingMaskIntoConstraints = false
-        btn.layer.borderColor = UIColor.middleGray.cgColor
+        btn.layer.borderColor = UIColor.desc.cgColor
         btn.layer.borderWidth = 1
         btn.layer.cornerRadius = 3
-        btn.setTitleColor(.middleGray, for: .normal)
+        btn.setTitleColor(.desc, for: .normal)
         btn.titleLabel?.font = R.Font.ExtraSmall
         btn.contentEdgeInsets = UIEdgeInsets(top: 1, left: 3, bottom: 1, right: 3)
         btn.addTarget(self, action: #selector(nodeTapped), for: .touchUpInside)
@@ -55,7 +55,7 @@ class TopicCell: UITableViewCell
     private lazy var commentImageView: UIImageView = {
         let view = UIImageView()
         view.image = R.Image.Comment
-        view.tintColor = .middleGray
+        view.tintColor = .desc
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         
@@ -66,7 +66,7 @@ class TopicCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.text = R.String.Zero
 
         return label
@@ -76,7 +76,7 @@ class TopicCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.ExtraSmall
-        label.textColor = .borderGray
+        label.textColor = .note
         
         return label
     }()
@@ -84,7 +84,7 @@ class TopicCell: UITableViewCell
     private lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -115,10 +115,10 @@ class TopicCell: UITableViewCell
             "lastReplayDateAndUserLabel": lastReplayDateAndUserLabel,
             "bottomLine": bottomLine
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[nodeNameBtn]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[commentImageView]-1-[repliesNumberLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[nodeNameBtn]", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[commentImageView]-1-[repliesNumberLabel]-8-|", metrics: nil, views: bindings))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[userNameLabel]-6-[topicTitleLabel]-6-[lastReplayDateAndUserLabel]-3.5-[bottomLine(0.5)]|", options: [.alignAllLeading], metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[avatarImageView]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[avatarImageView]", metrics: nil, views: bindings))
         topicTitleLabel.leadingAnchor.constraint(equalTo: userNameLabel.leadingAnchor).isActive = true
         avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor).isActive = true
         commentImageView.centerYAnchor.constraint(equalTo: userNameLabel.centerYAnchor).isActive = true
@@ -132,10 +132,13 @@ class TopicCell: UITableViewCell
         avatarSize = NSLayoutConstraint(item: avatarImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: R.Constant.AvatarSize)
         avatarSize.isActive = true
         
-        contentView.backgroundColor = .white
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -154,6 +157,21 @@ class TopicCell: UITableViewCell
         nodeNameBtn.titleLabel?.font = R.Font.ExtraSmall
         repliesNumberLabel.font = R.Font.ExtraSmall
         lastReplayDateAndUserLabel.font = R.Font.ExtraSmall
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        avatarImageView.tintColor = .body
+        userNameLabel.textColor = .desc
+        topicTitleLabel.textColor = .body
+        nodeNameBtn.layer.borderColor = UIColor.desc.cgColor
+        nodeNameBtn.setTitleColor(.desc, for: .normal)
+        commentImageView.tintColor = .desc
+        repliesNumberLabel.textColor = .desc
+        lastReplayDateAndUserLabel.textColor = .note
+        bottomLine.backgroundColor = .border
+        contentView.backgroundColor = .background
     }
     
     // MARK: - Actions

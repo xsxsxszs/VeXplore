@@ -78,7 +78,7 @@ class SquaresLoadingView: UIView
         for _ in -1..<squaresLengthSize * squaresLengthSize
         {
             let square = CALayer()
-            square.backgroundColor = UIColor.black.cgColor
+            square.backgroundColor = UIColor.body.cgColor
             squares.append(square)
             contentView.layer.addSublayer(square)
         }
@@ -103,7 +103,7 @@ class SquaresLoadingView: UIView
         for _ in -1..<squaresLengthSize * squaresLengthSize
         {
             let square = CALayer()
-            square.backgroundColor = UIColor.black.cgColor
+            square.backgroundColor = UIColor.body.cgColor
             squares.append(square)
             contentView.layer.addSublayer(square)
         }
@@ -267,7 +267,7 @@ class SquaresLoadingView: UIView
         }
         centerSquare.opacity = 1
         centerSquare.isHidden = false
-        centerSquare.setAffineTransform(CGAffineTransform(rotationAngle: CGFloat(M_PI_4)))
+        centerSquare.setAffineTransform(CGAffineTransform(rotationAngle: .pi/4))
         
         CATransaction.begin()
         CATransaction.setAnimationDuration(0.5)
@@ -285,7 +285,7 @@ class SquaresLoadingView: UIView
             square.isHidden = false
             let desiredPoint = desiredPoints[i]
             var transform = CGAffineTransform(translationX: desiredPoint.x - square.position.x, y: desiredPoint.y - square.position.y)
-            transform = transform.rotated(by: CGFloat(M_PI_4))
+            transform = transform.rotated(by: .pi/4)
             square.setAffineTransform(transform)
         }
         

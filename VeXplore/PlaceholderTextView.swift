@@ -17,7 +17,7 @@ class PlaceholderTextView: UITextView
         }
     }
     
-    var placeholderTextColor: UIColor = .gray {
+    var placeholderTextColor: UIColor = .border {
         didSet
         {
             setNeedsDisplay()
@@ -36,7 +36,11 @@ class PlaceholderTextView: UITextView
     init()
     {
         super.init(frame: .zero, textContainer: nil)
+        
+        refreshColorScheme()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(textDidChange), name: NSNotification.Name.UITextViewTextDidChange, object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -75,6 +79,13 @@ class PlaceholderTextView: UITextView
         let placeholderRect = UIEdgeInsetsInsetRect(bounds, placeholderInset)
         let attributes: [String: Any] = [NSFontAttributeName: placeholderFont, NSForegroundColorAttributeName: placeholderTextColor]
         placeholderText.draw(in: placeholderRect, withAttributes: attributes)
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        backgroundColor = .background
+        placeholderTextColor = .border
     }
 
 }

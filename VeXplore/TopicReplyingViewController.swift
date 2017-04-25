@@ -43,7 +43,7 @@ class TopicReplyingViewController: InputViewController
     {
         super.resetTextViews()
         inputContainerView.contentTextView.placeholderText = R.String.ReplyPlaceholder
-        inputContainerView.contentTextView.placeholderTextColor = .borderGray
+        inputContainerView.contentTextView.placeholderTextColor = .border
     }
     
     func textViewDidChange(_ textView: UITextView)

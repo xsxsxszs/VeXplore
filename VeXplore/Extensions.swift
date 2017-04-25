@@ -7,18 +7,96 @@
 
 import SharedKit
 
-
 extension UIColor
 {
-    class var offWhite: UIColor { return .colorWithWhite(0xf8) }
-    class var lightGray: UIColor { return .colorWithWhite(0xE5) }
-    class var borderGray: UIColor { return .colorWithWhite(0xCD) }
-    class var gray: UIColor { return .colorWithWhite(0x99) }
-    class var middleGray: UIColor { return .colorWithWhite(0x66) }
-    class var darkGray: UIColor { return .colorWithWhite(0x33) }
-    class var lightPink: UIColor { return .colorWithHexString("C56FD5") }
-    class var hrefColor: UIColor { return .colorWithHexString("00314F") }
-    class var lightYellow: UIColor { return .colorWithHexString("FFFFF8") }
+    func toHexString() -> String
+    {
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+        let rgb:Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+        return String(format:"#%06x", rgb)
+    }
+    
+    private static let normalPalette = [
+        "#FFFFFF", // background
+        "#F8F8F8", // subBackground
+        "#CDCDCD", // border
+        "#999999", // note
+        "#666666", // desc
+        "#333333", // body
+        "#C56FD5", // highlight
+        "#00314F", // href
+        "#FFFFF8"  // refBackground
+    ]
+    
+    private static let nightPalette = [
+        "#142634",
+        "#172B44",
+        "#38547A",
+        "#50667B",
+        "#7E8889",
+        "#8FA9BC",
+        "#D48872",
+        "#EAC5A0",
+        "#333333"
+    ]
+
+    private class var currentViewPalette: [String] {
+        return UserDefaults.isNightModeEnabled ? nightPalette : normalPalette
+    }
+    
+    class var background: UIColor {
+        let colorString = currentViewPalette[0]
+        return .colorWithHexString(colorString)
+    }
+    
+    // background color of section header
+    class var subBackground: UIColor {
+        let colorString = currentViewPalette[1]
+        return .colorWithHexString(colorString)
+    }
+    
+    class var border: UIColor {
+        let colorString = currentViewPalette[2]
+        return .colorWithHexString(colorString)
+    }
+    
+    // placeholder
+    class var note: UIColor {
+        let colorString = currentViewPalette[3]
+        return .colorWithHexString(colorString)
+    }
+    
+    // username, for description
+    class var desc: UIColor {
+        let colorString = currentViewPalette[4]
+        return .colorWithHexString(colorString)
+    }
+    
+    // topic title, topic body
+    class var body: UIColor {
+        let colorString = currentViewPalette[5]
+        return .colorWithHexString(colorString)
+    }
+    
+    class var highlight: UIColor {
+        let colorString = currentViewPalette[6]
+        return .colorWithHexString(colorString)
+    }
+    
+    class var href: UIColor {
+        let colorString = currentViewPalette[7]
+        return .colorWithHexString(colorString)
+    }
+    
+    class var refBackground: UIColor {
+        let colorString = currentViewPalette[8]
+        return .colorWithHexString(colorString)
+    }
+
     
     private class func colorWithWhite(_ white:UInt) -> UIColor
     {
@@ -40,7 +118,7 @@ extension UIColor
         }
         if (cString.lenght != 6)
         {
-            return .white
+            return .background
         }
         var rgbValue: UInt32 = 0
         Scanner(string: cString).scanHexInt32(&rgbValue)
@@ -88,12 +166,24 @@ extension UIImage
         draw(in: imageFrame)
         
         // draw border
-        UIColor.borderGray.setStroke()
+        UIColor.border.setStroke()
         context?.strokeEllipse(in: imageFrame)
         
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image!
+    }
+    
+    class func drawImage(size: CGSize, color: UIColor) -> UIImage?
+    {
+        let rect = CGRect(x: 0, y: 0, width: size.width, height: 1)
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, UIScreen.main.scale)
+        let context = UIGraphicsGetCurrentContext()
+        color.setFill()
+        context?.fill(rect)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
     }
 }
 
@@ -127,7 +217,7 @@ extension String
         scanner.charactersToBeSkipped = nil
         var result = R.String.Empty
         var temp: NSString? = nil
-        let whitespaceCharacters = CharacterSet.whitespaces
+        let whitespaceCharacters = CharacterSet.whitespacesAndNewlines
         while scanner.isAtEnd == false
         {
             scanner.scanUpToCharacters(from: whitespaceCharacters, into: &temp)
@@ -170,7 +260,7 @@ extension String
     
     func stringByRemovingWhitespaceAtBeginAndEnd() -> String
     {
-        return self.trimmingCharacters(in: .whitespaces)
+        return self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     func isValidImgUrl() -> Bool
@@ -268,7 +358,8 @@ extension Notification.Name
 {
     struct Setting
     {
-        static let FontSizeDidChange = Notification.Name(rawValue: "vexplore.notification.name.setting.fontsizeDidChange")
+        static let FontsizeDidChange = Notification.Name(rawValue: "vexplore.notification.name.setting.fontsizeDidChange")
+        static let NightModeDidChange = Notification.Name(rawValue: "vexplore.notification.name.setting.nightModeDidChange")
     }
     
     struct Profile
@@ -303,6 +394,82 @@ extension UserDefaults
         }
     }
     
+    class var fontScaleString: String {
+        get
+        {
+            return UserDefaults.standard.string(forKey: R.Key.DynamicTitleFontScale) ?? "1.0"
+        }
+        
+        set
+        {
+            UserDefaults.standard.set(newValue, forKey: R.Key.DynamicTitleFontScale)
+        }
+    }
+    
+    class var isPullReplyEnabled: Bool {
+        get
+        {
+            return UserDefaults.standard.bool(forKey: R.Key.EnablePullReply)
+        }
+        
+        set
+        {
+            UserDefaults.standard.set(newValue, forKey: R.Key.EnablePullReply)
+        }
+    }
+    
+    class var isHighlightOwnerRepliesEnabled: Bool {
+        get
+        {
+            return UserDefaults.standard.bool(forKey: R.Key.EnableHighlightOwnerReplies)
+        }
+        
+        set
+        {
+            UserDefaults.standard.set(newValue, forKey: R.Key.EnableHighlightOwnerReplies)
+        }
+    }
+    
+    class var isShakeEnabled: Bool {
+        get
+        {
+            if let isShakeEnabled = UserDefaults.standard.object(forKey: R.Key.EnableShake) as? NSNumber
+            {
+                return isShakeEnabled.boolValue
+            }
+            return false
+        }
+        
+        set
+        {
+            UserDefaults.standard.set(NSNumber(value: newValue as Bool), forKey: R.Key.EnableShake)
+        }
+    }
+    
+    class var isTabBarHiddenEnabled: Bool {
+        get
+        {
+            return UserDefaults.standard.bool(forKey: R.Key.EnableTabBarHidden)
+        }
+        
+        set
+        {
+            UserDefaults.standard.set(newValue, forKey: R.Key.EnableTabBarHidden)
+        }
+    }
+    
+    class var isNightModeEnabled: Bool {
+        get
+        {
+            return UserDefaults.standard.bool(forKey: R.Key.EnableNightMode)
+        }
+        
+        set
+        {
+            UserDefaults.standard.set(newValue, forKey: R.Key.EnableNightMode)
+        }
+    }
+
 }
 
 extension NSRange
@@ -362,7 +529,7 @@ extension Request
             case requestError = 10004
             case serverError = 10005
             case invalidDataError = 10006
-            case DataSerializationError = 10007
+            case dataSerializationError = 10007
         }
         
         return DataResponseSerializer { request, response, data, error in
@@ -394,7 +561,7 @@ extension Request
                 return .success(htmlDoc)
             }
             
-            let error = NSError(domain: R.String.ErrorDomain, code: VeXploreError.DataSerializationError.rawValue, userInfo: nil)
+            let error = NSError(domain: R.String.ErrorDomain, code: VeXploreError.dataSerializationError.rawValue, userInfo: nil)
             return .failure(error)
         }
     }
@@ -434,3 +601,33 @@ extension UIApplication
     
 }
 
+
+extension UINavigationBar
+{
+    func setupNavigationbar()
+    {
+        isTranslucent = false
+        barTintColor = .background
+        tintColor = .desc
+        titleTextAttributes = [NSForegroundColorAttributeName : UIColor.body]
+        shadowImage = UIImage.drawImage(size: CGSize(width: frame.width, height: 1), color: .border)
+        setBackgroundImage(UIImage(), for: .default)
+    }
+}
+
+
+extension UITabBar
+{
+    func setupTabBar()
+    {
+        for tabBarItem in items!
+        {
+            tabBarItem.imageInsets = UIEdgeInsetsMake(6, 0, -6, 0)
+        }
+        tintColor = .highlight
+        isTranslucent = false
+        barTintColor = .background
+        shadowImage = UIImage.drawImage(size: CGSize(width: frame.width, height: 1), color: .border)
+        backgroundImage = UIImage()
+    }
+}

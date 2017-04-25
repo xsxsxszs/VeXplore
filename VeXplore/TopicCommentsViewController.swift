@@ -8,13 +8,13 @@
 
 class TopicCommentsViewController: BaseTableViewController, CommentImageTapDelegate, CommentCellDelegate, OwnerViewActivityDelegate, UIActionSheetDelegate
 {
-    var currentPage = 1
-    var totalPageNum = 1
     var topicId = R.String.Zero
-    var topicComments = [TopicCommentModel]()
-    var ownerComments = [TopicCommentModel]()
-    var isOwnerView = false
-    var isCommmentContext = false
+    private var currentPage = 1
+    private var totalPageNum = 1
+    private var topicComments = [TopicCommentModel]()
+    private var ownerComments = [TopicCommentModel]()
+    private var isOwnerView = false
+    private var isCommmentContext = false
     weak var inputVC: TopicReplyingViewController!
     var ownername: String? {
         didSet
@@ -183,7 +183,7 @@ class TopicCommentsViewController: BaseTableViewController, CommentImageTapDeleg
         cell.likeNumLabel.text = String(comment.likeNum)
         if User.shared.isLogin, comment.isThanked
         {
-            cell.likeImageView.tintColor = .lightPink
+            cell.likeImageView.tintColor = .highlight
         }
         if let commentIndex = comment.commentIndex, commentIndex.isEmpty == false
         {
@@ -232,13 +232,12 @@ class TopicCommentsViewController: BaseTableViewController, CommentImageTapDeleg
     
     func tableView(_ tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: IndexPath)
     {
-        let preferences = UserDefaults.standard
-        if preferences.bool(forKey: R.Key.EnableOwnerRepliesHighlighted)
+        if UserDefaults.isHighlightOwnerRepliesEnabled
         {
             let comment = isOwnerView ? ownerComments[indexPath.row] : topicComments[indexPath.row]
             if comment.username == ownername
             {
-                cell.contentView.backgroundColor  = UIColor.lightPink.withAlphaComponent(0.07)
+                cell.contentView.backgroundColor  = UIColor.highlight.withAlphaComponent(0.07)
             }
         }
     }
@@ -305,7 +304,7 @@ class TopicCommentsViewController: BaseTableViewController, CommentImageTapDeleg
                 if response.success
                 {
                     let cell = weakSelf.tableView.cellForRow(at: indexPath) as! TopicCommentCell
-                    cell.likeImageView.tintColor = .lightPink
+                    cell.likeImageView.tintColor = .highlight
                     cell.commentModel?.isThanked = true
                     if let oldLikeNumText = cell.commentModel?.likeNum
                     {

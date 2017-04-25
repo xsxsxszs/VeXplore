@@ -20,7 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate
             clearPageCache()
             UserDefaults.standard[R.Key.LastCacheVersion] = currentVersion()
         }
-        
+        UIApplication.shared.statusBarStyle = UserDefaults.isNightModeEnabled ? .lightContent : .default
+
         self.window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.rootViewController = mainVC
         self.window?.makeKeyAndVisible()

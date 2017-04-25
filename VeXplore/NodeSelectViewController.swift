@@ -21,7 +21,6 @@ class NodeSelectViewController: NodeSearchViewController
         title = R.String.NodeChoose
         
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
-        closeBtn.tintColor = .middleGray
         navigationItem.leftBarButtonItem = closeBtn
         tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
     }

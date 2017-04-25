@@ -50,7 +50,7 @@ class SiteSearchViewController: SearchViewController, SquareLoadingViewDelegate
         
         tableFooterView.addSubview(bottomLoadingView)
         let bindings = ["bottomLoadingView": bottomLoadingView]
-        tableFooterView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLoadingView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        tableFooterView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLoadingView]|", metrics: nil, views: bindings))
         bottomLoadingView.topAnchor.constraint(equalTo: tableFooterView.topAnchor).isActive = true
         bottomLoadingView.heightAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
         view.addSubview(tableView)
@@ -58,7 +58,13 @@ class SiteSearchViewController: SearchViewController, SquareLoadingViewDelegate
         
         tableView.register(TopicSearchResultCell.self, forCellReuseIdentifier: String(describing: TopicSearchResultCell.self))
         searchBox.searchField.returnKeyType = .google
-        searchBox.searchField.placeholder = R.String.SiteSearchPlaceholder
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        searchBox.searchField.attributedPlaceholder = NSAttributedString(string: R.String.SiteSearchPlaceholder, attributes: [NSForegroundColorAttributeName : UIColor.border])
     }
     
     // MARK: - UITextFieldDelegate

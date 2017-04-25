@@ -13,13 +13,12 @@ protocol ProfileAvatarCellDelegate: class
 
 class ProfileAvatarCell: UITableViewCell
 {
-
     lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.font = R.Font.Medium
-        label.textColor = .darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -29,7 +28,7 @@ class ProfileAvatarCell: UITableViewCell
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         view.image = R.Image.AvatarPlaceholder
-        view.tintColor = .darkGray
+        view.tintColor = .body
         
         return view
     }()
@@ -51,7 +50,7 @@ class ProfileAvatarCell: UITableViewCell
         label.textAlignment = .center
         label.numberOfLines = 0
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         
         return label
     }()
@@ -59,7 +58,7 @@ class ProfileAvatarCell: UITableViewCell
     private lazy var bottomLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -67,10 +66,9 @@ class ProfileAvatarCell: UITableViewCell
     lazy var writeBtn: UIButton = {
         let btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        let image = R.Image.Write
-        btn.setImage(image, for: .normal)
+        btn.setImage(R.Image.Write, for: .normal)
         btn.imageEdgeInsets = UIEdgeInsetsMake(-16, -12, -16, -12)
-        btn.tintColor = .middleGray
+        btn.tintColor = .desc
         btn.addTarget(self, action: #selector(writeBtnTapped), for: .touchUpInside)
         btn.isHidden = true
         
@@ -97,20 +95,23 @@ class ProfileAvatarCell: UITableViewCell
             "contentLabel": contentLabel,
             "bottomLine": bottomLine
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[writeBtn(44)]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[writeBtn(52)]", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[nameLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-24-[joinTimeLabel]-24-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-24-[contentLabel]-24-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(30@999)-[avatarImageView(50@999)]-4-[nameLabel]-4-[joinTimeLabel]-8-[contentLabel]-8-[bottomLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[writeBtn(44)]", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[writeBtn(52)]", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[nameLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-24-[joinTimeLabel]-24-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-24-[contentLabel]-24-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[bottomLine]|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(30@999)-[avatarImageView(50@999)]-4-[nameLabel]-4-[joinTimeLabel]-8-[contentLabel]-8-[bottomLine(0.5)]|", metrics: nil, views: bindings))
         avatarImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
         avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor).isActive = true
         
-        contentView.backgroundColor = .white
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -128,6 +129,18 @@ class ProfileAvatarCell: UITableViewCell
         nameLabel.font = R.Font.Medium
         joinTimeLabel.font = R.Font.ExtraSmall
         contentLabel.font = R.Font.Small
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        nameLabel.textColor = .body
+        avatarImageView.tintColor = .body
+        joinTimeLabel.textColor = .gray
+        contentLabel.textColor = .desc
+        bottomLine.backgroundColor = .border
+        writeBtn.tintColor = .desc
+        contentView.backgroundColor = .background
     }
     
     @objc

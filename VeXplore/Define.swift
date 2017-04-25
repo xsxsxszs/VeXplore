@@ -11,5 +11,4 @@ typealias IgnoreHandler = (_ topicId: String) -> Void
 typealias UnfavoriteHandler = (_ topicId: String) -> Void
 typealias UnfollowingHandler = (_ username: String) -> Void
 
-// User Default
-var enableTabarHidden = false
+let isProEnabled = true

@@ -45,7 +45,7 @@ class SegmentControl: UIControl, UIGestureRecognizerDelegate
         let view = IndicatorView()
         view.layer.cornerRadius = 11
         view.layer.masksToBounds = true
-        view.backgroundColor = .lightPink
+        view.backgroundColor = .highlight
         
         return view
     }()
@@ -64,14 +64,14 @@ class SegmentControl: UIControl, UIGestureRecognizerDelegate
             
             let labels: [(UILabel, UILabel)] = newValue.map { (string) -> (UILabel, UILabel) in
                 let titleLabel = UILabel()
-                titleLabel.textColor = .middleGray
+                titleLabel.textColor = .desc
                 titleLabel.text = string
                 titleLabel.lineBreakMode = .byTruncatingTail
                 titleLabel.textAlignment = .center
                 titleLabel.font = R.Font.StaticMedium
                 
                 let selectedTitleLabel = UILabel()
-                selectedTitleLabel.textColor = .white
+                selectedTitleLabel.textColor = .background
                 selectedTitleLabel.text = string
                 selectedTitleLabel.lineBreakMode = .byTruncatingTail
                 selectedTitleLabel.textAlignment = .center
@@ -136,7 +136,7 @@ class SegmentControl: UIControl, UIGestureRecognizerDelegate
         layer.masksToBounds = true
         layer.cornerRadius = 13.0
         layer.borderWidth = 1.0
-        layer.borderColor = UIColor.gray.cgColor
+        layer.borderColor = UIColor.note.cgColor
         backgroundColor = .clear
         
         addSubview(titleLabelsView)

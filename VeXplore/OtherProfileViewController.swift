@@ -140,13 +140,13 @@ class OtherProfileViewController: BaseProfileViewController, MemberFollowBlockCe
                     {
                         cell.contentLabel.text = R.String.AllTopicsHidden
                     }
-                    else if userProfile.topicsNum > 0
+                    else if userProfile.topicsNum > 0 || userProfile.hasMoreReplies
                     {
                         cell.contentLabel.text = String(format: R.String.AllTopicsMoreThan, userProfile.topicsNum)
                     }
                 }
                 cell.iconImageView.image = R.Image.Topics
-                cell.iconImageView.tintColor = .darkGray
+                cell.iconImageView.tintColor = .body
                 return cell
             case .replies:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: PersonalInfoCell.self), for: indexPath) as! PersonalInfoCell
@@ -157,7 +157,7 @@ class OtherProfileViewController: BaseProfileViewController, MemberFollowBlockCe
                 }
                 cell.longLine.isHidden = false
                 cell.iconImageView.image = R.Image.Replies
-                cell.iconImageView.tintColor = .darkGray
+                cell.iconImageView.tintColor = .body
                 return cell
             }
         case .personInfo:
@@ -174,7 +174,7 @@ class OtherProfileViewController: BaseProfileViewController, MemberFollowBlockCe
                 {
                     let personInfo = personInfos[indexPath.row - 1]
                     cell.iconImageView.image = R.Dict.PersonInfoIcons[personInfo.type]
-                    cell.iconImageView.tintColor = .darkGray
+                    cell.iconImageView.tintColor = .body
                     cell.contentLabel.text = personInfo.text
                 }
                 cell.longLine.isHidden = (indexPath.row != personInfos.count)

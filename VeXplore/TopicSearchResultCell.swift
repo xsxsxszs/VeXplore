@@ -12,7 +12,7 @@ class TopicSearchResultCell: UITableViewCell
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Small
-        label.textColor = .middleGray
+        label.textColor = .desc
         label.textAlignment = .center
         
         return label
@@ -23,7 +23,7 @@ class TopicSearchResultCell: UITableViewCell
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = R.Font.Medium
         label.numberOfLines = 0
-        label.textColor = .darkGray
+        label.textColor = .body
         
         return label
     }()
@@ -31,7 +31,7 @@ class TopicSearchResultCell: UITableViewCell
     lazy var separatorLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .borderGray
+        view.backgroundColor = .border
         
         return view
     }()
@@ -52,17 +52,20 @@ class TopicSearchResultCell: UITableViewCell
             "separatorLine": separatorLine,
             "cellTitleLabel": cellTitleLabel
         ]
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[cellTitleLabel(40)]-8-[topicTitleLabel]-8-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[topicTitleLabel]-12-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
-        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[separatorLine(0.5)]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[cellTitleLabel(40)]-8-[topicTitleLabel]-8-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[topicTitleLabel]-12-|", metrics: nil, views: bindings))
+        contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[separatorLine(0.5)]|", metrics: nil, views: bindings))
         cellTitleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         separatorLine.leadingAnchor.constraint(equalTo: topicTitleLabel.leadingAnchor).isActive = true
         separatorLine.trailingAnchor.constraint(equalTo: topicTitleLabel.trailingAnchor).isActive = true
         
-        contentView.backgroundColor = .white
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
+        
+        refreshColorScheme()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -82,6 +85,15 @@ class TopicSearchResultCell: UITableViewCell
         super.layoutSubviews()
         contentView.layoutSubviews()
         topicTitleLabel.preferredMaxLayoutWidth = topicTitleLabel.bounds.width
+    }
+    
+    @objc
+    private func refreshColorScheme()
+    {
+        cellTitleLabel.textColor = .desc
+        topicTitleLabel.textColor = .body
+        separatorLine.backgroundColor = .border
+        contentView.backgroundColor = .background
     }
     
 }
