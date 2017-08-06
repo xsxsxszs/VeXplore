@@ -52,13 +52,13 @@ struct V2Request
         //////////////////////////
         ////// Topic Detail //////
         //////////////////////////
-        static func getDetail(withTopicId topicId: String, completionHandler: @escaping (ValueResponse<TopicDetailModel?>) -> Void )->Void
+        static func getDetail(withTopicId topicId: String, completionHandler: @escaping (ValueResponse<TopicDetailModel>) -> Void )->Void
         {
             let url = R.String.BaseUrl + "/t/" + topicId
             Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) in
                 if response.result.isSuccess, response.request?.url?.absoluteString != response.response?.url?.absoluteString
                 {
-                    let response = ValueResponse<TopicDetailModel?>(success: false, message: [R.String.NeedLoginError])
+                    let response = ValueResponse<TopicDetailModel>(success: false, message: [R.String.NeedLoginError])
                     completionHandler(response)
                     return
                 }
@@ -74,7 +74,7 @@ struct V2Request
                     User.shared.getNotificationsNum(withNode: htmlDoc.rootNode!)
                 }
                 
-                let handler = ValueResponse<TopicDetailModel?>(value: topicModel, success: response.result.isSuccess)
+                let handler = ValueResponse<TopicDetailModel>(value: topicModel, success: response.result.isSuccess)
                 completionHandler(handler)
             }
         }

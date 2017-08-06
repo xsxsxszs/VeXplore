@@ -56,6 +56,10 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         {
             preferredContentSize = CGSize(width: 0, height: rowHeight * CGFloat(data.count))
         }
+        else
+        {
+            preferredContentSize = maxSize
+        }
     }
     
     // MARK: - UITableViewDataSource

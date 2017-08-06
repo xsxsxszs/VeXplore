@@ -23,6 +23,7 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
     weak var delegate: TopicDetailViewControllerDelegate?
     weak var inputVC: TopicReplyingViewController!
     var webViewReloadCount: UInt8 = 0
+    var isFavoriteEnable = true
 
     override func viewDidLoad()
     {
@@ -185,6 +186,10 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
     // MARK: - TopicDetailDelegate
     func favoriteBtnTapped()
     {
+        guard isFavoriteEnable else {
+            return
+        }
+        isFavoriteEnable = false
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         refreshTopicToken(completion: { [weak self] (token) in
             guard let weakSelf = self else {
@@ -197,24 +202,27 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
                     if response.success
                     {
                         weakSelf.refreshPage(completion: { (success) in
-                            if success == true
+                            if success
                             {
                                 weakSelf.delegate?.isUnfavoriteTopic(!weakSelf.topicDetailModel.isFavorite)
                                 dispatch_async_safely_to_main_queue {
                                     weakSelf.tableView.reloadData()
                                 }
                             }
+                            weakSelf.isFavoriteEnable = true
                             UIApplication.shared.isNetworkActivityIndicatorVisible = false
                         })
                     }
                     else
                     {
+                        weakSelf.isFavoriteEnable = true
                         UIApplication.shared.isNetworkActivityIndicatorVisible = false
                     }
                 })
             }
             else
             {
+                weakSelf.isFavoriteEnable = true
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }
         })
@@ -240,8 +248,7 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
         V2Request.Topic.getDetail(withTopicId: topicId, completionHandler: { (response) in
             if response.success,
                 let topicDetailModel = response.value,
-                let topicDetailModelUnwrap = topicDetailModel,
-                let token = topicDetailModelUnwrap.token
+                let token = topicDetailModel.token
             {
                 completion(token)
             }

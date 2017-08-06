@@ -353,8 +353,7 @@ class TopicCommentsViewController: BaseTableViewController, CommentImageTapDeleg
         V2Request.Topic.getDetail(withTopicId: topicId, completionHandler: { (response) in
             if response.success,
                 let topicDetailModel = response.value,
-                let topicDetailModelUnwrap = topicDetailModel,
-                let token = topicDetailModelUnwrap.token
+                let token = topicDetailModel.token
             {
                 completion(token)
             }

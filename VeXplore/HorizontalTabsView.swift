@@ -57,6 +57,10 @@ class HorizontalTabCell: UICollectionViewCell
     override var isSelected: Bool {
         didSet
         {
+            guard isSelected != oldValue else {
+                return
+            }
+            
             label.isHighlighted = isSelected
             if isSelected
             {
@@ -208,11 +212,16 @@ class HorizontalTabsView: UICollectionView, UICollectionViewDataSource, UICollec
     {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: HorizontalTabCell.self), for: indexPath) as! HorizontalTabCell
         cell.label.text = tabsDelegate?.titleOfTabs(in: self, forIndex: indexPath.row)
+        return cell
+    }
+    
+    // MARK: - UICollectionViewDelegate
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath)
+    {
         if let selectedIndexPaths = collectionView.indexPathsForSelectedItems, selectedIndexPaths.count > 0
         {
             cell.isSelected = (selectedIndexPaths[0].compare(indexPath) == .orderedSame)
         }
-        return cell
     }
 
     // MARK: - UICollectionViewDelegateFlowLayout

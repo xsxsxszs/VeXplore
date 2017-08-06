@@ -16,18 +16,19 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
         return view
     }()
     
-    // automaticallyAdjustsScrollViewInsets defaults to false
-    // set navigationController?.navigationBar.isTranslucent = false
+    // automaticallyAdjustsScrollViewInsets defaults to true
+    // when set navigationController?.navigationBar.isTranslucent = false
+    // will invoke:
     // -[UINavigationController navigationBarDidChangeOpacity:]
     // -[UINavigationController _layoutTopViewController]
     // -[UINavigationController _layoutViewController:]
     // -[UINavigationController _computeAndApplyScrollContentInsetDeltaForViewController:]
     // -[UIViewController _setNavigationControllerContentInsetAdjustment:]
     // -[UIScrollView _isAutomaticContentOffsetAdjustmentEnabled]
-    // will invoke contentSlideView
-    // To be safe, avoid using contentSlideView
-    // change contentSlideView -> contentSlideView
-    lazy var contentSlideView: UIScrollView = {
+    // which will invoke contentScrollView
+    // To be safe, avoid using contentScrollView
+    // change contentScrollView -> contentSlideView
+    private lazy var contentSlideView: UIScrollView = {
         let view = UIScrollView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.delegate = self

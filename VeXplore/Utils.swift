@@ -17,7 +17,7 @@ func dispatch_async_safely_to_main_queue(block: @escaping ()->())
 
 func dispatch_async_to_background_queue(block: @escaping () -> ())
 {
-    dispatch_async_safely_to_queue(DispatchQueue.global(qos: DispatchQoS.QoSClass.default), block)
+    dispatch_async_safely_to_queue(DispatchQueue.global(qos: .default), block)
 }
 
 func dispatch_async_safely_to_queue(_ queue: DispatchQueue, _ block: @escaping ()->())
