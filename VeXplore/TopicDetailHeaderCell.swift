@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class TopicDetailHeaderCell: UITableViewCell
+class TopicDetailHeaderCell: BaseTableViewCell
 {
     lazy var avatarImageView: AvatarImageView = {
         let view = AvatarImageView()
@@ -22,7 +23,7 @@ class TopicDetailHeaderCell: UITableViewCell
     lazy var userNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         
         return label
@@ -31,7 +32,7 @@ class TopicDetailHeaderCell: UITableViewCell
     lazy var topicTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.numberOfLines = 0
         label.textColor = .body
         
@@ -45,7 +46,7 @@ class TopicDetailHeaderCell: UITableViewCell
         btn.layer.borderWidth = 1
         btn.layer.cornerRadius = 3
         btn.setTitleColor(.desc, for: .normal)
-        btn.titleLabel?.font = R.Font.ExtraSmall
+        btn.titleLabel?.font = SharedR.Font.ExtraSmall
         btn.contentEdgeInsets = UIEdgeInsets(top: 1, left: 3, bottom: 1, right: 3)
         btn.addTarget(self, action: #selector(nodeTapped), for: .touchUpInside)
         
@@ -65,7 +66,7 @@ class TopicDetailHeaderCell: UITableViewCell
     lazy var repliesNumberLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .desc
         label.text = R.String.Zero
         
@@ -75,11 +76,11 @@ class TopicDetailHeaderCell: UITableViewCell
     lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .border
         label.textAlignment = .left
-        label.setContentHuggingPriority(UILayoutPriorityDefaultLow, for: .horizontal)
-        label.setContentCompressionResistancePriority(UILayoutPriorityDefaultLow, for: .horizontal)
+        label.setContentHuggingPriority(UILayoutPriority.defaultLow, for: .horizontal)
+        label.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: .horizontal)
         
         return label
     }()
@@ -108,11 +109,11 @@ class TopicDetailHeaderCell: UITableViewCell
     lazy var favoriteNumLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .desc
         label.textAlignment = .right
-        label.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
-        label.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .horizontal)
+        label.setContentHuggingPriority(UILayoutPriority.required, for: .horizontal)
+        label.setContentCompressionResistancePriority(UILayoutPriority.required, for: .horizontal)
         label.text = R.String.NoFavorite
         
         return label
@@ -179,7 +180,6 @@ class TopicDetailHeaderCell: UITableViewCell
         topicTitleLabel.trailingAnchor.constraint(equalTo: repliesNumberLabel.trailingAnchor).isActive = true
         likeImageView.centerYAnchor.constraint(equalTo: dateLabel.centerYAnchor).isActive = true
 
-        contentView.backgroundColor = .background
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
@@ -198,12 +198,28 @@ class TopicDetailHeaderCell: UITableViewCell
         repliesNumberLabel.text = R.String.Zero
         favoriteNumLabel.text = R.String.NoFavorite
         favoriteContainerView.isHidden = true
-        userNameLabel.font = R.Font.Small
-        topicTitleLabel.font = R.Font.Medium
-        nodeNameBtn.titleLabel?.font = R.Font.ExtraSmall
-        repliesNumberLabel.font = R.Font.ExtraSmall
-        dateLabel.font = R.Font.ExtraSmall
-        favoriteNumLabel.font = R.Font.ExtraSmall
+        userNameLabel.font = SharedR.Font.Small
+        topicTitleLabel.font = SharedR.Font.Medium
+        nodeNameBtn.titleLabel?.font = SharedR.Font.ExtraSmall
+        repliesNumberLabel.font = SharedR.Font.ExtraSmall
+        dateLabel.font = SharedR.Font.ExtraSmall
+        favoriteNumLabel.font = SharedR.Font.ExtraSmall
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        avatarImageView.tintColor = .body
+        userNameLabel.textColor = .desc
+        topicTitleLabel.textColor = .body
+        nodeNameBtn.setTitleColor(.desc, for: .normal)
+        commentImageView.tintColor = .desc
+        repliesNumberLabel.textColor = .desc
+        dateLabel.textColor = .border
+        likeImageView.tintColor = .desc
+        favoriteNumLabel.textColor = .desc
+        separatorLine.backgroundColor = .border
     }
     
     // MARK: - Actions

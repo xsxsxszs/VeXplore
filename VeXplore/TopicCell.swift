@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class TopicCell: UITableViewCell
+class TopicCell: BaseTableViewCell
 {
     lazy var avatarImageView: AvatarImageView = {
         let view = AvatarImageView()
@@ -22,7 +23,7 @@ class TopicCell: UITableViewCell
     lazy var userNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
 
         return label
@@ -31,7 +32,7 @@ class TopicCell: UITableViewCell
     lazy var topicTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.DynamicMedium
+        label.font = SharedR.Font.DynamicMedium
         label.numberOfLines = 0
         label.textColor = .body
         
@@ -45,7 +46,7 @@ class TopicCell: UITableViewCell
         btn.layer.borderWidth = 1
         btn.layer.cornerRadius = 3
         btn.setTitleColor(.desc, for: .normal)
-        btn.titleLabel?.font = R.Font.ExtraSmall
+        btn.titleLabel?.font = SharedR.Font.ExtraSmall
         btn.contentEdgeInsets = UIEdgeInsets(top: 1, left: 3, bottom: 1, right: 3)
         btn.addTarget(self, action: #selector(nodeTapped), for: .touchUpInside)
         
@@ -65,7 +66,7 @@ class TopicCell: UITableViewCell
     lazy var repliesNumberLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .desc
         label.text = R.String.Zero
 
@@ -75,7 +76,7 @@ class TopicCell: UITableViewCell
     lazy var lastReplayDateAndUserLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .note
         
         return label
@@ -135,10 +136,6 @@ class TopicCell: UITableViewCell
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -152,16 +149,17 @@ class TopicCell: UITableViewCell
         super.prepareForReuse()
         avatarImageView.image = nil
         repliesNumberLabel.text = R.String.Zero
-        userNameLabel.font = R.Font.Small
-        topicTitleLabel.font = R.Font.DynamicMedium
-        nodeNameBtn.titleLabel?.font = R.Font.ExtraSmall
-        repliesNumberLabel.font = R.Font.ExtraSmall
-        lastReplayDateAndUserLabel.font = R.Font.ExtraSmall
+        userNameLabel.font = SharedR.Font.Small
+        topicTitleLabel.font = SharedR.Font.DynamicMedium
+        nodeNameBtn.titleLabel?.font = SharedR.Font.ExtraSmall
+        repliesNumberLabel.font = SharedR.Font.ExtraSmall
+        lastReplayDateAndUserLabel.font = SharedR.Font.ExtraSmall
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         avatarImageView.tintColor = .body
         userNameLabel.textColor = .desc
         topicTitleLabel.textColor = .body
@@ -171,7 +169,6 @@ class TopicCell: UITableViewCell
         repliesNumberLabel.textColor = .desc
         lastReplayDateAndUserLabel.textColor = .note
         bottomLine.backgroundColor = .border
-        contentView.backgroundColor = .background
     }
     
     // MARK: - Actions
@@ -185,6 +182,7 @@ class TopicCell: UITableViewCell
     }
     
     // may need to override this method in subclass
+    @objc
     func nodeTapped()
     {
         if let nodeId = topicItemModel?.nodeId
@@ -201,3 +199,30 @@ class TopicCell: UITableViewCell
     }
     
 }
+
+
+class MemberTopicCell: TopicCell
+{
+    var memberTopicItemModel: MemberTopicItemModel?
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?)
+    {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        avatarSize.constant = 0.0
+    }
+    
+    required init?(coder aDecoder: NSCoder)
+    {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Action
+    override func nodeTapped()
+    {
+        if let nodeId = memberTopicItemModel?.nodeId
+        {
+            delegate?.nodeTapped(withNodeId: nodeId, nodeName: memberTopicItemModel?.nodeName)
+        }
+    }
+}
+

@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate
+class SearchViewController: BaseViewController, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate
 {
     lazy var searchBox: SearchBoxView = {
         let view = SearchBoxView()
@@ -55,17 +56,12 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[line]|", metrics: nil, views: bindings))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tableView]|", metrics: nil, views: bindings))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-4-[searchBox]-4-[line(0.5)][tableView]|", metrics: nil, views: bindings))
-
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
     
     @objc
-    func refreshColorScheme()
+    override func refreshColorScheme()
     {
-        navigationController?.navigationBar.setupNavigationbar()
+        super.refreshColorScheme()
         line.backgroundColor = .border
         tableView.backgroundColor = .background
         tableView.sectionIndexBackgroundColor = .background
@@ -74,12 +70,14 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
     }
     
     @objc
-    private func handleContentSizeCategoryDidChanged()
+    override func handleContentSizeCategoryDidChanged()
     {
-        searchBox.searchField.font = R.Font.Small
+        super.handleContentSizeCategoryDidChanged()
+        searchBox.searchField.font = SharedR.Font.Small
     }
 
     // override this method in subclass
+    @objc
     func searchFieldDidChange(_ textField: UITextField) {}
     
     // MARK: - UITableViewDataSource

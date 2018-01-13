@@ -7,7 +7,7 @@
 //
 
 
-class TopicDetailContentView: UIView
+class TopicDetailContentView: BaseView
 {
     lazy var contentWebView: WKWebView = {
         let webView = WKWebView()
@@ -31,7 +31,6 @@ class TopicDetailContentView: UIView
         let bindings = ["contentWebView": contentWebView]
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentWebView]|", metrics: nil, views: bindings))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[contentWebView]|", metrics: nil, views: bindings))
-        backgroundColor = .background
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -39,9 +38,9 @@ class TopicDetailContentView: UIView
         super.init(coder: aDecoder)
     }
     
-    func load(with model: TopicDetailModel)
+    func load(with model: TopicDetailModel?)
     {
-        if var html = model.topicContent
+        if var html = model?.topicContent
         {
             html = customizeHtml(html)
             if let htmlDoc = HTMLDoc(htmlString: html)

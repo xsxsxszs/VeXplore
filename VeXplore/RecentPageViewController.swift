@@ -6,7 +6,7 @@
 //
 
 
-class RecentPageViewController: UIViewController, UIScrollViewDelegate, DataPickerViewDelegate, DataPickerViewDataSource
+class RecentPageViewController: BaseViewController, UIScrollViewDelegate, DataPickerViewDelegate, DataPickerViewDataSource
 {
     private lazy var pagePicker: DataPickerView = {
         let view = DataPickerView()
@@ -49,10 +49,10 @@ class RecentPageViewController: UIViewController, UIScrollViewDelegate, DataPick
         
         view.addSubview(contentScrollView)
         view.addSubview(pagePicker)
-        let bindings: [String: Any] = [
+        let bindings: [String : Any] = [
             "pagePicker": pagePicker,
             "contentScrollView": contentScrollView
-            ]
+        ]
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[contentScrollView]|", metrics: nil, views: bindings))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[pagePicker]|", metrics: nil, views: bindings))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[pagePicker][contentScrollView]|", metrics: nil, views: bindings))
@@ -64,14 +64,21 @@ class RecentPageViewController: UIViewController, UIScrollViewDelegate, DataPick
         navigationItem.rightBarButtonItem = pageSelectBtn
         
         pagePicker.scrollingTask = {
-            (_) -> Void in
+            () -> Void in
             self.navigationItem.rightBarButtonItem?.isEnabled = false
         }
         pagePicker.endScrollingTask = {
-            (_) -> Void in
+            () -> Void in
             self.navigationItem.rightBarButtonItem?.isEnabled = true
         }
         setup()
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        contentScrollView.backgroundColor = .background
     }
 
     private func setup()
@@ -237,7 +244,7 @@ class RecentPageViewController: UIViewController, UIScrollViewDelegate, DataPick
         pageNumView.setValue(String(currentPage), animated: true)
     }
     
-    private func refresh(pageVC: BaseTableViewController)
+    private func refresh(pageVC: SwipeTableViewController)
     {
         pageVC.request?.cancel()
         if pageVC.isTopLoadingFail

@@ -5,19 +5,20 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 protocol ProfileAvatarCellDelegate: class
 {
     func writeBtnTapped()
 }
 
-class ProfileAvatarCell: UITableViewCell
+class ProfileAvatarCell: BaseTableViewCell
 {
     lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.textColor = .body
         
         return label
@@ -38,7 +39,7 @@ class ProfileAvatarCell: UITableViewCell
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .gray
         
         return label
@@ -49,7 +50,7 @@ class ProfileAvatarCell: UITableViewCell
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         
         return label
@@ -108,10 +109,6 @@ class ProfileAvatarCell: UITableViewCell
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -126,21 +123,21 @@ class ProfileAvatarCell: UITableViewCell
         avatarImageView.image = R.Image.AvatarPlaceholder
         contentLabel.text = nil
         joinTimeLabel.text = nil
-        nameLabel.font = R.Font.Medium
-        joinTimeLabel.font = R.Font.ExtraSmall
-        contentLabel.font = R.Font.Small
+        nameLabel.font = SharedR.Font.Medium
+        joinTimeLabel.font = SharedR.Font.ExtraSmall
+        contentLabel.font = SharedR.Font.Small
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         nameLabel.textColor = .body
         avatarImageView.tintColor = .body
         joinTimeLabel.textColor = .gray
         contentLabel.textColor = .desc
         bottomLine.backgroundColor = .border
         writeBtn.tintColor = .desc
-        contentView.backgroundColor = .background
     }
     
     @objc

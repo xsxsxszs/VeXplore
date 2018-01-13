@@ -6,10 +6,12 @@
 //
 
 import SafariServices
+import StoreKit
+import SharedKit
 
 class TopicCreatingViewController: InputViewController, NodeSelectDelegate
 {
-    private var nodeId = R.String.Empty
+    private var nodeId = SharedR.String.Empty
     var recorededResponder: UITextView?
     
     override func viewDidLoad()
@@ -29,7 +31,7 @@ class TopicCreatingViewController: InputViewController, NodeSelectDelegate
         inputContainerView.contentTextView.placeholderText = String(format: R.String.ContentCharactersLessThan, R.Constant.TopicContentCharactersMax)
         inputContainerView.contentTextView.placeholderTextColor = .border
         recorededResponder = nil
-        nodeId = R.String.Empty
+        nodeId = SharedR.String.Empty
     }
     
     override func viewWillAppear(_ animated: Bool)
@@ -51,11 +53,11 @@ class TopicCreatingViewController: InputViewController, NodeSelectDelegate
     {
         if textView == inputContainerView.titleTextView
         {
-            return textView.text.lenght + (text.lenght - range.length) <= R.Constant.TopicTitleCharactersMax
+            return textView.text.count + (text.count - range.length) <= R.Constant.TopicTitleCharactersMax
         }
         else
         {
-            return textView.text.lenght + (text.lenght - range.length) <= R.Constant.TopicContentCharactersMax
+            return textView.text.count + (text.count - range.length) <= R.Constant.TopicContentCharactersMax
         }
     }
     
@@ -64,7 +66,7 @@ class TopicCreatingViewController: InputViewController, NodeSelectDelegate
     {
         if let nodeName = node.nodeName, let nodeId = node.nodeId
         {
-            let title = NSAttributedString(string: nodeName, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight])
+            let title = NSAttributedString(string: nodeName, attributes: [NSAttributedStringKey.font: SharedR.Font.Small, NSAttributedStringKey.foregroundColor: UIColor.highlight])
             inputContainerView.nodeBtn.setAttributedTitle(title, for: .normal)
             self.nodeId = nodeId
             inputContainerView.isPostEnabled = (inputContainerView.titleTextView.text.isEmpty == false)
@@ -134,6 +136,10 @@ class TopicCreatingViewController: InputViewController, NodeSelectDelegate
                         NotificationCenter.default.post(name: NSNotification.Name.Profile.Refresh, object: nil)
                         ModalTransitioningDelegate.shared.reverseDirection = true
                         weakSelf.closeBtnTapped()
+                        if #available(iOS 10.3, *)
+                        {
+                            SKStoreReviewController.requestReview()
+                        }
                     }
                 })
             })

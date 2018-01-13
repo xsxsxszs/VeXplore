@@ -6,12 +6,19 @@
 //
 
 
-class BendingLine: UIView
+class BendingLine: BaseView
 {
     private var shapeLayer = CAShapeLayer()
     private var lineLayer = CAShapeLayer()
     var upAnimationFillColor: UIColor = .clear
     var lineColor: UIColor = .border
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        lineColor = .border
+    }
     
     // MARK - Public
     func animateLineUp(withDuration duration: Double)

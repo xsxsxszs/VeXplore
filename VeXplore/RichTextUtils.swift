@@ -30,7 +30,7 @@ extension NSMutableAttributedString
     
     func setHighlightText(withColor color: UIColor, url: String)
     {
-        addAttribute(NSForegroundColorAttributeName, value: color)
+        addAttribute(NSAttributedStringKey.foregroundColor.rawValue, value: color)
         addAttribute(HighlightAttributeName, value: url)
     }
     
@@ -38,12 +38,12 @@ extension NSMutableAttributedString
     {
         let style = NSMutableParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
         style.lineSpacing = lineSpacing
-        addAttribute(NSParagraphStyleAttributeName, value: style)
+        addAttribute(NSAttributedStringKey.paragraphStyle.rawValue, value: style)
     }
     
     func addAttribute(_ name: String, value: Any)
     {
-        addAttribute(name, value: value, range: NSMakeRange(0, length))
+        addAttribute(NSAttributedStringKey(rawValue: name), value: value, range: NSMakeRange(0, length))
     }
 
 }

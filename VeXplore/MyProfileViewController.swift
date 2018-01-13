@@ -8,7 +8,7 @@
 import SafariServices
 import SharedKit
 
-class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate, ProfileAvatarCellDelegate
+class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate, ProfileAvatarCellDelegate, Codable
 {
     private lazy var logoutBtn: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: R.Image.Logout, style: .plain, target: self, action: #selector(logoutBtnTapped))
@@ -27,21 +27,29 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
     private var cacheSize: String?
     private var getMemberInfoRequest: Request?
     
+    private enum CodingKeys: String, CodingKey {
+        case userProfile
+    }
+    
     init()
     {
         super.init(nibName: nil, bundle: nil)
         dismissStyle = .none
     }
     
-    override func encode(with aCoder: NSCoder)
-    {
-        aCoder.encode(userProfile, forKey: "userProfile")
+    required convenience init(from decoder: Decoder) throws {
+        self.init()
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        userProfile = try container.decode(ProfileModel.self, forKey: .userProfile)
     }
     
-    required convenience init?(coder aDecoder: NSCoder)
-    {
-        self.init()
-        userProfile = aDecoder.decodeObject(forKey: "userProfile") as? ProfileModel
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(userProfile, forKey: .userProfile)
     }
     
     override func viewDidLoad()
@@ -76,8 +84,7 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
         }
         refreshProfile()
         ImageCache.default.calculateDiskCacheSize { (size) in
-            let cacheSize = String(format:"%.1f", Float(size)/1024.0/1024.0)
-            self.cacheSize = String(format: R.String.CacheSize, cacheSize)
+            self.cacheSize = ByteCountFormatter.string(fromByteCount: Int64(size), countStyle: .file)
         }
     }
     
@@ -102,13 +109,15 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
     private func loginBtnTapped()
     {
         let loginVC = LoginViewController()
+        DispatchQueue.main.async(execute: {
+            self.bouncePresent(navigationVCWith: loginVC, completion: nil)
+        })
         loginVC.successHandler = {
             (username) -> Void in
             self.username = username
             self.refreshProfile()
             self.navigationItem.rightBarButtonItem = self.logoutBtn
         }
-        navigationController?.present(loginVC, animated: true, completion: nil)
     }
     
     @objc
@@ -119,6 +128,7 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
     }
     
     // MARK: - View Data
+    @objc
     func refreshProfile()
     {
         getMemberInfoRequest?.cancel()
@@ -144,9 +154,10 @@ class MyProfileViewController: BaseProfileViewController, MyFavoriteCellDelegate
                 weakSelf.userProfile = response.value
                 weakSelf.profileTableView.reloadData()
                 weakSelf.needRefreshProfile = false
-                if let diskCachePath = cachePathString(withFilename: weakSelf.classForCoder.description())
+                if let diskCachePath = cachePathString(withFilename: weakSelf.classForCoder.description()),
+                    let jsonData = try? JSONEncoder().encode(weakSelf)
                 {
-                    NSKeyedArchiver.archiveRootObject(weakSelf, toFile: diskCachePath)
+                    NSKeyedArchiver.archiveRootObject(jsonData, toFile: diskCachePath)
                 }
             }
             UIApplication.shared.isNetworkActivityIndicatorVisible = false

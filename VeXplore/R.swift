@@ -26,20 +26,6 @@ struct R
         
         static let FontSettingScales = ["0.7", "0.8", "0.9", "1.0", "1.1", "1.2", "1.3"]
         
-        static let ValidImgUrls = [
-            "imgur.com",
-            "sinaimg.cn",
-            "ooo.0o0.ooo"
-        ]
-        
-        static let URLPatterns = [
-            "^(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?",
-            "^(http:\\/\\/|https:\\/\\/)?(www\\.)?(v2ex.com)?(/)?member/[a-zA-Z0-9_]+$",
-            "^(http:\\/\\/|https:\\/\\/)?(www\\.)?(v2ex.com)?(/)?t/[0-9]+",
-            "^(http:\\/\\/|https:\\/\\/)?(www\\.)?(v2ex.com)?(/)?go/[a-zA-Z0-9_]+$",
-            "^mailto:.*@.*\\..*$"
-        ]
-
     }
     
     struct Dict
@@ -81,23 +67,22 @@ struct R
         static let AllNodesEtag = "vexplore.userDefaults.key.allNodesEtag"
         static let HomePageTopicList = "vexplore.topicList.homePage.key.%@"
         static let LastCacheVersion = "vexplore.userDefaults.key.lastCacheVersion"
-        static let EnableNightMode = "vexplore.userDefaults.key.enableNightMode"
     }
     
     struct String
     {
-        static let Empty = ""
         static let AllRepliesZero = "所有回复（0)"
         static let AllTopicsZero = "所有主题（0)"
         static let AllTopicsHidden = "主题列表被隐藏"
+        static let NeedLoginToViewTopics = "主题列表被设置为登录可见"
         static let AllTopicsMoreThan = "所有主题（>= %d)"
         static let AllRepliesMoreThan = "所有回复（>= %d)"
         static let PersonalInfo = "个人信息"
         static let ForumActivity = "社区动态"
         static let PersonalBio = "个人简介"
         static let NotLogin = "未登录"
-        static let NeedLoginToViewThisNode = "您尚未登录或无权限查看该节点"
-        static let NeedLoginToViewThisTopic = "需要登录才能查看该主题"
+        static let UnableToViewThisNode = "您尚未登录或无权限查看该节点"
+        static let UnableToViewThisTopic = "您尚未登录或无权限查看该主题"
         static let SwipeToDoMore = "左滑执行更多操作"
         static let NoRepliesNow = "暂无任何评论"
         static let ConversationContext = "对话上下文"
@@ -126,6 +111,7 @@ struct R
         static let Owner = "楼主"
         static let Content = "正文"
         static let Comment = "评论"
+        static let ViewDetail = "查看详情"
         static let PersonalTagline = "个人签名："
         static let FavoriteNodes = "节点收藏"
         static let FavoriteTopics = "主题收藏"
@@ -170,7 +156,16 @@ struct R
         static let PullToReplyInTopicView = "主题页面下拉回复"
         static let HighlightOwnerReplies = "楼主回复高亮"
         static let HomepageHideTabBarWhenScroll = "首页滚动隐藏底部菜单"
+        static let ShowReplyIndex = "回复他人时显示楼层"
         static let NightMode = "夜间模式"
+        static let AlwaysEnable = "始终开启"
+        static let ScheduleEnable = "定时开启"
+        static let ScheduleNightMode = "定时夜览"
+        static let Schedule = "定时"
+        static let TurnOnAt = "打开："
+        static let TurnOffAt = "关闭："
+        static let TurnedOff = "关闭"
+        static let ScheduledTime = "%@\n%@"
         static let TopicTitleFont = "主题列表标题字体"
         static let FontSettingTitle = "标题字体放大比例"
         static let Sccale = "x %@"
@@ -178,8 +173,8 @@ struct R
         static let ContactDeveloper = "联系作者"
         static let RatingApp = "评价App"
         static let OpenSource = "开源地址"
-        static let CacheSize = "%@ MB"
         static let AtSomeone = "@%@ "
+        static let AtSomeoneWithIndex = "@%@ #%@ "
         static let CommentIndex = "%@ 楼"
         static let IndexNumber = "No. "
         static let NoTitle = "无标题"
@@ -191,11 +186,11 @@ struct R
         
         static let ImagePlaceholder = "Image_Placeholder.png"
         static let ImageUploadUrl = "http://image.jimmyis.in"
-        static let NeedLoginError = "vexplore.message.needLoginError"
+        static let NotAuthorizedError = "vexplore.message.notAuthorizedError"
         static let BaseUrl = "https://www.v2ex.com"
         static let Https = "https:"
         static let ErrorDomain = "in.jimmyis.vexplore.Error"
-        static let AppStoreUrl = "https://itunes.apple.com/us/app/vexplore/id1119508407?ls=1&mt=8"
+        static let AppStoreUrl = "itms-apps://itunes.apple.com/app/id1119508407?action=write-review"
         static let OpenSourceUrl = "https://github.com/xsxsxszs/VeXplore"
     }
     
@@ -206,6 +201,7 @@ struct R
         static let TopicPageMax = 9999
         static let EstimatedRowHeight: CGFloat = 44.0
         static let EstimatedSectionHeaderHeight: CGFloat = 20.0
+        static let SectionSeparatorHeight: CGFloat = 0.5
         static let DataPickerCellHeight: CGFloat = 30.0
         static let DataPickerHeight: CGFloat = 150.0
         static let LoadingViewHeight: CGFloat = 44.0
@@ -216,6 +212,7 @@ struct R
         static let InputViewWidthMax: CGFloat = 700.0
         static let InputViewTitleHeight: CGFloat = 50.0
         static let InsetAnimationDuration: TimeInterval = 0.15
+        static let SliderCircleRadius:CGFloat = 20.0
     }
     
     static var Image: RImage { return RImage() }
@@ -268,27 +265,6 @@ struct R
         var Setting: UIImage! { return #imageLiteral(resourceName: "Setting").withRenderingMode(.alwaysTemplate) }
         var Favorite: UIImage! { return #imageLiteral(resourceName: "Favorite").withRenderingMode(.alwaysTemplate) }
         var FavoriteActivity: UIImage! { return #imageLiteral(resourceName: "Favorite_Activity").withRenderingMode(.alwaysTemplate) }
-    }
-    
-    static var Font: RFont { return RFont() }
-    struct RFont
-    {
-        fileprivate init(){}
-        var VeryLarge: UIFont { return UIFont.preferredFont(forTextStyle: .title3) }
-        var Large: UIFont { return UIFont.preferredFont(forTextStyle: .body) }
-        var Medium: UIFont { return UIFont.preferredFont(forTextStyle: .callout) } // topic title, comment
-        var Small: UIFont { return UIFont.preferredFont(forTextStyle: .footnote) }
-        var VerySmall: UIFont { return UIFont.preferredFont(forTextStyle: .caption1) }
-        var ExtraSmall: UIFont { return UIFont.preferredFont(forTextStyle: .caption2) } // date
-
-        var StaticMedium: UIFont { return UIFont.systemFont(ofSize: 14.0) }
-        var DynamicMedium: UIFont {
-            let fontScaleString = UserDefaults.fontScaleString
-            let fontScale = CGFloat(fontScaleString.doubleValue)
-            let scaledFontSize = round(R.Font.Medium.pointSize * fontScale)
-            let font = R.Font.Medium.withSize(scaledFontSize)
-            return font
-        }
     }
     
 }

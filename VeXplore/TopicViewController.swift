@@ -6,7 +6,7 @@
 //
 
 
-class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, TopicDetailViewControllerDelegate, ReplyActivityDelegate, FavoriteActivityDelegate, IgnoreActivityDelegate, ReportActivityDelegate, OpenInSafariActivityDelegate
+class TopicViewController: SwipeTransitionViewController, TopicDetailViewControllerDelegate, ReplyActivityDelegate, FavoriteActivityDelegate, IgnoreActivityDelegate, ReportActivityDelegate, OpenInSafariActivityDelegate
 {
     private lazy var segmentedControl: SegmentControl = {
         let control = SegmentControl(titles: [R.String.Content, R.String.Comment], selectedIndex: 0)
@@ -24,6 +24,7 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
         view.isPagingEnabled = true
         view.bounces = false
         view.scrollsToTop = false
+        view.backgroundColor = .background
         
         return view
     }()
@@ -40,13 +41,14 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
     private weak var presentingVC: UIViewController?
     private var currentIndex: Int = 0
     
-    init()
+    init(topicId: String)
     {
         super.init(nibName: nil, bundle: nil)
         presentStyle = .horizental
         dismissStyle = .right
         topicDetailVC.dismissStyle = .none
         topicCommentVC.dismissStyle = .none
+        self.topicId = topicId
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -67,10 +69,15 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
         navigationItem.leftBarButtonItem = closeBtn
         segmentedControl.frame = CGRect(x: 0, y: 0, width: 120, height: 26)
         navigationItem.titleView = segmentedControl
-        
+        setup()
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
         contentScrollView.backgroundColor = .background
         view.backgroundColor = .subBackground
-        setup()
     }
     
     override func viewWillDisappear(_ animated: Bool)
@@ -107,7 +114,7 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
         topicCommentVC.view.translatesAutoresizingMaskIntoConstraints = false
         contentScrollView.addSubview(topicCommentVC.view)
         
-        let bindings: [String: Any] = [
+        let bindings: [String : Any] = [
             "detailView": topicDetailVC.view,
             "commentView": topicCommentVC.view
         ]
@@ -148,7 +155,7 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
         {
             activityItems.append(url)
         }
-        let title = topicDetailVC.topicDetailModel.topicTitle ?? R.String.NoTitle
+        let title = topicDetailVC.topicDetailModel?.topicTitle ?? R.String.NoTitle
         activityItems.append(title)
         
         // reply
@@ -167,12 +174,12 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
         let ownerViewActivity = OwnerViewActivity()
         ownerViewActivity.delegate = topicCommentVC
         applicationActivities.append(ownerViewActivity)
-        topicCommentVC.ownername = topicDetailVC.topicDetailModel.username
+        topicCommentVC.ownername = topicDetailVC.topicDetailModel?.username
         
         // ignore & report, report code is commented, just for app store review
         if User.shared.isLogin == true
         {
-            if topicDetailVC.topicDetailModel.username != User.shared.username
+            if topicDetailVC.topicDetailModel?.username != User.shared.username
             {
                 let ignoreActivity = IgnoreActivity()
                 ignoreActivity.delegate = self
@@ -262,6 +269,7 @@ class TopicViewController: SwipeTransitionViewController, UIScrollViewDelegate, 
         }
     }
     
+    @objc
     func segmentedControlValueChanged(sender: SegmentControl)
     {
         currentIndex = sender.selectedIndex

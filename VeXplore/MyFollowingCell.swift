@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class MyFollowingCell: UITableViewCell
+class MyFollowingCell: BaseTableViewCell
 {
     lazy var avatarImageView: AvatarImageView = {
         let view = AvatarImageView()
@@ -20,7 +21,7 @@ class MyFollowingCell: UITableViewCell
     lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.textColor = .desc
         
         return label
@@ -53,7 +54,6 @@ class MyFollowingCell: UITableViewCell
         bottomLine.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor).isActive = true
         bottomLine.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
         
-        contentView.backgroundColor = .background
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
@@ -69,7 +69,16 @@ class MyFollowingCell: UITableViewCell
         avatarImageView.cancelImageDownloadTaskIfNeed()
         super.prepareForReuse()
         avatarImageView.image = nil
-        contentLabel.font = R.Font.Medium
+        contentLabel.font = SharedR.Font.Medium
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        avatarImageView.tintColor = .body
+        contentLabel.textColor = .desc
+        bottomLine.backgroundColor = .border
     }
     
 }

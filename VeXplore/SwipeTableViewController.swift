@@ -1,5 +1,5 @@
 //
-//  BaseTableViewController.swift
+//  SwipeTableViewController.swift
 //  SquaresLoading
 //
 //  Copyright © 2016 Jimmy. All rights reserved.
@@ -8,7 +8,7 @@
 import MessageUI
 import SharedKit
 
-class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSource, UITableViewDelegate, SquareLoadingViewDelegate, TopicCellDelegate, MFMailComposeViewControllerDelegate
+class SwipeTableViewController: SwipeTransitionViewController, UITableViewDataSource, UITableViewDelegate, SquareLoadingViewDelegate, TopicCellDelegate, MFMailComposeViewControllerDelegate
 {
     lazy var tableHeaderView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: self.tableView.frame.width, height: 0))
@@ -42,7 +42,7 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
     lazy var topReminderLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .border
         label.isHidden = true
         
@@ -52,7 +52,7 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
     lazy var topMessageLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         label.isHidden = true
         
@@ -62,7 +62,7 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
     lazy var centerMessageLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         label.isHidden = true
         
@@ -137,16 +137,12 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
         tableView.tableHeaderView = tableHeaderView
         topLoadingView.initSquaresPosition()
         bottomLoadingView.initSquaresPosition()
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
-        navigationController?.navigationBar.setupNavigationbar()
+        super.refreshColorScheme()
         topReminderLabel.textColor = .border
         topMessageLabel.textColor = .desc
         centerMessageLabel.textColor = .desc
@@ -354,9 +350,9 @@ class BaseTableViewController: SwipeTransitionViewController, UITableViewDataSou
     
     func prepareForReuse()
     {
-        topReminderLabel.font = R.Font.Small
-        topMessageLabel.font = R.Font.Small
-        centerMessageLabel.font = R.Font.Small
+        topReminderLabel.font = SharedR.Font.Small
+        topMessageLabel.font = SharedR.Font.Small
+        centerMessageLabel.font = SharedR.Font.Small
     }
     
     func topLoadingRequest()

@@ -63,23 +63,19 @@ class BaseProfileViewController: SwipeTransitionViewController, UITableViewDataS
         super.viewDidLoad()
         
         view.addSubview(profileTableView)
-        let bindings: [String: Any] = [
+        let bindings: [String : Any] = [
             "profileTableView": profileTableView,
             "top": topLayoutGuide
         ]
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[profileTableView]|", metrics: nil, views: bindings))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[top][profileTableView]|", metrics: nil, views: bindings))
-        
-        refreshColorScheme()
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
-        navigationController?.navigationBar.setupNavigationbar()
+        super.refreshColorScheme()
         profileTableView.backgroundColor = .background
-        view.backgroundColor = .background
     }
     
     func numberOfPersonalInfoCell() -> Int

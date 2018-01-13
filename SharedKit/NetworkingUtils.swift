@@ -14,7 +14,7 @@ public enum HTTPMethod: String
 }
 
 
-extension String
+public extension String
 {
     func toURL() throws -> URL
     {

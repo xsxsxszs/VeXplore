@@ -8,16 +8,23 @@
 import SharedKit
 
 
-class NodeModel: NSObject
+class NodeModel: NSObject, Codable
 {
     private(set) var nodeId: String?
     private(set) var nodeName: String?
-    private(set) var avatar: String?
+    private(set) var avatar: String? = nil
     
     //sort
-    var initialLetter: String?
-    var allLetter: String?
+    @objc var initialLetter: String? = nil
+    @objc var allLetter: String?
     var allLetterWithoutSpace: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case nodeId
+        case nodeName
+        case allLetter
+        case allLetterWithoutSpace
+    }
     
     init(json: JSON)
     {
@@ -30,33 +37,27 @@ class NodeModel: NSObject
         nodeName = rootNode.content
         if var href = rootNode["href"], let range = href.range(of: "/go/")
         {
-            href.replaceSubrange(range, with: R.String.Empty)
+            href.replaceSubrange(range, with: SharedR.String.Empty)
             nodeId = href
         }
         avatar = rootNode.xPath(".//img").first?["src"]
     }
     
-    func encodeWithCoder(_ aCoder: NSCoder)
+    init(favoriteNode: HTMLNode)
     {
-        aCoder.encode(nodeId, forKey: "nodeId")
-        aCoder.encode(nodeName, forKey: "nodeName")
-        aCoder.encode(allLetter, forKey: "allLetter")
-        aCoder.encode(allLetterWithoutSpace, forKey: "allLetterWithoutSpace")
-    }
-    
-    required init?(coder aDecoder: NSCoder)
-    {
-        super.init()
-        nodeId = aDecoder.decodeObject(forKey: "nodeId") as? String
-        nodeName = aDecoder.decodeObject(forKey: "nodeName") as? String
-        allLetter = aDecoder.decodeObject(forKey: "allLetter") as? String
-        allLetterWithoutSpace = aDecoder.decodeObject(forKey: "allLetterWithoutSpace") as? String
+        nodeName = favoriteNode.xPath("./div/text()").first?.content
+        if var href = favoriteNode["href"], let range = href.range(of: "/go/")
+        {
+            href.replaceSubrange(range, with: SharedR.String.Empty)
+            nodeId = href
+        }
+        avatar = favoriteNode.xPath(".//img").first?["src"]
     }
     
 }
 
 
-class NodeGroupModel: NSObject
+struct NodeGroupModel: Codable
 {
     private(set) var childNodes = [NodeModel]()
     private(set) var groupName: String?
@@ -69,34 +70,23 @@ class NodeGroupModel: NSObject
             childNodes.append(NodeModel(rootNode: node))
         }
     }
-    
-    func encodeWithCoder(_ aCoder: NSCoder)
-    {
-        aCoder.encode(groupName, forKey: "groupName")
-        aCoder.encode(childNodes, forKey: "childNodes")
+
+}
+
+extension NodeGroupModel: Equatable {}
+
+func ==(lhs: NodeGroupModel, rhs: NodeGroupModel) -> Bool
+{
+    guard lhs.groupName == rhs.groupName, lhs.childNodes.count == rhs.childNodes.count else {
+        return false
     }
     
-    required init?(coder aDecoder: NSCoder)
+    for i in 0..<lhs.childNodes.count
     {
-        super.init()
-        groupName = aDecoder.decodeObject(forKey: "groupName") as? String
-        childNodes = aDecoder.decodeObject(forKey: "childNodes") as! [NodeModel]
-    }
-    
-    override func isEqual(_ object: Any?) -> Bool
-    {
-        guard let other = object as? NodeGroupModel, groupName == other.groupName, childNodes.count == other.childNodes.count else {
+        if lhs.childNodes[i].nodeName != rhs.childNodes[i].nodeName
+        {
             return false
         }
-        
-        for i in 0..<childNodes.count
-        {
-            if childNodes[i].nodeName != other.childNodes[i].nodeName
-            {
-                return false
-            }
-        }
-        return true
     }
-
+    return true
 }

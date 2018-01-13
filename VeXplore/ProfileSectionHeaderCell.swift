@@ -5,13 +5,14 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class ProfileSectionHeaderCell: UITableViewCell
+class ProfileSectionHeaderCell: BaseTableViewCell
 {
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         label.textAlignment = .center
         
@@ -44,10 +45,6 @@ class ProfileSectionHeaderCell: UITableViewCell
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -58,12 +55,13 @@ class ProfileSectionHeaderCell: UITableViewCell
     override func prepareForReuse()
     {
         super.prepareForReuse()
-        titleLabel.font = R.Font.Small
+        titleLabel.font = SharedR.Font.Small
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         titleLabel.textColor = .desc
         bottomLine.backgroundColor = .border
         contentView.backgroundColor = .subBackground

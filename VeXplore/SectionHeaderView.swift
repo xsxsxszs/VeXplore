@@ -5,13 +5,14 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class SectionHeaderView: UITableViewHeaderFooterView
+class SectionHeaderView: BaseTableViewHeaderFooterView
 {
     lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.VeryLarge
+        label.font = SharedR.Font.VeryLarge
         label.textColor = .body
         
         return label
@@ -32,10 +33,6 @@ class SectionHeaderView: UITableViewHeaderFooterView
             
             return view
         }()
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -44,8 +41,9 @@ class SectionHeaderView: UITableViewHeaderFooterView
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         contentLabel.textColor = .body
         backgroundView?.backgroundColor = UIColor.border.withAlphaComponent(0.8)
     }

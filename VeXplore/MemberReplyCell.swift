@@ -5,15 +5,16 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class MemberReplyCell: UITableViewCell
+class MemberReplyCell: BaseTableViewCell
 {
     lazy var indexLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
-        label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
+        label.setContentHuggingPriority(UILayoutPriority.required, for: .vertical)
         
         return label
     }()
@@ -21,7 +22,7 @@ class MemberReplyCell: UITableViewCell
     lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .desc
         
         return label
@@ -30,12 +31,12 @@ class MemberReplyCell: UITableViewCell
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textColor = .body
-        label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
-        label.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
+        label.setContentHuggingPriority(UILayoutPriority.required, for: .vertical)
+        label.setContentCompressionResistancePriority(UILayoutPriority.required, for: .vertical)
         
         return label
     }()
@@ -81,7 +82,6 @@ class MemberReplyCell: UITableViewCell
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", metrics: nil, views: bindings))
         dateLabel.centerYAnchor.constraint(equalTo: indexLabel.centerYAnchor).isActive = true
         
-        contentView.backgroundColor = .background
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
@@ -95,9 +95,20 @@ class MemberReplyCell: UITableViewCell
     override func prepareForReuse()
     {
         super.prepareForReuse()
-        indexLabel.font = R.Font.Small
-        dateLabel.font = R.Font.ExtraSmall
-        titleLabel.font = R.Font.Medium
+        indexLabel.font = SharedR.Font.Small
+        dateLabel.font = SharedR.Font.ExtraSmall
+        titleLabel.font = SharedR.Font.Medium
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        indexLabel.textColor = .desc
+        dateLabel.textColor = .desc
+        titleLabel.textColor = .body
+        commentLabel.backgroundColor = .refBackground
+        bottomLine.backgroundColor = .border
     }
     
 }

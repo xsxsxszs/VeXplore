@@ -7,11 +7,12 @@
 
 import SafariServices
 import MessageUI
+import SharedKit
 
 struct URLAnalyzer
 {
     @discardableResult
-    static func Analyze(url:String, handleViewController: BaseTableViewController) -> Bool
+    static func Analyze(url:String, handleViewController: SwipeTableViewController) -> Bool
     {
         let result = URLAnalysisResult(url: url)
         dispatch_async_safely_to_main_queue {
@@ -34,8 +35,7 @@ struct URLAnalyzer
             case .topic:
                 if let topicId = result.value
                 {
-                    let topicVC = TopicViewController()
-                    topicVC.topicId = topicId
+                    let topicVC = TopicViewController(topicId: topicId)
                     handleViewController.bouncePresent(navigationVCWith: topicVC, completion: nil)
                 }
             case .node:
@@ -84,71 +84,3 @@ struct URLAnalyzer
 
 }
 
-
-struct URLAnalysisResult
-{
-    enum URLType: Int
-    {
-        case url = 0
-        case member
-        case topic
-        case node
-        case email
-        case undefined
-    }
-    
-    static let patternsRE: [NSRegularExpression] = R.Array.URLPatterns.map{ try! NSRegularExpression(pattern: $0, options: .caseInsensitive) }
-    var type: URLType = .undefined
-    var value: String?
-    
-    init(url: String)
-    {
-        for (index, regex) in URLAnalysisResult.patternsRE.enumerated()
-        {
-            if regex.numberOfMatches(in: url, options: .withoutAnchoringBounds, range: NSMakeRange(0, url.lenght)) > 0
-            {
-                type = URLType(rawValue: index)!
-                switch type
-                {
-                case .url:
-                    value = url
-                case .member:
-                    if let range = url.range(of: "/member/")
-                    {
-                        let username = url.substring(from: range.upperBound)
-                        value = username
-                    }
-                case .topic:
-                    if let range = url.range(of: "/t/")
-                    {
-                        var topicId = url.substring(from: range.upperBound)
-                        if let range = topicId.range(of: "?")
-                        {
-                            topicId = topicId.substring(to: range.lowerBound)
-                        }
-                        if let range = topicId.range(of: "#")
-                        {
-                            topicId = topicId.substring(to: range.lowerBound)
-                        }
-                        value = topicId
-                    }
-                case .node:
-                    if let range = url.range(of: "/go/")
-                    {
-                        let nodeID = url.substring(from: range.upperBound)
-                        value = nodeID
-                    }
-                case .email:
-                    if let range = url.range(of: "mailto:")
-                    {
-                        let recipient = url.substring(from: range.upperBound)
-                        value = recipient
-                    }
-                default:
-                    break
-                }
-            }
-        }
-    }
-    
-}

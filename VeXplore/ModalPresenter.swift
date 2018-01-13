@@ -143,7 +143,7 @@ class ModalPresentationController: UIPresentationController
             let offsetY = minY - (containerView.bounds.height - presentdeViewHeight) / 2.0
             frameOffsetYOfPresentedView = min(0, offsetY)
             
-            let animations: (Void) -> Void = {
+            let animations: () -> Void = {
                 self.presentedView?.frame.origin.y = self.frameOfPresentedViewInContainerView.origin.y
             }
             let completion: (Bool) -> Void = { finished in
@@ -211,7 +211,7 @@ class ModalTransitionAnimator: NSObject, UIViewControllerAnimatedTransitioning
             
             containerView.addSubview(viewToAnimate)
             
-            let animations: (Void) -> Void = {
+            let animations: () -> Void = {
                 if self.present
                 {
                     viewToAnimate.transform = CGAffineTransform.identity

@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 class NodesViewController: BaseCenterLoadingViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, AnimatedSearchButtonDelegate
 {
@@ -54,11 +55,6 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
         let searchBtn = UIBarButtonItem(customView: searchButton)
         navigationItem.rightBarButtonItem = searchBtn
         
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
-        
         searchVC.getAllNodesIfNeed()
     }
     
@@ -74,15 +70,16 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
-        navigationController?.navigationBar.setupNavigationbar()
+        super.refreshColorScheme()
         collectionView.backgroundColor = .background
     }
     
     @objc
-    private func handleContentSizeCategoryDidChanged()
+    override func handleContentSizeCategoryDidChanged()
     {
+        super.handleContentSizeCategoryDidChanged()
         collectionView.reloadData()
     }
     
@@ -102,7 +99,8 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
     override func loadingRequest()
     {
         if let diskCachePath = cachePathString(withFilename: classForCoder.description()),
-            let nodeGroupArray = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? [NodeGroupModel]
+            let jsonData = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? Data,
+            let nodeGroupArray = try? JSONDecoder().decode([NodeGroupModel].self, from: jsonData)
         {
             self.nodeGroupArray = nodeGroupArray
             if nodeGroupArray.count > 0
@@ -121,9 +119,10 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
             weakSelf.stopLoading(withSuccesse: response.success, completion: { (success) in
                 if success, let value = response.value
                 {
-                    if let diskCachePath = cachePathString(withFilename: weakSelf.classForCoder.description())
+                    if let diskCachePath = cachePathString(withFilename: weakSelf.classForCoder.description()),
+                        let jsonData = try? JSONEncoder().encode(value)
                     {
-                        NSKeyedArchiver.archiveRootObject(value, toFile: diskCachePath)
+                        NSKeyedArchiver.archiveRootObject(jsonData, toFile: diskCachePath)
                     }
                     // if new data is equal to old data, collectionView will not reload data
                     var needsReloadData = false
@@ -131,7 +130,7 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
                     {
                         for i in 0..<weakSelf.nodeGroupArray.count
                         {
-                            if weakSelf.nodeGroupArray[i].isEqual(value[i]) == false
+                            if weakSelf.nodeGroupArray[i] != (value[i])
                             {
                                 needsReloadData = true
                                 break
@@ -187,7 +186,7 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
     {
         let nodeModel = nodeGroupArray[indexPath.section].childNodes[indexPath.row]
         heightCell.nodeNameLabel.text = nodeModel.nodeName
-        heightCell.nodeNameLabel.font = R.Font.Small
+        heightCell.nodeNameLabel.font = SharedR.Font.Small
         let size = heightCell.systemLayoutSizeFitting(UILayoutFittingCompressedSize)
         return size
     }
@@ -205,7 +204,7 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
         let rect = groupName.boundingRect(
             with: CGSize(width: collectionView.frame.width, height: collectionView.frame.height),
             options: .usesLineFragmentOrigin,
-            attributes: [NSFontAttributeName:R.Font.Medium],
+            attributes: [NSAttributedStringKey.font:SharedR.Font.Medium],
             context: nil)
         return CGSize(width: collectionView.bounds.width, height: rect.height + 16)
     }
@@ -236,12 +235,12 @@ class NodesViewController: BaseCenterLoadingViewController, UICollectionViewData
 }
 
 
-class NodeCollectionViewCell: UICollectionViewCell
+class NodeCollectionViewCell: BaseCollectionViewCell
 {
     lazy var nodeNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         
         return label
@@ -258,10 +257,6 @@ class NodeCollectionViewCell: UICollectionViewCell
         
         layer.borderWidth = 1
         layer.cornerRadius = 5
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -272,12 +267,13 @@ class NodeCollectionViewCell: UICollectionViewCell
     override func prepareForReuse()
     {
         super.prepareForReuse()
-        nodeNameLabel.font = R.Font.Small
+        nodeNameLabel.font = SharedR.Font.Small
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         nodeNameLabel.textColor = .desc
         layer.borderColor = UIColor.border.cgColor
     }
@@ -285,12 +281,12 @@ class NodeCollectionViewCell: UICollectionViewCell
 }
 
 
-class NodeCollectionReusableView: UICollectionReusableView
+class NodeCollectionReusableView: BaseCollectionReusableView
 {
     lazy var nodeGroupNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.textColor = .body
         
         return label
@@ -304,10 +300,6 @@ class NodeCollectionReusableView: UICollectionReusableView
         let bindings = ["nodeGroupNameLabel": nodeGroupNameLabel,]
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[nodeGroupNameLabel]-12-|", metrics: nil, views: bindings))
         nodeGroupNameLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -318,12 +310,13 @@ class NodeCollectionReusableView: UICollectionReusableView
     override func prepareForReuse()
     {
         super.prepareForReuse()
-        nodeGroupNameLabel.font = R.Font.Medium
+        nodeGroupNameLabel.font = SharedR.Font.Medium
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         nodeGroupNameLabel.textColor = .body
         backgroundColor = .subBackground
     }

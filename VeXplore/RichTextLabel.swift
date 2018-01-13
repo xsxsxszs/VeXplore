@@ -6,7 +6,7 @@
 //
 
 
-class RichTextLabel: UIView
+class RichTextLabel: BaseView
 {
     typealias HighlightAction = (_ url: String) -> Void
 
@@ -32,6 +32,13 @@ class RichTextLabel: UIView
     required init?(coder aDecoder: NSCoder)
     {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        layer.setNeedsDisplay()
     }
     
     override func display(_ layer: CALayer)
@@ -101,7 +108,7 @@ class RichTextLabel: UIView
         guard let index = layout.glyphIndex(for: pointInLayout) else {
             return nil
         }
-        let url = layout.text.attribute(HighlightAttributeName, at: index, effectiveRange: nil) as? String
+        let url = layout.text.attribute(NSAttributedStringKey(rawValue: HighlightAttributeName), at: index, effectiveRange: nil) as? String
         return url
     }
     

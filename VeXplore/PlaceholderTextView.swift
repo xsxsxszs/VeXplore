@@ -5,13 +5,14 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class PlaceholderTextView: UITextView
+class PlaceholderTextView: BaseTextView
 {
-    var placeholderText: String = R.String.Empty {
+    var placeholderText: String = SharedR.String.Empty {
         didSet
         {
-            text = R.String.Empty
+            text = SharedR.String.Empty
             isPlaceholder = true
             setNeedsDisplay()
         }
@@ -33,14 +34,10 @@ class PlaceholderTextView: UITextView
     
     private var isPlaceholder = true
 
-    init()
+    override init()
     {
-        super.init(frame: .zero, textContainer: nil)
-        
-        refreshColorScheme()
-        
+        super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(textDidChange), name: NSNotification.Name.UITextViewTextDidChange, object: self)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -74,16 +71,17 @@ class PlaceholderTextView: UITextView
         }
         
         let caretPos = caretRect(for: beginningOfDocument)
-        let placeholderFont = font ?? R.Font.Medium
+        let placeholderFont = font ?? SharedR.Font.Medium
         let placeholderInset = UIEdgeInsets(top: caretPos.origin.y + 0.5*(caretPos.height - placeholderFont.lineHeight), left: caretPos.origin.x + caretPos.width, bottom: textContainerInset.bottom, right: textContainerInset.right)
         let placeholderRect = UIEdgeInsetsInsetRect(bounds, placeholderInset)
-        let attributes: [String: Any] = [NSFontAttributeName: placeholderFont, NSForegroundColorAttributeName: placeholderTextColor]
+        let attributes: [NSAttributedStringKey: Any] = [NSAttributedStringKey.font: placeholderFont, NSAttributedStringKey.foregroundColor: placeholderTextColor]
         placeholderText.draw(in: placeholderRect, withAttributes: attributes)
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         backgroundColor = .background
         placeholderTextColor = .border
     }

@@ -5,34 +5,21 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class SortedNodeGroupModel: NSObject
+struct SortedNodeGroupModel: Codable
 {
     var initial: String?
     var nodes = [NodeModel]()
-    
-    func encodeWithCoder(_ aCoder: NSCoder)
-    {
-        aCoder.encode(initial, forKey: "initial")
-        aCoder.encode(nodes, forKey: "nodes")
-    }
-    
-    required convenience init?(coder aDecoder: NSCoder)
-    {
-        self.init()
-        initial = aDecoder.decodeObject(forKey: "initial") as? String
-        nodes = aDecoder.decodeObject(forKey: "nodes") as! [NodeModel]
-    }
-    
 }
 
 
-class NodeSearchCell: UITableViewCell
+class NodeSearchCell: BaseTableViewCell
 {
     lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.textColor = .body
         
         return label
@@ -50,10 +37,6 @@ class NodeSearchCell: UITableViewCell
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -64,14 +47,14 @@ class NodeSearchCell: UITableViewCell
     override func prepareForReuse()
     {
         super.prepareForReuse()
-        contentLabel.font = R.Font.Medium
+        contentLabel.font = SharedR.Font.Medium
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         contentLabel.textColor = .body
-        contentView.backgroundColor = .background
     }
     
 }
@@ -95,9 +78,10 @@ class NodeSearchViewController: SearchViewController
                 groupedNodes[sectionNumber].initial = collation.sectionTitles[sectionNumber]
             }
             tableView.reloadData()
-            if let diskCachePath = cachePathString(withFilename: NodeSearchViewController.description())
+            if let diskCachePath = cachePathString(withFilename: NodeSearchViewController.description()),
+                let jsonData = try? JSONEncoder().encode(groupedNodes)
             {
-                NSKeyedArchiver.archiveRootObject(groupedNodes, toFile: diskCachePath)
+                NSKeyedArchiver.archiveRootObject(jsonData, toFile: diskCachePath)
             }
         }
     }
@@ -131,7 +115,8 @@ class NodeSearchViewController: SearchViewController
     func getAllNodesIfNeed()
     {
         if let diskCachePath = cachePathString(withFilename: NodeSearchViewController.description()),
-            let groupedNodes = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? [SortedNodeGroupModel]
+            let jsonData = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? Data,
+            let groupedNodes = try? JSONDecoder().decode([SortedNodeGroupModel].self, from: jsonData)
         {
             self.groupedNodes = groupedNodes
             tableView.reloadData()
@@ -177,12 +162,12 @@ class NodeSearchViewController: SearchViewController
 
     private func getSearchKey(fromString str: String) -> SearchKey // (initial, all)
     {
-        var result = SearchKey(initialLetter: R.String.Empty, allLetter: R.String.Empty)
+        var result = SearchKey(initialLetter: SharedR.String.Empty, allLetter: SharedR.String.Empty)
         let latinString = str.getUppercaseLatinString()
         result.allLetter = latinString
-        if let index = latinString.characters.index(latinString.startIndex, offsetBy: 1, limitedBy: latinString.endIndex)
+        if let index = latinString.index(latinString.startIndex, offsetBy: 1, limitedBy: latinString.endIndex)
         {
-            result.initialLetter = latinString.substring(to: index)
+            result.initialLetter = String(latinString[..<index])
         }
         return result
     }
@@ -227,7 +212,7 @@ class NodeSearchViewController: SearchViewController
                 }
                 if filteredNodes.count > 0
                 {
-                    let filteredNodeGroupModel = SortedNodeGroupModel()
+                    var filteredNodeGroupModel = SortedNodeGroupModel()
                     filteredNodeGroupModel.initial = sortedNodeGroupModel.initial
                     filteredNodeGroupModel.nodes = filteredNodes
                     searchResultNodes.append(filteredNodeGroupModel)
@@ -243,7 +228,7 @@ class NodeSearchViewController: SearchViewController
     }
     
     // MARK: - UITableViewDataSource
-    func numberOfSectionsInTableView(_ tableView: UITableView) -> Int
+    func numberOfSections(in tableView: UITableView) -> Int
     {
         return isSearching ? searchResultNodes.count : groupedNodes.count
     }
@@ -269,7 +254,7 @@ class NodeSearchViewController: SearchViewController
         return headerView
     }
     
-    func sectionIndexTitlesForTableView(_ tableView: UITableView) -> [String]
+    func sectionIndexTitles(for tableView: UITableView) -> [String]?
     {
         return isSearching ? [] : collation.sectionIndexTitles
     }

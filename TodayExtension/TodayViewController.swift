@@ -33,7 +33,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         super.viewDidLoad()
         extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         view.addSubview(tableView)
-        let bindings: [String: Any] = ["tableView": tableView]
+        let bindings: [String : Any] = ["tableView": tableView]
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[tableView]|", metrics: nil, views: bindings))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[tableView]|", metrics: nil, views: bindings))
     }
@@ -79,8 +79,8 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     // MARK: - UITableViewDelegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
-        let topicId = data[indexPath.row].id
-        if let url = URL(string: "todayExtension://?\(topicId)")
+        let topicURL = data[indexPath.row].url
+        if let url = URL(string: "vexplore://?\(topicURL)")
         {
             extensionContext?.open(url, completionHandler: nil)
         }
@@ -97,9 +97,9 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
                 let json = JSON(object: value)
                 for (_, subJson) in json
                 {
-                    if let topicId = subJson["id"].string, let topicTitle = subJson["title"].string
+                    if let topicURL = subJson["url"].string, let topicTitle = subJson["title"].string
                     {
-                        let topicItem = TopicItem(id: topicId, title: topicTitle)
+                        let topicItem = TopicItem(url: topicURL, title: topicTitle)
                         topics.append(topicItem)
                     }
                 }
@@ -111,7 +111,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     
     private struct TopicItem
     {
-        let id: String
+        let url: String
         let title: String
     }
 }

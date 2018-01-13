@@ -5,13 +5,14 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class SearchBoxView: UIView
+class SearchBoxView: BaseView
 {
     lazy var searchField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.font = R.Font.Small
+        textField.font = SharedR.Font.Small
         textField.textColor = .body
         textField.textAlignment = .left
         textField.clearButtonMode = .always
@@ -39,7 +40,7 @@ class SearchBoxView: UIView
         
         addSubview(searchField)
         addSubview(searchIcon)
-        let bindings: [String: Any] = [
+        let bindings: [String : Any] = [
             "searchField": searchField,
             "searchIcon": searchIcon
         ]
@@ -51,10 +52,6 @@ class SearchBoxView: UIView
         isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapped))
         addGestureRecognizer(tap)
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -63,8 +60,9 @@ class SearchBoxView: UIView
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         searchField.textColor = .body
         searchField.tintColor = .highlight
         searchField.backgroundColor = .background

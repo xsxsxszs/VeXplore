@@ -5,13 +5,14 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class MemberRepliesViewController: BaseTableViewController
+class MemberRepliesViewController: SwipeTableViewController
 {
     private lazy var pageNumView: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: R.Constant.defaulViewtSize, height: R.Constant.defaulViewtSize))
         label.textAlignment = .right
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         
         return label
@@ -27,24 +28,37 @@ class MemberRepliesViewController: BaseTableViewController
         super.viewDidLoad()
         title = String(format: R.String.MemberAllReplies, username)
 
+        tableView.estimatedRowHeight = 0
+        tableView.estimatedSectionHeaderHeight = 0
+        tableView.estimatedSectionFooterHeight = 0
         tableView.register(MemberReplyCell.self, forCellReuseIdentifier: String(describing: MemberReplyCell.self))
         enableBottomLoading = false
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
         let pageNumItem = UIBarButtonItem(customView: pageNumView)
         navigationItem.leftBarButtonItem = closeBtn
         navigationItem.rightBarButtonItem = pageNumItem
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
     
     @objc
-    private func handleContentSizeCategoryDidChanged()
+    override func handleContentSizeCategoryDidChanged()
     {
+        super.handleContentSizeCategoryDidChanged()
         for memberReply in memberRepliesList
         {
-            memberReply.contentAttributedString.addAttribute(NSFontAttributeName, value: R.Font.Medium)
+            memberReply.contentAttributedString.addAttribute(NSAttributedStringKey.font.rawValue, value: SharedR.Font.Medium)
         }
         super.prepareForReuse()
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        for memberReply in memberRepliesList
+        {
+            memberReply.refreshContentAttributedString()
+        }
+        tableView.reloadData()
     }
     
     @objc
@@ -178,11 +192,11 @@ class MemberRepliesViewController: BaseTableViewController
         let topicTitleRect = replyItem.title!.boundingRect(
             with: size,
             options: .usesLineFragmentOrigin,
-            attributes: [NSFontAttributeName: R.Font.Medium], context: nil)
+            attributes: [NSAttributedStringKey.font: SharedR.Font.Medium], context: nil)
         let topicTitleHeight = ceil(topicTitleRect.height)
         let layout = RichTextLayout(with: size, text: replyItem.contentAttributedString)
         let commentHeight = ceil(layout!.bounds.height)
-        let height = 8 + ceil(R.Font.Small.lineHeight) + 10 + topicTitleHeight + 10 + commentHeight + 8
+        let height = 8 + ceil(SharedR.Font.Small.lineHeight) + 10 + topicTitleHeight + 10 + commentHeight + 8
         return height
     }
     
@@ -190,8 +204,7 @@ class MemberRepliesViewController: BaseTableViewController
     {
         if let topicId = memberRepliesList[indexPath.row].topicId
         {
-            let topicVC = TopicViewController()
-            topicVC.topicId = topicId
+            let topicVC = TopicViewController(topicId: topicId)
             DispatchQueue.main.async(execute: {
                 self.bouncePresent(navigationVCWith: topicVC, completion: nil)
             })

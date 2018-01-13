@@ -12,7 +12,7 @@ protocol MemberFollowBlockCellDelegate: class
     func blockViewViewTapped()
 }
 
-class MemberFollowBlockCell: UITableViewCell
+class MemberFollowBlockCell: BaseTableViewCell
 {
     lazy var followView: ProfileActionView = {
         let view = ProfileActionView()
@@ -58,7 +58,6 @@ class MemberFollowBlockCell: UITableViewCell
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[blockView]-8-[bottomLine(0.5)]|", metrics: nil, views: bindings))
         followView.widthAnchor.constraint(equalTo: blockView.widthAnchor).isActive = true
         
-        contentView.backgroundColor = .background
         selectionStyle = .none
     }
     
@@ -85,6 +84,13 @@ class MemberFollowBlockCell: UITableViewCell
         super.prepareForReuse()
         followView.prepareForReuse()
         blockView.prepareForReuse()
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        bottomLine.backgroundColor = .border
     }
     
 }

@@ -30,7 +30,7 @@ class MyFollowingsViewController: BaseCenterLoadingViewController
             }
             
             weakSelf.stopLoading(withSuccesse: response.success, completion: { (success) in
-                if response.message.count > 0 && response.message[0] == R.String.NeedLoginError
+                if response.message.count > 0 && response.message[0] == R.String.NotAuthorizedError
                 {
                     User.shared.logout()
                 }

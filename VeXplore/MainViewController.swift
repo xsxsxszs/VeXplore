@@ -36,23 +36,25 @@ class MainViewController: UITabBarController, UITabBarControllerDelegate
     
     private func buildUI()
     {
-        if User.shared.isLogin == true, let diskCachePath = cachePathString(withFilename: NotificationViewController.description()), let unarchiveVC = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath), unarchiveVC is NotificationViewController
+        if User.shared.isLogin == true,
+            let diskCachePath = cachePathString(withFilename: NotificationViewController.description()),
+            let jsonData = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? Data,
+            let unarchiveVC = try? JSONDecoder().decode(NotificationViewController.self, from: jsonData),
+            unarchiveVC.username == User.shared.username
         {
-            let VC = unarchiveVC as! NotificationViewController
-            if VC.username == User.shared.username
-            {
-                notificationVC = VC
-            }
+            notificationVC = unarchiveVC
         }
-        
-        notificationVC = notificationVC ?? NotificationViewController()
+        else
+        {
+            notificationVC = NotificationViewController()
+        }
         
         if User.shared.isLogin == true,
             let diskCachePath = cachePathString(withFilename: MyProfileViewController.description()),
-            let unarchiveVC = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath),
-            unarchiveVC is MyProfileViewController
+            let jsonData = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? Data,
+            let unarchiveVC = try? JSONDecoder().decode(MyProfileViewController.self, from: jsonData)
         {
-            profileVC = unarchiveVC as! MyProfileViewController
+            profileVC = unarchiveVC
         }
         else
         {

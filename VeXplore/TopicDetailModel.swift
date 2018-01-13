@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 class TopicDetailModel: NSObject
 {
@@ -32,14 +33,14 @@ class TopicDetailModel: NSObject
             if var href = node["href"],
                 let range = href.range(of: "/go/")
             {
-                href.replaceSubrange(range, with: R.String.Empty)
+                href.replaceSubrange(range, with: SharedR.String.Empty)
                 nodeId = href
             }
         }
         avatar = rootNode.xPath(".//img[@class='avatar']").first?["src"]
         username = rootNode.xPath(".//small[contains(text(),'By')]/a").first?.content
         topicTitle = rootNode.xPath(".//h1").first?.content
-        topicContent = rootNode.xPath("./div[@class='cell']/div").first?.rawContent ?? R.String.Empty
+        topicContent = rootNode.xPath("./div[@class='cell']/div").first?.rawContent ?? SharedR.String.Empty
 
         // Append
         let appendNodes = rootNode.xPath("./div[@class='subtle']")
@@ -67,13 +68,13 @@ class TopicDetailModel: NSObject
         if let topicCommentTotalCountText = rootNode.xPath("//div[@class='box']/div[@class='cell']/span").first?.content,
             let range = topicCommentTotalCountText.range(of: " 回复")
         {
-            topicCommentTotalCount = topicCommentTotalCountText.substring(to: range.lowerBound)
+            topicCommentTotalCount = String(topicCommentTotalCountText[..<range.lowerBound])
         }
         if let id = rootNode.xPath("//a[contains(@onclick,'报告这个主题')]").first?["onclick"],
             let startRange = id.range(of: "/report/topic/"),
             let endRange = id.range(of: "\'; }")
         {
-            reportUrl = id.substring(with: Range(startRange.upperBound..<endRange.lowerBound))
+            reportUrl = String(id[startRange.upperBound..<endRange.lowerBound])
         }
     }
     

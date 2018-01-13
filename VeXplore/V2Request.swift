@@ -58,7 +58,7 @@ struct V2Request
             Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) in
                 if response.result.isSuccess, response.request?.url?.absoluteString != response.response?.url?.absoluteString
                 {
-                    let response = ValueResponse<TopicDetailModel>(success: false, message: [R.String.NeedLoginError])
+                    let response = ValueResponse<TopicDetailModel>(success: false, message: [R.String.NotAuthorizedError])
                     completionHandler(response)
                     return
                 }
@@ -155,7 +155,7 @@ struct V2Request
             Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) in
                 if response.result.isSuccess, response.request?.url?.absoluteString != response.response?.url?.absoluteString
                 {
-                    let response = ValueResponse<([TopicCommentModel], Int)>(success: false, message: [R.String.NeedLoginError])
+                    let response = ValueResponse<([TopicCommentModel], Int)>(success: false, message: [R.String.NotAuthorizedError])
                     completionHandler(response)
                     return
                 }
@@ -298,7 +298,7 @@ struct V2Request
                     
                     let parameters = [
                         "title": title,
-                        "content": content ?? R.String.Empty,
+                        "content": content ?? SharedR.String.Empty,
                         "once": once,
                         "syntax": "0"
                     ]
@@ -330,7 +330,7 @@ struct V2Request
             Networking.request(url, headers: SharedR.Dict.DesktopClientHeaders).responseParsableHtml { (response) in
                 if response.result.isSuccess, response.request?.url?.absoluteString != response.response?.url?.absoluteString
                 {
-                    let response = ValueResponse<([TopicItemModel], Bool, Int, String?, String?)>(success: false, message: [R.String.NeedLoginError])
+                    let response = ValueResponse<([TopicItemModel], Bool, Int, String?, String?)>(success: false, message: [R.String.NotAuthorizedError])
                     completionHandler(response)
                     return
                 }
@@ -342,7 +342,7 @@ struct V2Request
                 var nodeName: String?
                 if let htmlDoc = response.result.value
                 {
-                    nodeName = htmlDoc.xPath(".//title")?.first?.content?.replacingOccurrences(of: "V2EX › ", with: R.String.Empty)
+                    nodeName = htmlDoc.xPath(".//title")?.first?.content?.replacingOccurrences(of: "V2EX › ", with: SharedR.String.Empty)
                     if let node = htmlDoc.xPath(".//a[text()='取消收藏']")?.first
                     {
                         isFavorite = true
@@ -450,7 +450,7 @@ struct V2Request
             Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) in
                 if response.result.isSuccess, response.response?.url?.absoluteString.contains("v2ex.com/signin") == true
                 {
-                    let response = ValueResponse<([NotificationModel], Int)>(success: false, message: [R.String.NeedLoginError])
+                    let response = ValueResponse<([NotificationModel], Int)>(success: false, message: [R.String.NotAuthorizedError])
                     completionHandler(response)
                     return
                 }
@@ -458,10 +458,9 @@ struct V2Request
                 var notificationsPage = 1
                 if let htmlDoc = response.result.value
                 {
-                    if var notificationsPageText = htmlDoc.xPath(".//td[@align='center']/strong")?.first?.content, let range = notificationsPageText.range(of: "/")
+                    if let notificationsPageText = htmlDoc.xPath(".//td[@align='center']/strong")?.first?.content, let range = notificationsPageText.range(of: "/")
                     {
-                        notificationsPageText = notificationsPageText.substring(from: range.upperBound)
-                        notificationsPage = Int(notificationsPageText) ?? 1
+                        notificationsPage = Int(notificationsPageText[range.upperBound...]) ?? 1
                     }
                     if page <= notificationsPage, let aRootNode = htmlDoc.xPath(".//div[@class='cell'][attribute::id]")
                     {
@@ -538,7 +537,7 @@ struct V2Request
                     {
                         if let topicTitle = topic.content, let topicUrlWithPage = topic["href"], let topicUrl = topicUrlWithPage.components(separatedBy: "?").first
                         {
-                            let topicId = topicUrl.replacingOccurrences(of: "https://www.v2ex.com/t/", with: R.String.Empty)
+                            let topicId = topicUrl.replacingOccurrences(of: "https://www.v2ex.com/t/", with: SharedR.String.Empty)
                             let topicItemModel = TopicItemModel(id: topicId, title: topicTitle)
                             if searchResults.contains(where: {$0.topicId == topicItemModel.topicId}) == false
                             {
@@ -579,7 +578,7 @@ struct V2Request
             Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) -> Void in
                 if response.result.isSuccess, response.request?.url?.absoluteString != response.response?.url?.absoluteString
                 {
-                    let response = ValueResponse<([TopicItemModel], Int)>(success: false, message: [R.String.NeedLoginError])
+                    let response = ValueResponse<([TopicItemModel], Int)>(success: false, message: [R.String.NotAuthorizedError])
                     completionHandler(response)
                     return
                 }
@@ -616,7 +615,7 @@ struct V2Request
             Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) -> Void in
                 if response.result.isSuccess, response.request?.url?.absoluteString != response.response?.url?.absoluteString
                 {
-                    let response = ValueResponse<[NodeModel]>(success: false, message: [R.String.NeedLoginError])
+                    let response = ValueResponse<[NodeModel]>(success: false, message: [R.String.NotAuthorizedError])
                     completionHandler(response)
                     return
                 }
@@ -629,7 +628,7 @@ struct V2Request
                     {
                         for aNode in nodesArray
                         {
-                            let node = NodeModel(rootNode: aNode)
+                            let node = NodeModel(favoriteNode: aNode)
                             resultArray.append(node)
                         }
                     }
@@ -646,7 +645,7 @@ struct V2Request
             Networking.request(url, headers: SharedR.Dict.DesktopClientHeaders).responseParsableHtml { (response) -> Void in
                 if response.result.isSuccess, response.request?.url?.absoluteString != response.response?.url?.absoluteString
                 {
-                    let response = ValueResponse<[(String, String)]>(success: false, message: [R.String.NeedLoginError])
+                    let response = ValueResponse<[(String, String)]>(success: false, message: [R.String.NotAuthorizedError])
                     completionHandler(response)
                     return
                 }
@@ -682,10 +681,9 @@ struct V2Request
                 if let htmlDoc = response.result.value
                 {
                     var topicsPage: Int = 1
-                    if var topicsPageText = htmlDoc.xPath(".//td[@align='center']/strong")?.first?.content, let range = topicsPageText.range(of: "/")
+                    if let topicsPageText = htmlDoc.xPath(".//td[@align='center']/strong")?.first?.content, let range = topicsPageText.range(of: "/")
                     {
-                        topicsPageText = topicsPageText.substring(from: range.upperBound)
-                        topicsPage = Int(topicsPageText) ?? 1
+                        topicsPage = Int(topicsPageText[range.upperBound...]) ?? 1
                     }
                     
                     let topicsNum = htmlDoc.xPath(".//span[contains(text(), '主题总数 ')]/following-sibling::strong")?.first?.content ?? R.String.Zero
@@ -712,10 +710,9 @@ struct V2Request
                 if let htmlDoc = response.result.value
                 {
                     var repliesPage: Int = 1
-                    if var repliesPageText = htmlDoc.xPath(".//td[@align='center']/strong")?.first?.content, let range = repliesPageText.range(of: "/")
+                    if let repliesPageText = htmlDoc.xPath(".//td[@align='center']/strong")?.first?.content, let range = repliesPageText.range(of: "/")
                     {
-                        repliesPageText = repliesPageText.substring(from: range.upperBound)
-                        repliesPage = Int(repliesPageText) ?? 1
+                        repliesPage = Int(repliesPageText[range.upperBound...]) ?? 1
                     }
                     let repliesNum = htmlDoc.xPath(".//span[contains(text(), '回复总数 ')]/following-sibling::strong")?.first?.content ?? R.String.Zero
                     if let nodes = htmlDoc.xPath(".//div[@class='dock_area']")
@@ -752,55 +749,55 @@ struct V2Request
     
     struct Account
     {
-        static func Login(withUsername username: String,
-                         password: String,
-                         completionHandler: @escaping (ValueResponse<String>) -> Void) -> Request
-        {
-            User.shared.removeAllCookies()
-            let url = R.String.BaseUrl + "/signin"
-            let request = Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) -> Void in
-                if let htmlDoc = response.result.value,
-                    let onceStr = htmlDoc.xPath(".//*[@name='once'][1]")?.first?["value"],
-                    let usernameFieldName = htmlDoc.xPath(".//input[@class='sl' and @type='text']")?.first?["name"],
-                    let passwordFieldName = htmlDoc.xPath(".//input[@class='sl' and @type='password']")?.first?["name"]
-                {
-                    Account.Login(withUsername: username, password: password, once: onceStr, usernameFieldName: usernameFieldName, passwordFieldName: passwordFieldName, completionHandler: completionHandler)
-                    return
-                }
-                completionHandler(ValueResponse(success: false))
-            }
-            return request
-        }
-        
-        static func Login(withUsername username: String,
-                         password: String,
-                         once: String,
-                         usernameFieldName: String,
-                         passwordFieldName: String,
-                         completionHandler: @escaping (ValueResponse<String>) -> Void)
-        {
-            let parameters = [
-                "once": once,
-                "next": "/",
-                passwordFieldName: password,
-                usernameFieldName: username
-            ]
-            var dict = SharedR.Dict.MobileClientHeaders
-            dict["Referer"] = "https://v2ex.com/signin"
-            let url = R.String.BaseUrl + "/signin"
-            Networking.request(url, method: .post, parameters: parameters, headers: dict).responseParsableHtml{ (response) -> Void in
-                if let htmlDoc = response.result.value
-                {
-                    if let memberNode = htmlDoc.xPath(".//*[@id='Top']//a[contains(@href,'/member/')]")?.first, var username = memberNode["href"], username.hasPrefix("/member/")
-                    {
-                        username = username.replacingOccurrences(of: "/member/", with: R.String.Empty)
-                        completionHandler(ValueResponse(value: username, success: true))
-                        return
-                    }
-                }
-                completionHandler(ValueResponse(success: false))
-            }
-        }
+//        static func Login(withUsername username: String,
+//                         password: String,
+//                         completionHandler: @escaping (ValueResponse<String>) -> Void) -> Request
+//        {
+//            User.shared.removeAllCookies()
+//            let url = R.String.BaseUrl + "/signin"
+//            let request = Networking.request(url, headers: SharedR.Dict.MobileClientHeaders).responseParsableHtml { (response) -> Void in
+//                if let htmlDoc = response.result.value,
+//                    let onceStr = htmlDoc.xPath(".//*[@name='once'][1]")?.first?["value"],
+//                    let usernameFieldName = htmlDoc.xPath(".//input[@class='sl' and @type='text']")?.first?["name"],
+//                    let passwordFieldName = htmlDoc.xPath(".//input[@class='sl' and @type='password']")?.first?["name"]
+//                {
+//                    Account.Login(withUsername: username, password: password, once: onceStr, usernameFieldName: usernameFieldName, passwordFieldName: passwordFieldName, completionHandler: completionHandler)
+//                    return
+//                }
+//                completionHandler(ValueResponse(success: false))
+//            }
+//            return request
+//        }
+//        
+//        static func Login(withUsername username: String,
+//                         password: String,
+//                         once: String,
+//                         usernameFieldName: String,
+//                         passwordFieldName: String,
+//                         completionHandler: @escaping (ValueResponse<String>) -> Void)
+//        {
+//            let parameters = [
+//                "once": once,
+//                "next": "/",
+//                passwordFieldName: password,
+//                usernameFieldName: username
+//            ]
+//            var dict = SharedR.Dict.MobileClientHeaders
+//            dict["Referer"] = "https://v2ex.com/signin"
+//            let url = R.String.BaseUrl + "/signin"
+//            Networking.request(url, method: .post, parameters: parameters, headers: dict).responseParsableHtml{ (response) -> Void in
+//                if let htmlDoc = response.result.value
+//                {
+//                    if let memberNode = htmlDoc.xPath(".//*[@id='Top']//a[contains(@href,'/member/')]")?.first, var username = memberNode["href"], username.hasPrefix("/member/")
+//                    {
+//                        username = username.replacingOccurrences(of: "/member/", with: SharedR.String.Empty)
+//                        completionHandler(ValueResponse(value: username, success: true))
+//                        return
+//                    }
+//                }
+//                completionHandler(ValueResponse(success: false))
+//            }
+//        }
         
         static func dailyRedeem()
         {
@@ -851,6 +848,90 @@ struct V2Request
                     return
                 }
                 completionHandler(CommonResponse(success: false))
+            }
+        }
+        
+    }
+    
+    struct OCR
+    {
+        static func recognize(captchaURLString: String, completion completionHandler: @escaping (Bool, String) -> Void)
+        {
+            guard let captchaURL = URL(string: captchaURLString) else {
+                completionHandler(false, "")
+                return
+            }
+            
+            dispatch_async_to_background_queue {
+                if let captchaData = try? Data(contentsOf: captchaURL)
+                {
+                    // get token
+                    getToken { (accessToken) in
+                        let captchaEncodedString = captchaData.base64EncodedString()
+                        var params = [String: String]()
+                        params["access_token"] = accessToken
+                        params["image"] = captchaEncodedString
+                        params["language_type"] = "ENG"
+                        // recognize captcha
+                        Networking.request("https://aip.baidubce.com/rest/2.0/ocr/v1/webimage", method: .post, parameters: params).responseJSON { (response) in
+                            if response.result.isSuccess, let value = response.result.value
+                            {
+                                let json = JSON(object: value)
+                                let wordsResults = json["words_result"]
+                                for (_, subJson) in wordsResults
+                                {
+                                    if let words = subJson["words"].string, words.isValidCaptcha()
+                                    {
+                                        completionHandler(true, words)
+                                        return
+                                    }
+                                }
+                                completionHandler(false, "")
+                                return
+                            }
+                            completionHandler(false, "")
+                            return
+                        }
+                    }
+                }
+                else
+                {
+                    completionHandler(false, "")
+                    return
+                }
+            }
+        }
+        
+        static private func getToken(completion completionHandler: @escaping (String) -> Void)
+        {
+            // get token if cached
+            if let expiresDate = UserDefaults.baiduTokenExpiresDate,
+                expiresDate > Date(),
+                let accessToken = UserDefaults.baiduAccessToken
+            {
+                completionHandler(accessToken)
+                return
+            }
+            
+            // fetech token
+            var params = [String: String]()
+            params["grant_type"] = "client_credentials"
+            // use your own baidu OCR keys
+            params["client_id"] = "use_your_own_key"
+            params["client_secret"] = "use_your_own_key"
+            Networking.request("https://aip.baidubce.com/oauth/2.0/token", method: .post, parameters: params).responseJSON { (response) in
+                if response.result.isSuccess, let value = response.result.value
+                {
+                    let json = JSON(object: value)
+                    if let accessToken = json["access_token"].string
+                    {
+                        // cache token
+                        let expiresIn = json["expires_in"].string?.doubleValue ?? 2592000 // default: expires in a month
+                        UserDefaults.baiduTokenExpiresDate = Date(timeIntervalSinceNow: expiresIn)
+                        UserDefaults.baiduAccessToken = accessToken
+                        completionHandler(accessToken)
+                    }
+                }
             }
         }
         

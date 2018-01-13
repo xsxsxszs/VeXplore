@@ -31,7 +31,6 @@ class BaseCenterLoadingViewController: SwipeTransitionViewController, SquareLoad
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        navigationController?.navigationBar.setupNavigationbar()
 
         view.addSubview(tableView)
         view.addSubview(centerLoadingView)
@@ -40,6 +39,13 @@ class BaseCenterLoadingViewController: SwipeTransitionViewController, SquareLoad
         centerLoadingView.widthAnchor.constraint(equalToConstant: R.Constant.LoadingViewHeight).isActive = true
         centerLoadingView.initSquaresPosition()
         beginLoading()
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        tableView.backgroundColor = .background
     }
     
     private func beginLoading()

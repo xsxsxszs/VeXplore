@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class TopicCommentsViewController: BaseTableViewController, CommentImageTapDelegate, CommentCellDelegate, OwnerViewActivityDelegate, UIActionSheetDelegate
+class TopicCommentsViewController: SwipeTableViewController, CommentImageTapDelegate, CommentCellDelegate, OwnerViewActivityDelegate, UIActionSheetDelegate
 {
     var topicId = R.String.Zero
     private var currentPage = 1
@@ -34,12 +35,14 @@ class TopicCommentsViewController: BaseTableViewController, CommentImageTapDeleg
     {
         super.viewDidLoad()
         
+        tableView.estimatedRowHeight = 0
+        tableView.estimatedSectionHeaderHeight = 0
+        tableView.estimatedSectionFooterHeight = 0
         tableView.register(TopicCommentCell.self, forCellReuseIdentifier: String(describing: TopicCommentCell.self))
         initTopLoading()
         enableBottomLoading = false
         tableView.scrollsToTop = false
         NotificationCenter.default.addObserver(self, selector: #selector(refreshMyCommentIfNeed), name: NSNotification.Name.Topic.CommentAdded, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool)
@@ -51,13 +54,25 @@ class TopicCommentsViewController: BaseTableViewController, CommentImageTapDeleg
     }
     
     @objc
-    private func handleContentSizeCategoryDidChanged()
+    override func handleContentSizeCategoryDidChanged()
     {
+        super.handleContentSizeCategoryDidChanged()
         for comment in topicComments
         {
-            comment.contentAttributedString.addAttribute(NSFontAttributeName, value: R.Font.Medium)
+            comment.contentAttributedString.addAttribute(NSAttributedStringKey.font.rawValue, value: SharedR.Font.Medium)
         }
         super.prepareForReuse()
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        for topicComment in topicComments
+        {
+            topicComment.refreshContentAttributedString()
+        }
+        tableView.reloadData()
     }
     
     // MARK: - UITableViewDelegate
@@ -111,12 +126,11 @@ class TopicCommentsViewController: BaseTableViewController, CommentImageTapDeleg
                 }
                 else
                 {
-                    if response.message.count > 0, response.message[0] == R.String.NeedLoginError
+                    if response.message.count > 0, response.message[0] == R.String.NotAuthorizedError
                     {
-                        weakSelf.topMessageLabel.text = R.String.NeedLoginToViewThisTopic
+                        weakSelf.topMessageLabel.text = R.String.UnableToViewThisTopic
                         weakSelf.topMessageLabel.isHidden = false
                         weakSelf.topLoadingView.isHidden = true
-                        User.shared.logout()
                     }
                     weakSelf.isTopLoadingFail = true
                 }
@@ -226,7 +240,7 @@ class TopicCommentsViewController: BaseTableViewController, CommentImageTapDeleg
         let size = CGSize(width: view.frame.width - 64, height: CGFloat.greatestFiniteMagnitude)
         let layout = RichTextLayout(with: size, text: comment.contentAttributedString)
         let contentHeight = ceil(layout!.bounds.height)
-        let height = 10 + ceil(R.Font.Small.lineHeight) + 4 + contentHeight + 8 + ceil(R.Font.ExtraSmall.lineHeight) + 4
+        let height = 10 + ceil(SharedR.Font.Small.lineHeight) + 4 + contentHeight + 8 + ceil(SharedR.Font.ExtraSmall.lineHeight) + 4
         return height
     }
     
@@ -341,10 +355,17 @@ class TopicCommentsViewController: BaseTableViewController, CommentImageTapDeleg
         })
     }
     
-    func replyBtnTapped(withUsername username: String)
+    func replyBtnTapped(withUsername username: String, index: String)
     {
         inputVC.topicId = topicId
-        inputVC.atSomeone = String(format: R.String.AtSomeone, username)
+        if UserDefaults.isShowReplyIndexEnabled
+        {
+            inputVC.atSomeone = String(format: R.String.AtSomeoneWithIndex, username, index)
+        }
+        else
+        {
+            inputVC.atSomeone = String(format: R.String.AtSomeone, username)
+        }
         present(inputVC, animated: true, completion: nil)
     }
     

@@ -23,7 +23,8 @@ class HomePageTopicListViewController: TopicListViewController
     {
         let cacheKey = String(format: R.Key.HomePageTopicList, tabId)
         if let diskCachePath = cachePathString(withFilename: cacheKey),
-            let cachedTopicList = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? [TopicItemModel]
+            let jsonData = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? Data,
+            let cachedTopicList = try? JSONDecoder().decode([TopicItemModel].self, from: jsonData)
         {
             topicList = cachedTopicList
             tableView.reloadData()
@@ -48,9 +49,10 @@ class HomePageTopicListViewController: TopicListViewController
                     }) { (_) in
                         weakSelf.topLoadingView.initSquaresPosition()
                         let cacheKey = String(format: R.Key.HomePageTopicList, weakSelf.tabId)
-                        if let diskCachePath = cachePathString(withFilename: cacheKey)
+                        if let diskCachePath = cachePathString(withFilename: cacheKey),
+                            let jsonData = try? JSONEncoder().encode(value)
                         {
-                            NSKeyedArchiver.archiveRootObject(value, toFile: diskCachePath)
+                            NSKeyedArchiver.archiveRootObject(jsonData, toFile: diskCachePath)
                         }
                     }
                     weakSelf.isTopLoadingFail = false

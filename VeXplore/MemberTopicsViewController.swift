@@ -5,13 +5,14 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class MemberTopicsViewController: BaseTableViewController
+class MemberTopicsViewController: SwipeTableViewController
 {
     lazy var pageNumView: UILabel = {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: R.Constant.defaulViewtSize, height: R.Constant.defaulViewtSize))
         label.textAlignment = .right
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         
         return label
@@ -174,8 +175,7 @@ class MemberTopicsViewController: BaseTableViewController
     {
         if let topicId = memberTopicList[indexPath.row].topicId
         {
-            let topicVC = TopicViewController()
-            topicVC.topicId = topicId
+            let topicVC = TopicViewController(topicId: topicId)
             DispatchQueue.main.async(execute: {
                 self.bouncePresent(navigationVCWith: topicVC, completion: nil)
             })

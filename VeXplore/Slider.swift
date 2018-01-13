@@ -5,13 +5,14 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 protocol SliderDelegate: class
 {
     func didSelect(at index: Int)
 }
 
-class Slider: UIView
+class Slider: BaseView
 {
     private lazy var stackView: UIStackView = {
         let view = UIStackView()
@@ -32,7 +33,7 @@ class Slider: UIView
     
     private lazy var circle: CircleView = {
         let view = CircleView()
-        view.radius = 20.0
+        view.radius = R.Constant.SliderCircleRadius
         view.translatesAutoresizingMaskIntoConstraints = false
         
         return view
@@ -67,7 +68,7 @@ class Slider: UIView
                     let label: UILabel = {
                         let label = UILabel()
                         label.translatesAutoresizingMaskIntoConstraints = false
-                        label.font = R.Font.ExtraSmall
+                        label.font = SharedR.Font.ExtraSmall
                         label.textColor = .note
                         label.text = text
                         
@@ -171,7 +172,24 @@ class Slider: UIView
     {
         for scaleLabel in scaleLabels
         {
-            scaleLabel.font = R.Font.ExtraSmall
+            scaleLabel.font = SharedR.Font.ExtraSmall
+        }
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        backgroundColor = .clear
+        circle.radius = R.Constant.SliderCircleRadius
+        hLine.backgroundColor = .note
+        for line in vLines
+        {
+            line.backgroundColor = .note
+        }
+        for label in scaleLabels
+        {
+            label.textColor = .note
         }
     }
     

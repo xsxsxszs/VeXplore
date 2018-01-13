@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class FontSettingViewController: UIViewController, SliderDelegate
+class FontSettingViewController: BaseViewController, SliderDelegate
 {
     private var fontScaleString = UserDefaults.fontScaleString
     private lazy var slider: Slider = {
@@ -29,11 +30,10 @@ class FontSettingViewController: UIViewController, SliderDelegate
     {
         super.viewDidLoad()
         title = R.String.FontSettingTitle
-        navigationController?.navigationBar.setupNavigationbar()
         
         view.addSubview(slider)
         view.addSubview(topicCellView)
-        let bindings: [String: Any] = [
+        let bindings: [String : Any] = [
             "slider": slider,
             "topicCellView": topicCellView,
             ]
@@ -47,15 +47,20 @@ class FontSettingViewController: UIViewController, SliderDelegate
         navigationItem.leftBarButtonItem = closeBtn
         navigationItem.rightBarButtonItem = confirmBtn
 
-        view.backgroundColor = .subBackground
         slider.selectedIndex = slider.options?.index(of: fontScaleString) ?? 0
-
-        NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
     
     @objc
-    private func handleContentSizeCategoryDidChanged()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
+        view.backgroundColor = .subBackground
+    }
+    
+    @objc
+    override func handleContentSizeCategoryDidChanged()
+    {
+        super.handleContentSizeCategoryDidChanged()
         slider.prepareForReuse()
         topicCellView.prepareForReuse()
     }
@@ -78,15 +83,15 @@ class FontSettingViewController: UIViewController, SliderDelegate
     func didSelect(at index: Int)
     {
         let fontScale = CGFloat(slider.options![index].doubleValue)
-        let scaledFontSize = round(R.Font.Medium.pointSize * fontScale)
-        let font = R.Font.Medium.withSize(scaledFontSize)
+        let scaledFontSize = round(SharedR.Font.Medium.pointSize * fontScale)
+        let font = SharedR.Font.Medium.withSize(scaledFontSize)
         topicCellView.topicTitleLabel.font = font
         fontScaleString = slider.options![index]
     }
     
 }
 
-class TopicCellView: UIView
+class TopicCellView: BaseView
 {
     private lazy var avatarImageView: UIImageView = {
         let view = UIImageView()
@@ -100,7 +105,7 @@ class TopicCellView: UIView
     private lazy var userNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         label.text = R.String.WangXizhi
 
@@ -110,33 +115,28 @@ class TopicCellView: UIView
     lazy var topicTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.numberOfLines = 0
         label.textColor = .body
         label.text = R.String.PrefaceOfLantingExcerpt
         return label
     }()
     
-    private lazy var nodeNameLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
-        label.textColor = .desc
-        label.text = R.String.PrefaceOfLanting
-
-        return label
-    }()
-    
-    private lazy var nodeNameContainerView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.borderColor = UIColor.desc.cgColor
-        view.layer.borderWidth = 1
-        view.layer.cornerRadius = 3
+    lazy var nodeNameBtn: UIButton = {
+        let btn = UIButton()
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.layer.borderColor = UIColor.desc.cgColor
+        btn.layer.borderWidth = 1
+        btn.layer.cornerRadius = 3
+        btn.setTitleColor(.desc, for: .normal)
+        btn.titleLabel?.font = SharedR.Font.ExtraSmall
+        btn.setTitle(R.String.PrefaceOfLanting, for: .normal)
+        btn.contentEdgeInsets = UIEdgeInsets(top: 1, left: 3, bottom: 1, right: 3)
+        btn.isUserInteractionEnabled = false
         
-        return view
+        return btn
     }()
-    
+
     private lazy var commentImageView: UIImageView = {
         let view = UIImageView()
         view.image = R.Image.Comment
@@ -150,7 +150,7 @@ class TopicCellView: UIView
     private lazy var repliesNumberLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .desc
         label.text = R.String.Zero
         
@@ -160,7 +160,7 @@ class TopicCellView: UIView
     private lazy var lastReplayDateAndUserLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .note
         label.text = R.String.PrefaceOfLantingPublicTime
 
@@ -182,28 +182,24 @@ class TopicCellView: UIView
         let bindings = [
             "avatarImageView": avatarImageView,
             "userNameLabel": userNameLabel,
-            "nodeNameLabel": nodeNameLabel,
-            "nodeNameContainerView": nodeNameContainerView,
+            "nodeNameBtn": nodeNameBtn,
             "commentImageView": commentImageView,
             "repliesNumberLabel": repliesNumberLabel,
             "topicTitleLabel": topicTitleLabel,
             "lastReplayDateAndUserLabel": lastReplayDateAndUserLabel,
             "separatorLine": separatorLine
         ]
-        
-        nodeNameContainerView.addSubview(nodeNameLabel)
-        nodeNameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-3-[nodeNameLabel]-3-|", metrics: nil, views: bindings))
-        nodeNameContainerView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-1-[nodeNameLabel]-1-|", metrics: nil, views: bindings))
+
         
         addSubview(avatarImageView)
         addSubview(userNameLabel)
-        addSubview(nodeNameContainerView)
+        addSubview(nodeNameBtn)
         addSubview(commentImageView)
         addSubview(repliesNumberLabel)
         addSubview(topicTitleLabel)
         addSubview(lastReplayDateAndUserLabel)
         addSubview(separatorLine)
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[nodeNameContainerView]", metrics: nil, views: bindings))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[avatarImageView]-8-[userNameLabel]-8-[nodeNameBtn]", metrics: nil, views: bindings))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[commentImageView]-1-[repliesNumberLabel]-8-|", metrics: nil, views: bindings))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[userNameLabel]-6-[topicTitleLabel]-6-[lastReplayDateAndUserLabel]-4-[separatorLine(0.5)]|", options: [.alignAllLeading], metrics: nil, views: bindings))
         avatarImageView.topAnchor.constraint(equalTo: topAnchor, constant: 8).isActive = true
@@ -211,13 +207,11 @@ class TopicCellView: UIView
         avatarImageView.heightAnchor.constraint(equalToConstant: R.Constant.AvatarSize).isActive = true
         commentImageView.centerYAnchor.constraint(equalTo: userNameLabel.centerYAnchor).isActive = true
         repliesNumberLabel.centerYAnchor.constraint(equalTo: userNameLabel.centerYAnchor).isActive = true
-        nodeNameContainerView.centerYAnchor.constraint(equalTo: userNameLabel.centerYAnchor).isActive = true
+        nodeNameBtn.centerYAnchor.constraint(equalTo: userNameLabel.centerYAnchor).isActive = true
         userNameLabel.topAnchor.constraint(equalTo: avatarImageView.topAnchor).isActive = true
         separatorLine.trailingAnchor.constraint(equalTo: repliesNumberLabel.trailingAnchor).isActive = true
         topicTitleLabel.trailingAnchor.constraint(equalTo: repliesNumberLabel.trailingAnchor).isActive = true
         lastReplayDateAndUserLabel.trailingAnchor.constraint(equalTo: repliesNumberLabel.trailingAnchor).isActive = true
-        
-        backgroundColor = .background
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -227,11 +221,26 @@ class TopicCellView: UIView
     
     func prepareForReuse()
     {
-        userNameLabel.font = R.Font.Small
-        topicTitleLabel.font = R.Font.Medium
-        nodeNameLabel.font = R.Font.ExtraSmall
-        repliesNumberLabel.font = R.Font.ExtraSmall
-        lastReplayDateAndUserLabel.font = R.Font.ExtraSmall
+        userNameLabel.font = SharedR.Font.Small
+        topicTitleLabel.font = SharedR.Font.Medium
+        nodeNameBtn.titleLabel?.font = SharedR.Font.ExtraSmall
+        repliesNumberLabel.font = SharedR.Font.ExtraSmall
+        lastReplayDateAndUserLabel.font = SharedR.Font.ExtraSmall
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        avatarImageView.tintColor = .body
+        userNameLabel.textColor = .desc
+        topicTitleLabel.textColor = .body
+        nodeNameBtn.layer.borderColor = UIColor.desc.cgColor
+        nodeNameBtn.setTitleColor(.desc, for: .normal)
+        commentImageView.tintColor = .desc
+        repliesNumberLabel.textColor = .desc
+        lastReplayDateAndUserLabel.textColor = .note
+        separatorLine.backgroundColor = .border
     }
     
 }

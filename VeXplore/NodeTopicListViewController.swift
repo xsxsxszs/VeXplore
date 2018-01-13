@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 class NodeTopicListViewController: TopicListViewController
 {
@@ -117,9 +118,9 @@ class NodeTopicListViewController: TopicListViewController
                 }
                 else
                 {
-                    if response.message.count > 0 && response.message[0] == R.String.NeedLoginError
+                    if response.message.count > 0 && response.message[0] == R.String.NotAuthorizedError
                     {
-                        weakSelf.topMessageLabel.text = R.String.NeedLoginToViewThisNode
+                        weakSelf.topMessageLabel.text = R.String.UnableToViewThisNode
                         weakSelf.topMessageLabel.isHidden = false
                         weakSelf.topLoadingView.isHidden = true
                     }
@@ -190,7 +191,7 @@ class NodeTopicListViewController: TopicListViewController
         }
         else
         {
-            cell.lastReplayDateAndUserLabel.text = String(format: R.String.PublicDate, topicItem.lastReplyDate ?? R.String.Empty)
+            cell.lastReplayDateAndUserLabel.text = String(format: R.String.PublicDate, topicItem.lastReplyDate ?? SharedR.String.Empty)
         }
         cell.delegate = self
         return cell

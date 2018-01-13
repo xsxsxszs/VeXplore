@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 protocol DataPickerViewDataSource: class
 {
@@ -17,7 +18,7 @@ protocol DataPickerViewDelegate: class
     func pickerView(_ pickerView: DataPickerView, didSelectItemAt index: Int, animate: Bool)
 }
 
-class DataPickerView: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
+class DataPickerView: BaseView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
 {
     private lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: DataPickerCollectionViewLayout())
@@ -77,8 +78,8 @@ class DataPickerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
     private var isAniamting = false
     var selectedItem: Int?
     var isExpanded = false
-    var scrollingTask: ((Void) -> Void)?
-    var endScrollingTask: ((Void) -> Void)?
+    var scrollingTask: (() -> Void)?
+    var endScrollingTask: (() -> Void)?
     weak var dataSource: DataPickerViewDataSource?
     weak var delegate: DataPickerViewDelegate?
     
@@ -105,12 +106,20 @@ class DataPickerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         pickerContainerHeight.isActive = true
         
         clipsToBounds = false
-        backgroundColor = .background
     }
     
     required init?(coder aDecoder: NSCoder)
     {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        collectionView.backgroundColor = .background
+        bottomLine.backgroundColor = .border
+        bendingLine.backgroundColor = .border
     }
     
     override func layoutSubviews()
@@ -120,7 +129,7 @@ class DataPickerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
     }
     
     //MARK: - Public
-    func showOrHide(_ animated: Bool, completion: ((Void) -> Void)?)
+    func showOrHide(_ animated: Bool, completion: (() -> Void)?)
     {
         guard isAniamting == false else{
             return
@@ -329,7 +338,7 @@ class DataPickerCollectionViewCell: UICollectionViewCell
         label.textColor = .body
         label.textAlignment = .center
         label.highlightedTextColor = .highlight
-        label.font = R.Font.StaticMedium
+        label.font = SharedR.Font.StaticMedium
         label.lineBreakMode = .byTruncatingTail
         label.autoresizingMask = [
             .flexibleTopMargin,
@@ -341,6 +350,7 @@ class DataPickerCollectionViewCell: UICollectionViewCell
         return label
     }()
     
+    //jctodo: bug: somethimes not highlighted
     override var isSelected: Bool{
         didSet
         {

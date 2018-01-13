@@ -17,7 +17,7 @@ protocol SquareLoadingViewDelegate: class
     func didTriggeredReloading()
 }
 
-class SquaresLoadingView: UIView
+class SquaresLoadingView: BaseView
 {
     private lazy var contentView: UIView = {
         let view = UIView()
@@ -71,6 +71,16 @@ class SquaresLoadingView: UIView
     required init?(coder aDecoder: NSCoder)
     {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        for square in squares
+        {
+            square.backgroundColor = UIColor.body.cgColor
+        }
     }
     
     private func commonInit()

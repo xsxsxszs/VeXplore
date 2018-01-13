@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class BaseTopicItemModel: NSObject
+class MemberTopicItemModel: Codable
 {
     fileprivate(set) var topicId: String?
     fileprivate(set) var topicTitle: String?
@@ -14,40 +15,65 @@ class BaseTopicItemModel: NSObject
     fileprivate(set) var nodeId: String?
     fileprivate(set) var lastReplyDate: String?
     fileprivate(set) var repliesNumber: String?
+    fileprivate(set) var lastReplyUserName: String?
+
+    private enum CodingKeys: String, CodingKey
+    {
+        case topicId
+        case topicTitle
+        case nodeName
+        case nodeId
+        case lastReplyDate
+        case repliesNumber
+        case lastReplyUserName
+    }
+    
+    init() {}
+    
+    init(rootNode: HTMLNode)
+    {
+        nodeName = rootNode.xPath(".//a[@class='node']").first?.content
+        if var href = rootNode.xPath(".//a[@class='node']").first?["href"], let range = href.range(of: "/go/")
+        {
+            href.replaceSubrange(range, with: SharedR.String.Empty)
+            nodeId = href
+        }
+        topicTitle = rootNode.xPath(".//span[@class='item_title']").first?.content
+        let topicIdUrl = rootNode.xPath(".//span[@class='item_title']/a").first?["href"]
+        topicId = topicIdUrl?.extractId()
+        lastReplyDate = rootNode.xPath("./table/tr/td[1]/span[3]").first?.content
+        lastReplyUserName  = rootNode.xPath("./table/tr/td[1]/span[3]/strong[1]/a[1]").first?.content
+        repliesNumber  = rootNode.xPath("./table/tr/td[2]/a[1]").first?.content
+    }
+
 }
 
 
-class TopicItemModel: BaseTopicItemModel
+class TopicItemModel: MemberTopicItemModel
 {
     private(set) var avatar: String?
     private(set) var username: String?
-    private(set) var lastReplyUserName: String?
     
-    func encodeWithCoder(_ aCoder: NSCoder)
+    private enum CodingKeys: String, CodingKey
     {
-        aCoder.encode(topicId, forKey: "topicId")
-        aCoder.encode(avatar, forKey: "avatar")
-        aCoder.encode(nodeName, forKey: "nodeName")
-        aCoder.encode(nodeId, forKey: "nodeId")
-        aCoder.encode(username, forKey: "username")
-        aCoder.encode(topicTitle, forKey: "topicTitle")
-        aCoder.encode(lastReplyDate, forKey: "lastReplyDate")
-        aCoder.encode(lastReplyUserName, forKey: "lastReplyUserName")
-        aCoder.encode(repliesNumber, forKey: "repliesNumber")
+        case avatar
+        case username
     }
     
-    required init?(coder aDecoder: NSCoder)
-    {
-        super.init()
-        topicId = aDecoder.decodeObject(forKey: "topicId") as? String
-        avatar = aDecoder.decodeObject(forKey: "avatar") as? String
-        nodeName = aDecoder.decodeObject(forKey: "nodeName") as? String
-        nodeId = aDecoder.decodeObject(forKey: "nodeId") as? String
-        username = aDecoder.decodeObject(forKey: "username") as? String
-        topicTitle = aDecoder.decodeObject(forKey: "topicTitle") as? String
-        lastReplyDate = aDecoder.decodeObject(forKey: "lastReplyDate") as? String
-        lastReplyUserName = aDecoder.decodeObject(forKey: "lastReplyUserName") as? String
-        repliesNumber = aDecoder.decodeObject(forKey: "repliesNumber") as? String
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        avatar = try container.decode(String.self, forKey: .avatar)
+        username = try container.decode(String.self, forKey: .username)
+        let superdecoder = try container.superDecoder()
+        try super.init(from: superdecoder)
+    }
+    
+    override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(avatar, forKey: .avatar)
+        try container.encode(username, forKey: .username)
+        let superdecoder = container.superEncoder()
+        try super.encode(to: superdecoder)
     }
     
     init(id: String, title: String)
@@ -57,7 +83,7 @@ class TopicItemModel: BaseTopicItemModel
         self.topicTitle = title
     }
     
-    init(rootNode: HTMLNode)
+    override init(rootNode: HTMLNode)
     {
         super.init()
         avatar = rootNode.xPath(".//img[@class='avatar']").first?["src"]
@@ -68,7 +94,7 @@ class TopicItemModel: BaseTopicItemModel
             if var href = node["href"],
                 let range = href.range(of: "/go/")
             {
-                href.replaceSubrange(range, with: R.String.Empty)
+                href.replaceSubrange(range, with: SharedR.String.Empty)
                 nodeId = href
             }
         }
@@ -122,7 +148,7 @@ class TopicItemModel: BaseTopicItemModel
             if var href = node["href"],
                 let range = href.range(of: "/go/")
             {
-                href.replaceSubrange(range, with: R.String.Empty)
+                href.replaceSubrange(range, with: SharedR.String.Empty)
                 nodeId = href
             }
         }
@@ -144,30 +170,6 @@ class TopicItemModel: BaseTopicItemModel
         }
         lastReplyUserName = favoritesRootNode.xPath("./table/tr/td[3]/span[2]/strong[2]/a[1]").first?.content
         repliesNumber = favoritesRootNode.xPath("./table/tr/td[4]/a[1]").first?.content
-    }
-    
-}
-
-
-class MemberTopicItemModel: BaseTopicItemModel
-{
-    private(set) var lastReplyUserName: String?
-    
-    init(rootNode: HTMLNode)
-    {
-        super.init()
-        nodeName = rootNode.xPath(".//a[@class='node']").first?.content
-        if var href = rootNode.xPath(".//a[@class='node']").first?["href"], let range = href.range(of: "/go/")
-        {
-            href.replaceSubrange(range, with: R.String.Empty)
-            nodeId = href
-        }
-        topicTitle = rootNode.xPath(".//span[@class='item_title']").first?.content
-        let topicIdUrl = rootNode.xPath(".//span[@class='item_title']/a").first?["href"]
-        topicId = topicIdUrl?.extractId()
-        lastReplyDate = rootNode.xPath("./table/tr/td[1]/span[3]").first?.content
-        lastReplyUserName  = rootNode.xPath("./table/tr/td[1]/span[3]/strong[1]/a[1]").first?.content
-        repliesNumber  = rootNode.xPath("./table/tr/td[2]/a[1]").first?.content
     }
     
 }

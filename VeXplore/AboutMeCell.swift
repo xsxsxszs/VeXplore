@@ -5,14 +5,15 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class AboutMeCell: UITableViewCell
+class AboutMeCell: BaseTableViewCell
 {
     lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.textColor = UIColor.desc
         
         return label
@@ -27,14 +28,9 @@ class AboutMeCell: UITableViewCell
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-12-[contentLabel]-12-|", metrics: nil, views: bindings))
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-8-[contentLabel]-8-|", metrics: nil, views: bindings))
 
-        contentView.backgroundColor = .background
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -45,14 +41,14 @@ class AboutMeCell: UITableViewCell
     override func prepareForReuse()
     {
         super.prepareForReuse()
-        contentLabel.font = R.Font.Medium
+        contentLabel.font = SharedR.Font.Medium
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         contentLabel.textColor = .desc
-        contentView.backgroundColor = .background
     }
     
 }

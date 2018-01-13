@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class SegmentControl: UIControl, UIGestureRecognizerDelegate
+class SegmentControl: BaseControl, UIGestureRecognizerDelegate
 {
     private class IndicatorView: UIView
     {
@@ -68,14 +69,14 @@ class SegmentControl: UIControl, UIGestureRecognizerDelegate
                 titleLabel.text = string
                 titleLabel.lineBreakMode = .byTruncatingTail
                 titleLabel.textAlignment = .center
-                titleLabel.font = R.Font.StaticMedium
+                titleLabel.font = SharedR.Font.StaticMedium
                 
                 let selectedTitleLabel = UILabel()
                 selectedTitleLabel.textColor = .background
                 selectedTitleLabel.text = string
                 selectedTitleLabel.lineBreakMode = .byTruncatingTail
                 selectedTitleLabel.textAlignment = .center
-                selectedTitleLabel.font = R.Font.StaticMedium
+                selectedTitleLabel.font = SharedR.Font.StaticMedium
                 
                 return (titleLabel, selectedTitleLabel)
             }
@@ -118,9 +119,9 @@ class SegmentControl: UIControl, UIGestureRecognizerDelegate
     private var panGestureRecognizer: UIPanGestureRecognizer!
     private(set) var selectedIndex = 0
     
-    init(titles: [String], selectedIndex: Int)
+    override init(titles: [String], selectedIndex: Int)
     {
-        super.init(frame: .zero)
+        super.init(titles: titles, selectedIndex: selectedIndex)
         self.selectedIndex = selectedIndex
         self.titles = titles
         setup()
@@ -129,6 +130,22 @@ class SegmentControl: UIControl, UIGestureRecognizerDelegate
     required init?(coder aDecoder: NSCoder)
     {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        layer.borderColor = UIColor.note.cgColor
+        indicatorView.backgroundColor = .highlight
+        for label in titleLabels
+        {
+            label.textColor = .desc
+        }
+        for label in selectedTitleLabels
+        {
+            label.textColor = .background
+        }
     }
     
     private func setup()

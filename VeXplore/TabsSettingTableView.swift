@@ -26,7 +26,7 @@ protocol TabsSettingTableViewDelegate: class
     func tabsSettingTableView(_ tableView: TabsSettingTableView, moveRowAt indexPath: IndexPath, to newIndexPath: IndexPath)
 }
 
-class TabsSettingTableView: UITableView, UIGestureRecognizerDelegate
+class TabsSettingTableView: BaseTableView, UIGestureRecognizerDelegate
 {
     var moveGesture: UILongPressGestureRecognizer!
     weak var tabsSettingDataSource: TabsSettingTableViewDataSource?
@@ -48,13 +48,19 @@ class TabsSettingTableView: UITableView, UIGestureRecognizerDelegate
         moveGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
         moveGesture.delegate = self
         addGestureRecognizer(moveGesture)
-        backgroundColor = .subBackground
         separatorStyle = .none
     }
     
     required init?(coder aDecoder: NSCoder)
     {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        backgroundColor = .subBackground
     }
     
     // MARK: - Handle gesture

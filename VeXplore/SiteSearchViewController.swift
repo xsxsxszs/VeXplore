@@ -64,7 +64,7 @@ class SiteSearchViewController: SearchViewController, SquareLoadingViewDelegate
     override func refreshColorScheme()
     {
         super.refreshColorScheme()
-        searchBox.searchField.attributedPlaceholder = NSAttributedString(string: R.String.SiteSearchPlaceholder, attributes: [NSForegroundColorAttributeName : UIColor.border])
+        searchBox.searchField.attributedPlaceholder = NSAttributedString(string: R.String.SiteSearchPlaceholder, attributes: [NSAttributedStringKey.foregroundColor : UIColor.border])
     }
     
     // MARK: - UITextFieldDelegate
@@ -149,7 +149,7 @@ class SiteSearchViewController: SearchViewController, SquareLoadingViewDelegate
     }
     
     // MARK: - UITableViewDataSource
-    func numberOfSectionsInTableView(_ tableView: UITableView) -> Int
+    func numberOfSections(in tableView: UITableView) -> Int
     {
         return 2
     }
@@ -228,8 +228,7 @@ class SiteSearchViewController: SearchViewController, SquareLoadingViewDelegate
             let topic = searchResults[indexPath.row]
             if let topicId = topic.topicId
             {
-                let topicVC = TopicViewController()
-                topicVC.topicId = topicId
+                let topicVC = TopicViewController(topicId: topicId)
                 DispatchQueue.main.async(execute: {
                     self.bouncePresent(navigationVCWith: topicVC, completion: nil)
                 })

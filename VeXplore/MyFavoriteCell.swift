@@ -13,7 +13,7 @@ protocol MyFavoriteCellDelegate: class
     func myFollowingsTapped()
 }
 
-class MyFavoriteCell: UITableViewCell
+class MyFavoriteCell: BaseTableViewCell
 {
     lazy var nodesView: ProfileActionView = {
         let view = ProfileActionView()
@@ -78,10 +78,6 @@ class MyFavoriteCell: UITableViewCell
         topicsView.widthAnchor.constraint(equalTo: followingView.widthAnchor).isActive = true
 
         selectionStyle = .none
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -99,10 +95,10 @@ class MyFavoriteCell: UITableViewCell
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         bottomLine.backgroundColor = .border
-        contentView.backgroundColor = .background
     }
 
     // MARK: - Actions

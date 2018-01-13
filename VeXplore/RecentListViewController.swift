@@ -6,7 +6,7 @@
 //
 
 
-class RecentListViewController: BaseTableViewController
+class RecentListViewController: SwipeTableViewController
 {
     var page = 0
     
@@ -83,8 +83,7 @@ class RecentListViewController: BaseTableViewController
     {
         if let topicId = topicList[indexPath.row].topicId
         {
-            let topicVC = TopicViewController()
-            topicVC.topicId = topicId
+            let topicVC = TopicViewController(topicId: topicId)
             topicVC.ignoreHandler = { [weak self] topicId -> Void in
                 guard let weakSelf = self else {
                     return

@@ -5,13 +5,14 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class SpringTextView: UIView
+class SpringTextView: BaseView
 {
     private lazy var animateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.StaticMedium
+        label.font = SharedR.Font.StaticMedium
         label.textColor = .highlight
         
         return label
@@ -20,7 +21,7 @@ class SpringTextView: UIView
     private lazy var staticLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.StaticMedium
+        label.font = SharedR.Font.StaticMedium
         label.textColor = .desc
         label.text = R.String.CurrentPage
         
@@ -44,6 +45,14 @@ class SpringTextView: UIView
     required init?(coder aDecoder: NSCoder)
     {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        animateLabel.textColor = .highlight
+        staticLabel.textColor = .desc
     }
     
     func setValue(_ value: String, animated: Bool)

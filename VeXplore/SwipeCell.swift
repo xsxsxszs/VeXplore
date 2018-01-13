@@ -6,7 +6,7 @@
 //
 
 
-class SwipCell: UITableViewCell
+class SwipCell: BaseTableViewCell
 {
     lazy var panGestureRecognizer: UIPanGestureRecognizer = ({
         let gesture =  UIPanGestureRecognizer(target: self, action: #selector(pan(sender:)))
@@ -46,8 +46,6 @@ class SwipCell: UITableViewCell
         addGestureRecognizer(tapGestureRecognizer)
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
-        contentView.backgroundColor = .background
-        backgroundColor = .subBackground
         selectionStyle = .none
     }
     
@@ -55,7 +53,14 @@ class SwipCell: UITableViewCell
     {
         super.init(coder: aDecoder)
     }
-
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        backgroundColor = .subBackground
+    }
+    
     // MARK: - Actions
     @objc
     private func pan(sender: UIPanGestureRecognizer)

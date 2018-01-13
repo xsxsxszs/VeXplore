@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 protocol TabsSortingDelegate: class
 {
@@ -31,7 +32,7 @@ class TabsSettingViewController: UITableViewController, TabsSettingTableViewDele
             defaultShowedTabs,
             [R.String.HiddenTabsTitle],
             defaultHiddenTabs,
-            [R.String.Empty]
+            [SharedR.String.Empty]
         ]
         readTabsSorting()
 

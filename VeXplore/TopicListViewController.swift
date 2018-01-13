@@ -6,7 +6,7 @@
 //
 
 
-class TopicListViewController: BaseTableViewController
+class TopicListViewController: SwipeTableViewController
 {
     override func viewDidLoad()
     {
@@ -15,6 +15,7 @@ class TopicListViewController: BaseTableViewController
         NotificationCenter.default.addObserver(self, selector: #selector(handleFontsizeDidChanged), name: NSNotification.Name.Setting.FontsizeDidChange, object: nil)
     }
     
+    @objc
     func handleFontsizeDidChanged()
     {
         tableView.reloadData()
@@ -58,8 +59,7 @@ class TopicListViewController: BaseTableViewController
     {
         if let topicId = topicList[indexPath.row].topicId
         {
-            let topicVC = TopicViewController()
-            topicVC.topicId = topicId
+            let topicVC = TopicViewController(topicId: topicId)
             topicVC.ignoreHandler = { topicId -> Void in
                 self.removeTopic(withId: topicId)
             }

@@ -6,8 +6,9 @@
 //
 
 import SafariServices
+import SharedKit
 
-class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafariViewControllerDelegate, UITextViewDelegate
+class InputViewController: BaseViewController, SquareLoadingViewDelegate, SFSafariViewControllerDelegate, UITextViewDelegate
 {
     lazy var backgroudView: UIView = {
         let view = UIView()
@@ -54,7 +55,7 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
     
     private var isKeyboardShowed = false
     private var safariVC: SFSafariViewController!
-    var copyedString = R.String.Empty
+    var copyedString = SharedR.String.Empty
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?)
     {
@@ -73,7 +74,7 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
     {
         super.viewDidLoad()
         
-        let bindings: [String: Any] = [
+        let bindings: [String : Any] = [
             "inputContainerView": inputContainerView,
             "backgroudView": backgroudView,
             "centerLoadingView": centerLoadingView,
@@ -99,16 +100,12 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(8@998)-[inputContainerView]-(8@999)-|", metrics: nil, views: bindings))
         inputContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         inputContainerView.centerYAnchor.constraint(lessThanOrEqualTo: view.centerYAnchor).isActive = true
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         backgroudView.backgroundColor = .subBackground
         inputContainerView.backgroundColor = .background
     }
@@ -119,14 +116,15 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
         backgroudView.isHidden = true
         centerLoadingView.isHidden = true
         inputContainerView.isPostEnabled = false
-        inputContainerView.titleTextView.text = R.String.Empty
-        inputContainerView.contentTextView.text = R.String.Empty
-        inputContainerView.nodeBtn.setAttributedTitle(NSAttributedString(string: R.String.ChooseNode, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight]), for: .normal)
+        inputContainerView.titleTextView.text = SharedR.String.Empty
+        inputContainerView.contentTextView.text = SharedR.String.Empty
+        inputContainerView.nodeBtn.setAttributedTitle(NSAttributedString(string: R.String.ChooseNode, attributes: [NSAttributedStringKey.font: SharedR.Font.Small, NSAttributedStringKey.foregroundColor: UIColor.highlight]), for: .normal)
     }
     
     @objc
-    private func handleContentSizeCategoryDidChanged()
+    override func handleContentSizeCategoryDidChanged()
     {
+        super.handleContentSizeCategoryDidChanged()
         inputContainerView.prepareForReuse()
     }
     
@@ -146,6 +144,7 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
     }
     
     // may need to override this method in subclass
+    @objc
     func closeBtnTapped()
     {
         dismiss(animated: true) {
@@ -158,18 +157,20 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
     }
     
     // may need to override this method in subclass
+    @objc
     func imageBtnTapped()
     {
         if let urlString = R.String.ImageUploadUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
             let url = URL(string: urlString)
         {
             safariVC = SFSafariViewController(url: url, entersReaderIfAvailable: true)
-            copyedString = UIPasteboard.general.string ?? R.String.Empty
+            copyedString = UIPasteboard.general.string ?? SharedR.String.Empty
             safariVC.delegate = self
             present(safariVC, animated: true, completion: nil)
         }
     }
     
+    @objc
     func postBtnTapped()
     {
         // override this method in subclass
@@ -189,12 +190,12 @@ class InputViewController: UIViewController, SquareLoadingViewDelegate, SFSafari
 ////// VIEW //////
 //////////////////
 
-class InputContainerView: UIView
+class InputContainerView: BaseView
 {
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.VeryLarge
+        label.font = SharedR.Font.VeryLarge
         label.textColor = .gray
         label.text = User.shared.username
         
@@ -266,7 +267,7 @@ class InputContainerView: UIView
     lazy var nodeBtn: UIButton = {
         let btn = UIButton(type: .custom)
         btn.translatesAutoresizingMaskIntoConstraints = false
-        let title = NSAttributedString(string: R.String.ChooseNode, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight])
+        let title = NSAttributedString(string: R.String.ChooseNode, attributes: [NSAttributedStringKey.font: SharedR.Font.Small, NSAttributedStringKey.foregroundColor: UIColor.highlight])
         btn.setAttributedTitle(title, for: .normal)
         btn.isHidden = true
         
@@ -276,17 +277,17 @@ class InputContainerView: UIView
     private lazy var bottomLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .border
         label.text = R.String.CopyUrlAfterUploadingImage
-        label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
+        label.setContentHuggingPriority(UILayoutPriority.required, for: .vertical)
         
         return label
     }()
     
     lazy var titleTextView: PlaceholderTextView = {
         let view = PlaceholderTextView()
-        view.font = R.Font.Medium
+        view.font = SharedR.Font.Medium
         view.textContainerInset = UIEdgeInsetsMake(4, 6, 4, 6)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.tintColor = .highlight
@@ -294,14 +295,14 @@ class InputContainerView: UIView
         view.autocorrectionType = .no
         let style = NSMutableParagraphStyle()
         style.lineHeightMultiple = 1.1
-        view.typingAttributes[NSParagraphStyleAttributeName] = style
+        view.typingAttributes[NSAttributedStringKey.paragraphStyle.rawValue] = style
         
         return view
     }()
     
     lazy var contentTextView: PlaceholderTextView = {
         let view = PlaceholderTextView()
-        view.font = R.Font.Medium
+        view.font = SharedR.Font.Medium
         view.textContainerInset = UIEdgeInsetsMake(8, 6, 8, 6)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.tintColor = .highlight
@@ -309,7 +310,7 @@ class InputContainerView: UIView
         view.autocorrectionType = .no
         let style = NSMutableParagraphStyle()
         style.lineHeightMultiple = 1.1
-        view.typingAttributes[NSParagraphStyleAttributeName] = style
+        view.typingAttributes[NSAttributedStringKey.paragraphStyle.rawValue] = style
         
         return view
     }()
@@ -395,10 +396,6 @@ class InputContainerView: UIView
         layer.shadowOpacity = 0.7
         layer.shadowOffset = CGSize.zero
         layer.shadowPath = UIBezierPath(rect: layer.bounds).cgPath
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -408,19 +405,20 @@ class InputContainerView: UIView
     
     func prepareForReuse()
     {
-        titleLabel.font = R.Font.VeryLarge
-        bottomLabel.font = R.Font.Small
-        titleTextView.font = R.Font.Medium
-        contentTextView.font = R.Font.Medium
+        titleLabel.font = SharedR.Font.VeryLarge
+        bottomLabel.font = SharedR.Font.Small
+        titleTextView.font = SharedR.Font.Medium
+        contentTextView.font = SharedR.Font.Medium
         titleTextView.setNeedsDisplay()
         contentTextView.setNeedsDisplay()
         let nodeName = nodeBtn.attributedTitle(for: .normal)?.string ?? R.String.ChooseNode
-        nodeBtn.setAttributedTitle(NSAttributedString(string: nodeName, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight]), for: .normal)
+        nodeBtn.setAttributedTitle(NSAttributedString(string: nodeName, attributes: [NSAttributedStringKey.font: SharedR.Font.Small, NSAttributedStringKey.foregroundColor: UIColor.highlight]), for: .normal)
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         titleLabel.textColor = .gray
         cancelBtn.tintColor = .desc
         postBtn.tintColor = .border
@@ -429,7 +427,7 @@ class InputContainerView: UIView
         bottomLine.backgroundColor = .border
         imageBtnIcon.tintColor = .border
         imageBtn.backgroundColor = .clear
-        let title = NSAttributedString(string: R.String.ChooseNode, attributes: [NSFontAttributeName: R.Font.Small, NSForegroundColorAttributeName: UIColor.highlight])
+        let title = NSAttributedString(string: R.String.ChooseNode, attributes: [NSAttributedStringKey.font: SharedR.Font.Small, NSAttributedStringKey.foregroundColor: UIColor.highlight])
         nodeBtn.setAttributedTitle(title, for: .normal)
         bottomLabel.textColor = .border
         titleTextView.tintColor = .highlight

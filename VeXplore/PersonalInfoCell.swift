@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class PersonalInfoCell: UITableViewCell
+class PersonalInfoCell: BaseTableViewCell
 {
     lazy var iconImageView: UIImageView = {
         let view = UIImageView()
@@ -19,7 +20,7 @@ class PersonalInfoCell: UITableViewCell
     lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.textColor = .desc
         
         return label
@@ -69,10 +70,6 @@ class PersonalInfoCell: UITableViewCell
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -85,16 +82,16 @@ class PersonalInfoCell: UITableViewCell
         super.prepareForReuse()
         line.isHidden = false
         longLine.isHidden = true
-        contentLabel.font = R.Font.Medium
+        contentLabel.font = SharedR.Font.Medium
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         contentLabel.textColor = .desc
         line.backgroundColor = .border
         longLine.backgroundColor = .border
-        contentView.backgroundColor = .background
     }
     
 }

@@ -6,6 +6,7 @@
 //
 
 import ImageIO
+import SharedKit
 
 class AnimatableImageView: UIImageView
 {

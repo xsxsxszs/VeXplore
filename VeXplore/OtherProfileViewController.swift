@@ -19,16 +19,14 @@ class OtherProfileViewController: BaseProfileViewController, MemberFollowBlockCe
         profileTableView.register(MemberFollowBlockCell.self, forCellReuseIdentifier: String(describing: MemberFollowBlockCell.self))
         profileTableView.bounces = false
         if let diskCachePath = cachePathString(withFilename: classForCoder.description()),
-            let userProfile = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? ProfileModel,
+            let jsonData = NSKeyedUnarchiver.unarchiveObject(withFile: diskCachePath) as? Data,
+            let userProfile = try? JSONDecoder().decode(ProfileModel.self, from: jsonData),
             userProfile.username == username
         {
             self.userProfile = userProfile
             self.profileTableView.reloadData()
         }
-        else
-        {
-            profileLoadingRequest()
-        }
+        profileLoadingRequest()
     }
     
     override func viewDidDisappear(_ animated: Bool)
@@ -56,9 +54,10 @@ class OtherProfileViewController: BaseProfileViewController, MemberFollowBlockCe
             {
                 weakSelf.userProfile = value
                 weakSelf.profileTableView.reloadData()
-                if let diskCachePath = cachePathString(withFilename: weakSelf.classForCoder.description())
+                if let diskCachePath = cachePathString(withFilename: weakSelf.classForCoder.description()),
+                    let jsonData = try? JSONEncoder().encode(value)
                 {
-                    NSKeyedArchiver.archiveRootObject(weakSelf.userProfile!, toFile: diskCachePath)
+                    NSKeyedArchiver.archiveRootObject(jsonData, toFile: diskCachePath)
                 }
             }
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
@@ -139,6 +138,10 @@ class OtherProfileViewController: BaseProfileViewController, MemberFollowBlockCe
                     if userProfile.topicHidden == true
                     {
                         cell.contentLabel.text = R.String.AllTopicsHidden
+                    }
+                    else if userProfile.needLoginToViewTopics
+                    {
+                        cell.contentLabel.text = R.String.NeedLoginToViewTopics
                     }
                     else if userProfile.topicsNum > 0 || userProfile.hasMoreReplies
                     {

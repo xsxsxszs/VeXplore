@@ -62,7 +62,7 @@ class FavoriteTopicsViewController: TopicListViewController
                 }
                 else
                 {
-                    if response.message.count > 0 && response.message[0] == R.String.NeedLoginError
+                    if response.message.count > 0 && response.message[0] == R.String.NotAuthorizedError
                     {
                         User.shared.logout()
                     }
@@ -127,8 +127,7 @@ class FavoriteTopicsViewController: TopicListViewController
     {
         if let topicId = topicList[indexPath.row].topicId
         {
-            let topicVC = TopicViewController()
-            topicVC.topicId = topicId
+            let topicVC = TopicViewController(topicId: topicId)
             topicVC.unfavoriteHandler = { [weak self] topicId -> Void in
                 guard let weakSelf = self else {
                     return

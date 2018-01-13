@@ -59,11 +59,11 @@ class RichTextLayout
         {
             needsDrawText = true
             text.enumerateAttributes(in: visibleRange, options: .longestEffectiveRangeNotRequired, using: { (attrs, range, stop) in
-                if attrs[HighlightAttributeName] != nil
+                if attrs[NSAttributedStringKey(rawValue: HighlightAttributeName)] != nil
                 {
                     hasHighlightText = true
                 }
-                if attrs[AttachmentAttributeName] != nil
+                if attrs[NSAttributedStringKey(rawValue: AttachmentAttributeName)] != nil
                 {
                     needsDrawAttachments = true
                 }

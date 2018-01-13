@@ -10,6 +10,7 @@ import MessageUI
 private enum SettingSection: Int
 {
     case config = 0
+    case nightMode
     case feedback
     case version
 }
@@ -22,8 +23,15 @@ private enum ConfigSectionRow: Int
     case enableTopicPullReply
     case enableOwnerRepliesHighlight
     case enableTabBarScrollHidden
-    case enableNightMode
+    case addReplyIndex
     case fontSetting
+}
+
+private enum NightModeSectionRow: Int
+{
+    case title = 0
+    case alwaysEnableNightMode
+    case nightModeSchedule
 }
 
 private enum FeedbackSectionRow: Int
@@ -34,36 +42,60 @@ private enum FeedbackSectionRow: Int
     case openSource
 }
 
-class SettingViewController: UITableViewController, MFMailComposeViewControllerDelegate
+class SettingViewController: BaseTableViewController, MFMailComposeViewControllerDelegate, NightModeScheduleDelegate
 {
     var cacheSize: String?
+    private var scheduledTime: String {
+        if UserDefaults.isNightModeScheduleEnabled,
+            let startTime = UserDefaults.scheduleStartDate?.stringValue(),
+            let endTime = UserDefaults.scheduleEndDate?.stringValue()
+        {
+            return String(format: R.String.ScheduledTime, startTime, endTime)
+        }
+        else
+        {
+            return R.String.TurnedOff
+        }
+    }
     
     override func viewDidLoad()
     {
         super.viewDidLoad()
         navigationItem.title = R.String.Setting
-        refreshColorScheme()
 
         tableView.register(SettingHeaderCell.self, forCellReuseIdentifier: String(describing: SettingHeaderCell.self))
         tableView.register(SettingCell.self, forCellReuseIdentifier: String(describing: SettingCell.self))
         tableView.register(VersionCell.self, forCellReuseIdentifier: String(describing: VersionCell.self))
+        tableView.register(SeparatorFooterView.self, forHeaderFooterViewReuseIdentifier: String(describing: SeparatorFooterView.self))
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.sectionFooterHeight = R.Constant.SectionSeparatorHeight
         tableView.cellLayoutMarginsFollowReadableWidth = false
         
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
         navigationItem.leftBarButtonItem = closeBtn
         
         NotificationCenter.default.addObserver(self, selector: #selector(refreshFontSettingInfo), name: NSNotification.Name.Setting.FontsizeDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
+    }
+    
+    private func alwaysEnableNightModeDidChange()
+    {
+        if UserDefaults.isNightModeAlwaysEnabled
+        {
+            tableView.deleteRows(at: [IndexPath(row: 2, section: SettingSection.nightMode.rawValue)], with: .automatic)
+        }
+        else
+        {
+            tableView.insertRows(at: [IndexPath(row: 2, section: SettingSection.nightMode.rawValue)], with: .automatic)
+        }
+        NotificationCenter.default.post(name: Notification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
-        UIApplication.shared.statusBarStyle = UserDefaults.isNightModeEnabled ? .lightContent : .default
-        navigationController?.navigationBar.setupNavigationbar()
+        super.refreshColorScheme()
         tableView.backgroundColor = .subBackground
     }
     
@@ -82,7 +114,7 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
     // MARK: - UITableViewDataSource
     override func numberOfSections(in tableView: UITableView) -> Int
     {
-        return 3
+        return 4
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
@@ -92,6 +124,8 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
         {
         case .config:
             return 8
+        case .nightMode:
+            return UserDefaults.isNightModeAlwaysEnabled ? 2 : 3
         case .feedback:
             return 4
         case .version:
@@ -115,60 +149,89 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
             case .cleanCache:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
                 cell.leftLabel.text = R.String.CleanImageCache
+                cell.rightLabel.isHidden = false
                 cell.rightLabel.text = cacheSize
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
             case .isShakeEnabled:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
                 cell.leftLabel.text = R.String.ShakeToCallInputView
-                cell.rightLabel.isHidden = true
                 cell.rightSwitch.isOn = UserDefaults.isShakeEnabled
                 cell.rightSwitch.isHidden = false
                 cell.rightSwitch.removeTarget(self, action: nil, for: .valueChanged)
                 cell.rightSwitch.addTarget(self, action: #selector(isShakeEnabledValueChanged), for: .valueChanged)
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
             case .enableTopicPullReply:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
                 cell.leftLabel.text = R.String.PullToReplyInTopicView
-                cell.rightLabel.isHidden = true
                 cell.rightSwitch.isOn = UserDefaults.isPullReplyEnabled
                 cell.rightSwitch.isHidden = false
                 cell.rightSwitch.removeTarget(self, action: nil, for: .valueChanged)
                 cell.rightSwitch.addTarget(self, action: #selector(isPullReplyEnabledValueChanged), for: .valueChanged)
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
             case .enableOwnerRepliesHighlight:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
                 cell.leftLabel.text = R.String.HighlightOwnerReplies
-                cell.rightLabel.isHidden = true
                 cell.rightSwitch.isOn = UserDefaults.isHighlightOwnerRepliesEnabled
                 cell.rightSwitch.isHidden = false
                 cell.rightSwitch.removeTarget(self, action: nil, for: .valueChanged)
                 cell.rightSwitch.addTarget(self, action: #selector(isHighlightOwnerRepliesEnabledValueChanged), for: .valueChanged)
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
             case .enableTabBarScrollHidden:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
                 cell.leftLabel.text = R.String.HomepageHideTabBarWhenScroll
-                cell.rightLabel.isHidden = true
                 cell.rightSwitch.isOn = UserDefaults.isTabBarHiddenEnabled
                 cell.rightSwitch.isHidden = false
                 cell.rightSwitch.removeTarget(self, action: nil, for: .valueChanged)
                 cell.rightSwitch.addTarget(self, action: #selector(isTabBarHiddenEnabledValueChanged), for: .valueChanged)
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
-            case .enableNightMode:
+            case .addReplyIndex:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
-                cell.leftLabel.text = R.String.NightMode
-                cell.rightLabel.isHidden = true
-                cell.rightSwitch.isOn = UserDefaults.isNightModeEnabled
+                cell.leftLabel.text = R.String.ShowReplyIndex
+                cell.rightSwitch.isOn = UserDefaults.isShowReplyIndexEnabled
                 cell.rightSwitch.isHidden = false
                 cell.rightSwitch.removeTarget(self, action: nil, for: .valueChanged)
-                cell.rightSwitch.addTarget(self, action: #selector(isisNightModeEnabledValueChanged), for: .valueChanged)
-                cell.enable = isProEnabled
+                cell.rightSwitch.addTarget(self, action: #selector(isShowReplyIndexEnabledValueChanged), for: .valueChanged)
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
             case .fontSetting:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
                 cell.leftLabel.text = R.String.TopicTitleFont
+                cell.rightLabel.isHidden = false
                 cell.rightLabel.text = String(format: R.String.Sccale, UserDefaults.fontScaleString)
                 cell.accessoryType = .disclosureIndicator
-                cell.longLine.isHidden = false
+                cell.line.isHidden = (indexPath.row == 1)
+                return cell
+            }
+        case .nightMode:
+            let nightModeSectionRow = NightModeSectionRow(rawValue: indexPath.row)!
+            switch nightModeSectionRow
+            {
+            case .title:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingHeaderCell.self), for: indexPath) as! SettingHeaderCell
+                cell.titleLabel.text = R.String.NightMode
+                return cell
+            case .alwaysEnableNightMode:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
+                cell.leftLabel.text = R.String.AlwaysEnable
+                cell.rightSwitch.isOn = UserDefaults.isNightModeAlwaysEnabled
+                cell.rightSwitch.isHidden = false
+                cell.rightSwitch.removeTarget(self, action: nil, for: .valueChanged)
+                cell.rightSwitch.addTarget(self, action: #selector(isNightModeAlwaysEnabledValueChanged), for: .valueChanged)
+                cell.enable = isProEnabled
+                cell.line.isHidden = (indexPath.row == 1)
+                return cell
+            case .nightModeSchedule:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
+                cell.leftLabel.text = R.String.ScheduleEnable
+                cell.rightLabel.isHidden = false
+                cell.rightLabel.text = scheduledTime
+                cell.accessoryType = .disclosureIndicator
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
             }
         case .feedback:
@@ -182,15 +245,17 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
             case .contact:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
                 cell.leftLabel.text = R.String.ContactDeveloper
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
             case .evaluate:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
                 cell.leftLabel.text = R.String.RatingApp
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
             case .openSource:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SettingCell.self), for: indexPath) as! SettingCell
                 cell.leftLabel.text = R.String.OpenSource
-                cell.longLine.isHidden = false
+                cell.line.isHidden = (indexPath.row == 1)
                 return cell
             }
         case .version:
@@ -199,16 +264,29 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
         }
     }
     
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView?
+    {
+        let settingSection = SettingSection(rawValue: section)!
+        switch settingSection
+        {
+        case .config, .nightMode, .feedback:
+            let headerView: SeparatorFooterView! = tableView.dequeueReusableHeaderFooterView(withIdentifier: String(describing: SeparatorFooterView.self)) as? SeparatorFooterView ?? SeparatorFooterView()
+            return headerView
+        default:
+            return nil
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
     {
         let settingSection = SettingSection(rawValue: indexPath.section)!
         switch settingSection
         {
-        case .config:
-            let configSectionRow = ConfigSectionRow(rawValue: indexPath.row)!
-            switch configSectionRow
+        case .nightMode:
+            let nightModeSectionRow = NightModeSectionRow(rawValue: indexPath.row)!
+            switch nightModeSectionRow
             {
-            case .enableNightMode:
+            case .alwaysEnableNightMode:
                 let cell = cell as! SettingCell
                 cell.enable = isProEnabled
             default:
@@ -244,14 +322,25 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
                                 let confirmAction = UIAlertAction(title: R.String.Confirm, style: .cancel, handler: nil)
                                 alertController.addAction(confirmAction)
                                 weakSelf.present(alertController, animated: true) {
-                                    cell.rightLabel.text = String(format: R.String.CacheSize, R.String.Zero)
+                                    cell.rightLabel.text = ByteCountFormatter.string(fromByteCount: 0, countStyle: .file)
                                 }
                             })
                         })
                     }
                 })
                 return
-            case .enableNightMode:
+            case .fontSetting:
+                let fontSettingVC = FontSettingViewController()
+                navigationController?.pushViewController(fontSettingVC, animated: true)
+                return
+            default:
+                return
+            }
+        case .nightMode:
+            let nightModeSectionRow = NightModeSectionRow(rawValue: indexPath.row)!
+            switch nightModeSectionRow
+            {
+            case .alwaysEnableNightMode:
                 if !isProEnabled
                 {
                     let alertController = UIAlertController(title: nil, message: R.String.NotSupportedForFreeVersion, preferredStyle: .alert)
@@ -261,9 +350,11 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
                         self.present(alertController, animated: true, completion: nil)
                     })
                 }
-            case .fontSetting:
-                let fontSettingVC = FontSettingViewController()
-                navigationController?.pushViewController(fontSettingVC, animated: true)
+                return
+            case .nightModeSchedule:
+                let nightModeScheduleVC = NightModeScheduleViewController()
+                nightModeScheduleVC.delegate = self
+                navigationController?.pushViewController(nightModeScheduleVC, animated: true)
                 return
             default:
                 return
@@ -339,10 +430,16 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
     }
     
     @objc
-    private func isisNightModeEnabledValueChanged(_ sender: UISwitch)
+    private func isShowReplyIndexEnabledValueChanged(_ sender: UISwitch)
     {
-        UserDefaults.isNightModeEnabled = sender.isOn
-        NotificationCenter.default.post(name: Notification.Name.Setting.NightModeDidChange, object: nil)
+        UserDefaults.isShowReplyIndexEnabled = sender.isOn
+    }
+    
+    @objc
+    private func isNightModeAlwaysEnabledValueChanged(_ sender: UISwitch)
+    {
+        UserDefaults.isNightModeAlwaysEnabled = sender.isOn
+        alwaysEnableNightModeDidChange()
     }
     
     // MARK: - MFMailComposeViewControllerDelegate
@@ -351,4 +448,10 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
         dismiss(animated: true, completion: nil)
     }
 
+    // MARK: - NightModeScheduleDelegate
+    func nightModeScheduleDidChange()
+    {
+        tableView.reloadRows(at: [IndexPath(row: 2, section: SettingSection.nightMode.rawValue)], with: .automatic)
+    }
+    
 }

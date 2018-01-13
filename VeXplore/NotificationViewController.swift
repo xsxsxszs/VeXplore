@@ -6,13 +6,21 @@
 //
 
 
-class NotificationViewController: BaseTableViewController, NotificationCellDelegate
+class NotificationViewController: SwipeTableViewController, NotificationCellDelegate, Codable
 {
     private var currentPage = 1
     private var totalPageNum = 1
     private var notifications = [NotificationModel]()
     var topicId = R.String.Zero
     var username: String?
+    
+    private enum CodingKeys: String, CodingKey
+    {
+        case currentPage
+        case totalPageNum
+        case notifications
+        case username
+    }
     
     override func viewDidLoad()
     {
@@ -29,6 +37,9 @@ class NotificationViewController: BaseTableViewController, NotificationCellDeleg
             enableBottomLoading = true
             bottomLoadingView.initSquaresNormalPostion()
         }
+        tableView.estimatedRowHeight = 0
+        tableView.estimatedSectionHeaderHeight = 0
+        tableView.estimatedSectionFooterHeight = 0
         tableView.register(NotificationCell.self, forCellReuseIdentifier: String(describing: NotificationCell.self))
         NotificationCenter.default.addObserver(self, selector: #selector(didLogout), name: NSNotification.Name.User.DidLogout, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didLogin), name: NSNotification.Name.User.DidLogin, object: nil)
@@ -38,23 +49,6 @@ class NotificationViewController: BaseTableViewController, NotificationCellDeleg
     {
         super.init()
         dismissStyle = .none
-    }
-    
-    override func encode(with aCoder: NSCoder)
-    {
-        aCoder.encode(notifications, forKey: "notifications")
-        aCoder.encode(username, forKey: "username")
-        aCoder.encode(currentPage, forKey: "currentPage")
-        aCoder.encode(totalPageNum, forKey: "totalPageNum")
-    }
-    
-    required convenience init?(coder aDecoder: NSCoder)
-    {
-        self.init()
-        username = aDecoder.decodeObject(forKey: "username") as? String
-        notifications = aDecoder.decodeObject(forKey: "notifications") as! [NotificationModel]
-        currentPage = aDecoder.decodeInteger(forKey: "currentPage")
-        totalPageNum = aDecoder.decodeInteger(forKey: "totalPageNum")
     }
     
     @objc
@@ -139,7 +133,7 @@ class NotificationViewController: BaseTableViewController, NotificationCellDeleg
                 }
                 else
                 {
-                    if response.message.count > 0 && response.message[0] == R.String.NeedLoginError
+                    if response.message.count > 0 && response.message[0] == R.String.NotAuthorizedError
                     {
                         weakSelf.topMessageLabel.isHidden = false
                         weakSelf.topMessageLabel.text = R.String.NeedLoginToViewNotifications
@@ -166,11 +160,11 @@ class NotificationViewController: BaseTableViewController, NotificationCellDeleg
                     weakSelf.bottomLoadingView.isHidden = true
                     var shouldAddNotifications = false
                     var insertIndexPaths = [IndexPath]()
-                    if let notification = weakSelf.notifications.last, let notificationId = notification.notificationId
+                    if let lastNotification = weakSelf.notifications.last, let lastNotificationId = lastNotification.notificationId
                     {
-                        for notification in value.0
+                        for newNotification in value.0
                         {
-                            if notification.notificationId == notificationId
+                            if newNotification.notificationId == lastNotificationId
                             {
                                 shouldAddNotifications = true
                                 continue
@@ -179,17 +173,17 @@ class NotificationViewController: BaseTableViewController, NotificationCellDeleg
                             {
                                 let indexPath = IndexPath(row: weakSelf.notifications.count, section: 0)
                                 insertIndexPaths.append(indexPath)
-                                weakSelf.notifications.append(notification)
+                                weakSelf.notifications.append(newNotification)
                             }
                         }
                     }
                     if shouldAddNotifications == false
                     {
-                        for notification in value.0
+                        for newNotification in value.0
                         {
                             let indexPath = IndexPath(row: weakSelf.notifications.count, section: 0)
                             insertIndexPaths.append(indexPath)
-                            weakSelf.notifications.append(notification)
+                            weakSelf.notifications.append(newNotification)
                         }
                     }
                     weakSelf.tableView.insertRows(at: insertIndexPaths, with: .none)
@@ -215,9 +209,10 @@ class NotificationViewController: BaseTableViewController, NotificationCellDeleg
         if User.shared.isLogin
         {
             username = User.shared.username
-            if let diskCachePath = cachePathString(withFilename: classForCoder.description())
+            if let diskCachePath = cachePathString(withFilename: classForCoder.description()),
+                let jsonData = try? JSONEncoder().encode(self)
             {
-                NSKeyedArchiver.archiveRootObject(self, toFile: diskCachePath)
+                NSKeyedArchiver.archiveRootObject(jsonData, toFile: diskCachePath)
             }
         }
     }
@@ -271,8 +266,7 @@ class NotificationViewController: BaseTableViewController, NotificationCellDeleg
         }
         if let topicId = notifications[indexPath.row].topicId
         {
-            let topicVC = TopicViewController()
-            topicVC.topicId = topicId
+            let topicVC = TopicViewController(topicId: topicId)
             DispatchQueue.main.async(execute: {
                 self.bouncePresent(navigationVCWith: topicVC, completion: nil)
             })
@@ -313,13 +307,12 @@ class NotificationViewController: BaseTableViewController, NotificationCellDeleg
             
             if response.success
             {
-                for notification in weakSelf.notifications
+                for (index, notification) in weakSelf.notifications.enumerated()
                 {
                     if notification.notificationId == notificationId
                     {
-                        let index = weakSelf.notifications.index(of: notification)
-                        weakSelf.notifications.remove(at: index!)
-                        weakSelf.tableView.deleteRows(at: [IndexPath(row: index!, section: 0)], with: .automatic)
+                        weakSelf.notifications.remove(at: index)
+                        weakSelf.tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
                         weakSelf.cacheIfNeed()
                     }
                 }

@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 class BaseTopicCommentModel: NSObject
 {
@@ -20,7 +21,7 @@ class BaseTopicCommentModel: NSObject
             if node.tag == "text", let content = node.content
             {
                 let clearedContent = content.stringByRemovingNewLinesAndWhitespace()
-                commentAttributedString.append(NSMutableAttributedString(string: clearedContent, attributes: [NSFontAttributeName: R.Font.Medium, NSForegroundColorAttributeName: UIColor.desc]))
+                commentAttributedString.append(NSMutableAttributedString(string: clearedContent, attributes: [NSAttributedStringKey.font: SharedR.Font.Medium, NSAttributedStringKey.foregroundColor: UIColor.desc]))
                 commentAttributedString.set(lineSpacing: 1)
             }
             else if node.tag == "img", var imageURL = node["src"]
@@ -31,7 +32,7 @@ class BaseTopicCommentModel: NSObject
                     imageURL = R.String.Https + imageURL
                 }
                 image.imageURL = imageURL
-                let imageAttributedString = NSMutableAttributedString.attachmentString(with: image, size: CGSize(width: R.Constant.CommentImageSize, height: R.Constant.CommentImageSize), alignTo: R.Font.Medium)
+                let imageAttributedString = NSMutableAttributedString.attachmentString(with: image, size: CGSize(width: R.Constant.CommentImageSize, height: R.Constant.CommentImageSize), alignTo: SharedR.Font.Medium)
                 commentAttributedString.append(imageAttributedString)
                 images.append(imageURL)
             }
@@ -45,7 +46,7 @@ class BaseTopicCommentModel: NSObject
                 if content.isEmpty == false
                 {
                     let contentWithSpace = content + " " // add space after @ someone
-                    let attr = NSMutableAttributedString(string: contentWithSpace, attributes: [NSFontAttributeName: R.Font.Medium])
+                    let attr = NSMutableAttributedString(string: contentWithSpace, attributes: [NSAttributedStringKey.font: SharedR.Font.Medium])
                     attr.setHighlightText(withColor: .href, url: url)
                     commentAttributedString.append(attr)
                 }
@@ -60,14 +61,35 @@ class BaseTopicCommentModel: NSObject
             }
             else if node.tag == "br"
             {
-                commentAttributedString.append(NSMutableAttributedString(string: "\n",  attributes: [NSForegroundColorAttributeName: UIColor.desc]))
+                commentAttributedString.append(NSMutableAttributedString(string: "\n",  attributes: [NSAttributedStringKey.foregroundColor: UIColor.desc]))
             }
             else if let content = node.content
             {
-                commentAttributedString.append(NSMutableAttributedString(string: content,  attributes: [NSForegroundColorAttributeName: UIColor.desc]))
+                commentAttributedString.append(NSMutableAttributedString(string: content,  attributes: [NSAttributedStringKey.foregroundColor: UIColor.desc]))
             }
         }
         return commentAttributedString
+    }
+    
+    func refreshContentAttributedString()
+    {
+        let tempAttributedString = NSMutableAttributedString(attributedString: contentAttributedString)
+        contentAttributedString.enumerateAttribute(.foregroundColor, in: NSMakeRange(0, contentAttributedString.length), options: .longestEffectiveRangeNotRequired) { (value, range, stop) in
+            guard let color = value as? UIColor else {
+                return
+            }
+            
+            if let hrefReverse = UIColor.href.reverseNightMode(), color == hrefReverse
+            {
+                tempAttributedString.addAttributes([.foregroundColor : UIColor.href], range: range)
+            }
+            
+            if let hrefReverse = UIColor.desc.reverseNightMode(), color == hrefReverse
+            {
+                tempAttributedString.addAttributes([.foregroundColor : UIColor.desc], range: range)
+            }
+        }
+        contentAttributedString = tempAttributedString
     }
 
 }
@@ -90,7 +112,7 @@ class TopicCommentModel: BaseTopicCommentModel
         
         if let replyIdText = rootNode["id"], replyIdText.hasPrefix("r_")
         {
-            replyId = replyIdText.replacingOccurrences(of: "r_", with: R.String.Empty)
+            replyId = replyIdText.replacingOccurrences(of: "r_", with: SharedR.String.Empty)
         }
         if rootNode.xPath(".//div[@class='thank_area thanked']").count > 0
         {
@@ -170,7 +192,7 @@ class TopicCommentModel: BaseTopicCommentModel
     func getUsersInComment() -> Set<String>
     {
         var users: Set<String> = []
-        contentAttributedString.enumerateAttribute(HighlightAttributeName, in: NSMakeRange(0, contentAttributedString.length), options: []) {(attribute, range, stop) -> Void in
+        contentAttributedString.enumerateAttribute(NSAttributedStringKey(rawValue: HighlightAttributeName), in: NSMakeRange(0, contentAttributedString.length), options: []) {(attribute, range, stop) -> Void in
             if let url = attribute as? String
             {
                 let result = URLAnalysisResult(url: url)

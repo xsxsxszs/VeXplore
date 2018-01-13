@@ -5,8 +5,9 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class TabsSettingTabCell: UITableViewCell
+class TabsSettingTabCell: BaseTableViewCell
 {
     lazy var lockImageView: UIImageView = {
         let view = UIImageView()
@@ -34,7 +35,7 @@ class TabsSettingTabCell: UITableViewCell
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Large
+        label.font = SharedR.Font.Large
         label.textColor = .desc
         
         return label
@@ -88,7 +89,6 @@ class TabsSettingTabCell: UITableViewCell
         line.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor).isActive = true
         
         selectionStyle = .none
-        contentView.backgroundColor = .background
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -112,20 +112,31 @@ class TabsSettingTabCell: UITableViewCell
         lockImageView.isHidden = true
         invisibleImageView.isHidden = true
         longLine.isHidden = true
-        titleLabel.font = R.Font.Large
+        titleLabel.font = SharedR.Font.Large
         contentView.alpha = 1.0
         contentView.backgroundColor = .background
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        lockImageView.tintColor = .desc
+        invisibleImageView.tintColor = .gray
+        titleLabel.textColor = .desc
+        line.backgroundColor = .border
+        longLine.backgroundColor = .border
     }
     
 }
 
 
-class TabsSettingHeaderCell: UITableViewCell
+class TabsSettingHeaderCell: BaseTableViewCell
 {
     lazy var descLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .desc
         
         return label
@@ -134,7 +145,7 @@ class TabsSettingHeaderCell: UITableViewCell
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.VerySmall
+        label.font = SharedR.Font.VerySmall
         label.textColor = .body
         
         return label
@@ -166,7 +177,6 @@ class TabsSettingHeaderCell: UITableViewCell
         contentView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[bottomLine(0.5)]|", metrics: nil, views: bindings))
         descLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
 
-        contentView.backgroundColor = .subBackground
         selectionStyle = .none
     }
     
@@ -179,20 +189,29 @@ class TabsSettingHeaderCell: UITableViewCell
     {
         super.prepareForReuse()
         descLabel.text = nil
-        descLabel.font = R.Font.ExtraSmall
-        titleLabel.font = R.Font.VerySmall
+        descLabel.font = SharedR.Font.ExtraSmall
+        titleLabel.font = SharedR.Font.VerySmall
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        descLabel.textColor = .desc
+        titleLabel.textColor = .body
+        bottomLine.backgroundColor = .border
+        contentView.backgroundColor = .subBackground
     }
     
 }
 
 
-class TabsSettingPlaceholderCell: UITableViewCell
+class TabsSettingPlaceholderCell: BaseTableViewCell
 {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
-        contentView.backgroundColor = .subBackground
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -200,4 +219,11 @@ class TabsSettingPlaceholderCell: UITableViewCell
         fatalError("init(coder:) has not been implemented")
     }
 
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        contentView.backgroundColor = .subBackground
+    }
+    
 }

@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 private enum ActionButtonType: Int
 {
@@ -29,7 +30,7 @@ class TopicCommentCell: SwipCell
     lazy var ownerLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .gray
         label.text = R.String.Owner
         label.isHidden = true
@@ -40,10 +41,10 @@ class TopicCommentCell: SwipCell
     lazy var userNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
-        label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
-        label.setContentCompressionResistancePriority(UILayoutPriorityDefaultLow, for: .vertical)
+        label.setContentHuggingPriority(UILayoutPriority.required, for: .vertical)
+        label.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: .vertical)
         
         return label
     }()
@@ -51,10 +52,10 @@ class TopicCommentCell: SwipCell
     lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .border
-        label.setContentHuggingPriority(UILayoutPriorityRequired, for: .vertical)
-        label.setContentCompressionResistancePriority(UILayoutPriorityDefaultLow, for: .vertical)
+        label.setContentHuggingPriority(UILayoutPriority.required, for: .vertical)
+        label.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: .vertical)
 
         return label
     }()
@@ -72,7 +73,7 @@ class TopicCommentCell: SwipCell
     lazy var likeNumLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .desc
 
         return label
@@ -81,7 +82,7 @@ class TopicCommentCell: SwipCell
     lazy var commentIndexLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .desc
         label.text = R.String.Zero
 
@@ -91,7 +92,7 @@ class TopicCommentCell: SwipCell
     lazy var commentLabel: RichTextLabel = {
         let label = RichTextLabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
+        label.setContentCompressionResistancePriority(UILayoutPriority.required, for: .vertical)
 
         return label
     }()
@@ -166,14 +167,26 @@ class TopicCommentCell: SwipCell
         super.prepareForReuse()
         avatarImageView.image = nil
         commentIndexLabel.text = R.String.Zero
-        userNameLabel.font = R.Font.Small
-        dateLabel.font = R.Font.ExtraSmall
-        likeNumLabel.font = R.Font.ExtraSmall
-        commentIndexLabel.font = R.Font.ExtraSmall
+        userNameLabel.font = SharedR.Font.Small
+        dateLabel.font = SharedR.Font.ExtraSmall
+        likeNumLabel.font = SharedR.Font.ExtraSmall
+        commentIndexLabel.font = SharedR.Font.ExtraSmall
         likeImageView.tintColor = .desc
-        ownerLabel.font = R.Font.ExtraSmall
+        ownerLabel.font = SharedR.Font.ExtraSmall
         ownerLabel.isHidden = true
-        contentView.backgroundColor = .background
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        avatarImageView.tintColor = .body
+        userNameLabel.textColor = .desc
+        dateLabel.textColor = .border
+        likeImageView.tintColor = .desc
+        likeNumLabel.textColor = .desc
+        commentIndexLabel.textColor = .desc
+        separatorLine.backgroundColor = .border
     }
     
     @objc
@@ -283,9 +296,9 @@ class TopicCommentCell: SwipCell
     
     private func replayBtnTapped()
     {
-        if let username = commentModel?.username
+        if let username = commentModel?.username, let index = commentModel?.commentIndex
         {
-            delegate?.replyBtnTapped(withUsername: username)
+            delegate?.replyBtnTapped(withUsername: username, index: index)
         }
     }
     

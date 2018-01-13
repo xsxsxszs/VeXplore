@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 class CSSStyle
 {
@@ -31,9 +32,9 @@ class CSSStyle
             FontSizeStyle(labelName:"<H2_FONT_SIZE>", defaultFontSize: Int(UIFont.preferredFont(forTextStyle: UIFontTextStyle.title2).pointSize)),
             FontSizeStyle(labelName:"<H3_FONT_SIZE>", defaultFontSize: Int(UIFont.preferredFont(forTextStyle: UIFontTextStyle.title3).pointSize)),
             FontSizeStyle(labelName:"<PRE_FONT_SIZE>", defaultFontSize: Int(UIFont.preferredFont(forTextStyle: UIFontTextStyle.subheadline).pointSize)),
-            FontSizeStyle(labelName:"<BODY_FONT_SIZE>", defaultFontSize: Int(R.Font.Medium.pointSize)), // 正文
-            FontSizeStyle(labelName:"<SUBTLE_FONT_SIZE>", defaultFontSize: Int(R.Font.Small.pointSize)), // 附言正文
-            FontSizeStyle(labelName:"<SUBTLE_FADE_FONT_SIZE>", defaultFontSize: Int(R.Font.ExtraSmall.pointSize)) // 附言标题
+            FontSizeStyle(labelName:"<BODY_FONT_SIZE>", defaultFontSize: Int(SharedR.Font.Medium.pointSize)), // 正文
+            FontSizeStyle(labelName:"<SUBTLE_FONT_SIZE>", defaultFontSize: Int(SharedR.Font.Small.pointSize)), // 附言正文
+            FontSizeStyle(labelName:"<SUBTLE_FADE_FONT_SIZE>", defaultFontSize: Int(SharedR.Font.ExtraSmall.pointSize)) // 附言标题
         ]
         var fontCss = FONT_CSS
         FONT_SIZE_STYLE_ARRAY.forEach { fontSizeStyle in

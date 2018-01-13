@@ -6,6 +6,7 @@
 //
 
 import WebKit
+import SharedKit
 
 protocol TopicDetailViewControllerDelegate: class
 {
@@ -13,10 +14,10 @@ protocol TopicDetailViewControllerDelegate: class
     func isUnfavoriteTopic(_ unfavorite: Bool) // if unfavorite topic
 }
 
-class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, WKNavigationDelegate
+class TopicDetailViewController: SwipeTableViewController, TopicDetailDelegate, WKNavigationDelegate
 {
     var topicId = R.String.Zero
-    var topicDetailModel: TopicDetailModel!
+    var topicDetailModel: TopicDetailModel?
     var token: String?
     private var contentView = TopicDetailContentView()
     private var lastContentCellHeight: CGFloat?
@@ -27,13 +28,11 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
 
     override func viewDidLoad()
     {
-        contentView.contentWebView.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         super.viewDidLoad()
+        contentView.contentWebView.scrollView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         tableView.register(TopicDetailHeaderCell.self, forCellReuseIdentifier: String(describing: TopicDetailHeaderCell.self))
         contentView.contentWebView.navigationDelegate = self
         initTopLoading()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChanged), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
     
     deinit
@@ -41,16 +40,24 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
         contentView.contentWebView.scrollView.removeObserver(self, forKeyPath: "contentSize")
     }
     
-    @objc
-    private func handleContentSizeCategoryDidChanged()
-    {
-        prepareForReuse()
-    }
-    
     override func prepareForReuse()
     {
         super.prepareForReuse()
         contentView.load(with: topicDetailModel)
+    }
+    
+    @objc
+    override func handleContentSizeCategoryDidChanged()
+    {
+        super.handleContentSizeCategoryDidChanged()
+        prepareForReuse()
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        prepareForReuse()
     }
     
     override func observeValue(forKeyPath keyPath: String?,
@@ -112,13 +119,12 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
                 }
                 else
                 {
-                    if response.message.count > 0, response.message[0] == R.String.NeedLoginError
+                    if response.message.count > 0, response.message[0] == R.String.NotAuthorizedError
                     {
-                        weakSelf.topMessageLabel.text = R.String.NeedLoginToViewThisTopic
+                        weakSelf.topMessageLabel.text = R.String.UnableToViewThisTopic
                         weakSelf.topMessageLabel.isHidden = false
                         weakSelf.topLoadingView.isHidden = true
                         weakSelf.tableView.tableFooterView = nil
-                        User.shared.logout()
                     }
                     weakSelf.isTopLoadingFail = true
                 }
@@ -174,7 +180,7 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
         heightCell.prepareForReuse()
-        heightCell.topicTitleLabel.text = topicDetailModel.topicTitle
+        heightCell.topicTitleLabel.text = topicDetailModel?.topicTitle
         heightCell.userNameLabel.text = R.String.Placeholder
         heightCell.dateLabel.text = R.String.Placeholder
         heightCell.setNeedsLayout()
@@ -196,15 +202,15 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
                 return
             }
             
-            if let topicId = weakSelf.topicDetailModel.topicId
+            if let topicDetailModel = weakSelf.topicDetailModel, let topicId = topicDetailModel.topicId
             {
-                V2Request.Topic.favoriteTopic(!weakSelf.topicDetailModel.isFavorite, topicId: topicId, token: token, completionHandler: { (response) in
+                V2Request.Topic.favoriteTopic(!topicDetailModel.isFavorite, topicId: topicId, token: token, completionHandler: { (response) in
                     if response.success
                     {
                         weakSelf.refreshPage(completion: { (success) in
                             if success
                             {
-                                weakSelf.delegate?.isUnfavoriteTopic(!weakSelf.topicDetailModel.isFavorite)
+                                weakSelf.delegate?.isUnfavoriteTopic(!topicDetailModel.isFavorite)
                                 dispatch_async_safely_to_main_queue {
                                     weakSelf.tableView.reloadData()
                                 }
@@ -287,13 +293,13 @@ class TopicDetailViewController: BaseTableViewController, TopicDetailDelegate, W
                                 imageInfo.referenceView = webView.scrollView
                                 let imageVC = ImageViewingController(imageInfo: imageInfo)
                                 imageVC.presented(by: self)
-                                decisionHandler(.cancel)
-                                return
                             }
                         }
                     })
                 }
             }
+            decisionHandler(.cancel)
+            return
         }
         
         // handle customized url navigation

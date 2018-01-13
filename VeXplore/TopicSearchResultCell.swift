@@ -5,13 +5,14 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class TopicSearchResultCell: UITableViewCell
+class TopicSearchResultCell: BaseTableViewCell
 {
     lazy var cellTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         label.textAlignment = .center
         
@@ -21,7 +22,7 @@ class TopicSearchResultCell: UITableViewCell
     lazy var topicTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.numberOfLines = 0
         label.textColor = .body
         
@@ -62,10 +63,6 @@ class TopicSearchResultCell: UITableViewCell
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
         selectionStyle = .none
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -76,8 +73,8 @@ class TopicSearchResultCell: UITableViewCell
     override func prepareForReuse()
     {
         super.prepareForReuse()
-        cellTitleLabel.font = R.Font.Small
-        topicTitleLabel.font = R.Font.Medium
+        cellTitleLabel.font = SharedR.Font.Small
+        topicTitleLabel.font = SharedR.Font.Medium
     }
     
     override func layoutSubviews()
@@ -88,12 +85,12 @@ class TopicSearchResultCell: UITableViewCell
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         cellTitleLabel.textColor = .desc
         topicTitleLabel.textColor = .body
         separatorLine.backgroundColor = .border
-        contentView.backgroundColor = .background
     }
     
 }

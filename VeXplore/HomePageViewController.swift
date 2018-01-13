@@ -6,7 +6,7 @@
 //
 
 
-class HomePageViewController: UIViewController, UIScrollViewDelegate, HorizontalTabsViewDelegate, TabsSortingDelegate
+class HomePageViewController: BaseViewController, UIScrollViewDelegate, HorizontalTabsViewDelegate, TabsSortingDelegate
 {
     private lazy var tabsScrollView: HorizontalTabsView = {
         let view = HorizontalTabsView()
@@ -67,7 +67,7 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
 
         view.addSubview(tabsScrollView)
         view.addSubview(contentSlideView)
-        let bindings: [String: Any] = [
+        let bindings: [String : Any] = [
             "top": topLayoutGuide,
             "tabsScrollView": tabsScrollView,
             "contentSlideView": contentSlideView
@@ -85,10 +85,8 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
         edgesForExtendedLayout = .bottom
         extendedLayoutIncludesOpaqueBars = true
         
-        refreshColorScheme()
         setup()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didLogout), name: NSNotification.Name.User.DidLogout, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didLogin), name: NSNotification.Name.User.DidLogin, object: nil)
     }
@@ -114,9 +112,9 @@ class HomePageViewController: UIViewController, UIScrollViewDelegate, Horizontal
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
-        navigationController?.navigationBar.setupNavigationbar()
+        super.refreshColorScheme()
         contentSlideView.backgroundColor = .background
     }
     

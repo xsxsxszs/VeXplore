@@ -60,15 +60,14 @@ class User
         {
             notificationCount = 0
             let regex = try! NSRegularExpression(pattern: "\\([0-9]+\\)", options: [.caseInsensitive])
-            let range = regex.rangeOfFirstMatch(in: notificationString, options: [.withoutAnchoringBounds], range: NSMakeRange(0, notificationString.lenght))
+            let range = regex.rangeOfFirstMatch(in: notificationString, options: [.withoutAnchoringBounds], range: NSMakeRange(0, notificationString.count))
             guard range.length > 0 else {
                 return
             }
             if let startIndex = notificationString.index(notificationString.startIndex, offsetBy: range.location + 1, limitedBy: notificationString.endIndex),
                 let endIndex = notificationString.index(notificationString.startIndex, offsetBy: range.location + range.length - 1, limitedBy: notificationString.endIndex)
             {
-                let subRange = Range<String.Index>(startIndex..<endIndex)
-                let countString = notificationString.substring(with: subRange)
+                let countString = notificationString[startIndex..<endIndex]
                 if let count = Int(countString)
                 {
                     notificationCount = count

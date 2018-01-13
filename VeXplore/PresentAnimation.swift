@@ -60,16 +60,19 @@ class SwipeDismissInteractiveTransition: UIPercentDrivenInteractiveTransition, U
                 {
                     let superViewBounds = superView.bounds
                     var fraction: CGFloat = 0
+                    var velocity: CGFloat = 0
                     switch dismissStyle
                     {
                     case .down:
                         fraction = translation.y / superViewBounds.height
+                        velocity = gestureRecognizer.velocity(in: presentedVC?.view).y
                     case .right:
-                        fraction = translation.x / superViewBounds.height
+                        fraction = translation.x / superViewBounds.width
+                        velocity = gestureRecognizer.velocity(in: presentedVC?.view).x
                     default:
                         break
                     }
-                    shouldComplete = (fraction > 0.25)
+                    shouldComplete = (fraction > 0.25 || velocity > 800)
                     update(fraction)
                 }
             }
@@ -130,7 +133,7 @@ class BouncePresentTransition: NSObject, UIViewControllerAnimatedTransitioning
 
 class SwipeDismissTransition: NSObject, UIViewControllerAnimatedTransitioning
 {
-    private let dismissDuration = 0.45
+    private var dismissDuration = 0.45
     fileprivate var dismissStyle: TransitionDismissStyle = .down
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval
@@ -150,8 +153,10 @@ class SwipeDismissTransition: NSObject, UIViewControllerAnimatedTransitioning
             {
             case .down:
                 finalFrame = intialFrame.offsetBy(dx: 0, dy: containerView.bounds.height)
+                dismissDuration = 0.45
             case .right:
                 finalFrame = intialFrame.offsetBy(dx: containerView.bounds.width, dy: 0)
+                dismissDuration = 0.35
             default:
                 break
             }
@@ -161,7 +166,7 @@ class SwipeDismissTransition: NSObject, UIViewControllerAnimatedTransitioning
             toVC.view.alpha = 0.3
             toVC.view.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             
-            let animations: (Void) -> Void = {
+            let animations: () -> Void = {
                 fromVC.view.frame = finalFrame
                 toVC.view.alpha = 1.0
                 toVC.view.transform = CGAffineTransform.identity
@@ -193,7 +198,7 @@ enum TransitionDismissStyle: Int
     case none
 }
 
-class SwipeTransitionViewController: UIViewController, UIViewControllerTransitioningDelegate
+class SwipeTransitionViewController: BaseViewController, UIViewControllerTransitioningDelegate, UIScrollViewDelegate
 {
     private let presentTransition = BouncePresentTransition()
     private var dismissTransition: SwipeDismissTransition!

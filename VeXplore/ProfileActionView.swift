@@ -5,14 +5,15 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
-class ProfileActionView: UIView
+class ProfileActionView: BaseView
 {
     lazy var numLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .desc
         
         return label
@@ -22,7 +23,7 @@ class ProfileActionView: UIView
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.textColor = .note
         
         return label
@@ -53,10 +54,6 @@ class ProfileActionView: UIView
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[verticalLine]|", metrics: nil, views: bindings))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[numLabel]|", metrics: nil, views: bindings))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[textLabel]|", metrics: nil, views: bindings))
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -66,18 +63,18 @@ class ProfileActionView: UIView
     
     func prepareForReuse()
     {
-        numLabel.font = R.Font.Small
+        numLabel.font = SharedR.Font.Small
         numLabel.text = R.String.Zero
-        textLabel.font = R.Font.Small
+        textLabel.font = SharedR.Font.Small
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         numLabel.textColor = .desc
         textLabel.textColor = .note
         verticalLine.backgroundColor = .border
-        backgroundColor = .background
     }
     
 }

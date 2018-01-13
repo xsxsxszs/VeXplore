@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 class NotificationCell: SwipCell
 {
@@ -22,7 +23,7 @@ class NotificationCell: SwipCell
     lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.ExtraSmall
+        label.font = SharedR.Font.ExtraSmall
         label.textColor = .gray
         
         return label
@@ -31,7 +32,7 @@ class NotificationCell: SwipCell
     lazy var topicTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Medium
+        label.font = SharedR.Font.Medium
         label.numberOfLines = 0
         label.textColor = .body
         
@@ -41,7 +42,7 @@ class NotificationCell: SwipCell
     lazy var commentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = R.Font.Small
+        label.font = SharedR.Font.Small
         label.numberOfLines = 0
         label.textColor = .desc
         label.backgroundColor = .refBackground
@@ -111,9 +112,20 @@ class NotificationCell: SwipCell
         super.prepareForReuse()
         avatarImageView.image = nil
         commentLabel.text = nil
-        dateLabel.font = R.Font.ExtraSmall
-        topicTitleLabel.font = R.Font.Medium
-        commentLabel.font = R.Font.Small
+        dateLabel.font = SharedR.Font.ExtraSmall
+        topicTitleLabel.font = SharedR.Font.Medium
+        commentLabel.font = SharedR.Font.Small
+    }
+    
+    @objc
+    override func refreshColorScheme()
+    {
+        super.refreshColorScheme()
+        avatarImageView.tintColor = .body
+        topicTitleLabel.textColor = .body
+        commentLabel.textColor = .desc
+        commentLabel.backgroundColor = .refBackground
+        separatorLine.backgroundColor = .border
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool

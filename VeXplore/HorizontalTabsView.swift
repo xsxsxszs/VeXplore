@@ -5,6 +5,7 @@
 //  Copyright © 2016 Jimmy. All rights reserved.
 //
 
+import SharedKit
 
 protocol HorizontalTabsViewDelegate: class
 {
@@ -13,14 +14,14 @@ protocol HorizontalTabsViewDelegate: class
     func horizontalTabsView(_ horizontalTabsView: HorizontalTabsView, didSelectItemAt index: Int)
 }
 
-class HorizontalTabCell: UICollectionViewCell
+class HorizontalTabCell: BaseCollectionViewCell
 {
     fileprivate lazy var label: UILabel = {
         let label = UILabel(frame: self.contentView.bounds)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.textColor = .body
-        label.font = R.Font.StaticMedium
+        label.font = SharedR.Font.StaticMedium
         label.highlightedTextColor = .highlight
         
         return label
@@ -118,10 +119,6 @@ class HorizontalTabCell: UICollectionViewCell
         bottomLine.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
         bottomLineWidth = bottomLine.widthAnchor.constraint(equalToConstant: 0.0)
         bottomLineWidth.isActive = true
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)
@@ -140,8 +137,9 @@ class HorizontalTabCell: UICollectionViewCell
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         label.textColor = .body
         label.highlightedTextColor = .highlight
         bottomLine.backgroundColor = .body
@@ -176,10 +174,6 @@ class HorizontalTabsView: UICollectionView, UICollectionViewDataSource, UICollec
         dataSource = self
         delegate = self
         allowsMultipleSelection = false
-        
-        refreshColorScheme()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshColorScheme), name: NSNotification.Name.Setting.NightModeDidChange, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder)

@@ -191,7 +191,7 @@ class HTMLNode
             return []
         }
         xPathContext.pointee.node = xmlNode
-        let xPathObject = xmlXPathEvalExpression(UnsafeRawPointer(xPath.cString(using: .utf8)!).assumingMemoryBound(to: xmlChar.self), xPathContext)
+        let xPathObject = xmlXPathEvalExpression(xPath, xPathContext)
         xmlXPathFreeContext(xPathContext)
         guard  xPathObject != nil else {
             return []

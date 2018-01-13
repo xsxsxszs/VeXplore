@@ -6,6 +6,7 @@
 //
 
 import SafariServices
+import StoreKit
 
 class TopicReplyingViewController: InputViewController
 {
@@ -81,6 +82,10 @@ class TopicReplyingViewController: InputViewController
                         NotificationCenter.default.post(name: NSNotification.Name.Profile.NeedRefresh, object: nil)
                         ModalTransitioningDelegate.shared.reverseDirection = true
                         weakSelf.closeBtnTapped()
+                        if #available(iOS 10.3, *)
+                        {
+                            SKStoreReviewController.requestReview()
+                        }
                     }
                 })
             }
