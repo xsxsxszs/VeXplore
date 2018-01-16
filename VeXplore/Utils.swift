@@ -87,3 +87,6 @@ func removeUserDefaults()
     let appDomain = Bundle.main.bundleIdentifier
     UserDefaults.standard.removePersistentDomain(forName: appDomain!)
 }
+
+let isPad =  UIDevice.current.userInterfaceIdiom == .pad
+

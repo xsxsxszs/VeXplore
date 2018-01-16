@@ -49,5 +49,4 @@ protocol CommentCellDelegate: AvatarTappedDelegate, SwipeCellDelegate
     func thankBtnTapped(withReplyId replyId: String, indexPath: IndexPath)
     func ignoreBtnTapped(withReplyId replyId: String)
     func replyBtnTapped(withUsername username: String, index: String)
-    func longPress(at indexPath: IndexPath)
 }

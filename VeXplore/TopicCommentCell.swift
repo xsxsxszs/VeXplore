@@ -150,9 +150,6 @@ class TopicCommentCell: SwipCell
         separatorLine.trailingAnchor.constraint(equalTo: commentIndexLabel.trailingAnchor).isActive = true
         separatorLine.leadingAnchor.constraint(equalTo: userNameLabel.leadingAnchor).isActive = true
 
-        longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
-        addGestureRecognizer(longPressGestureRecognizer)
-        longPressGestureRecognizer.delegate = self
         enableSwipe = User.shared.isLogin
     }
     
@@ -189,22 +186,9 @@ class TopicCommentCell: SwipCell
         separatorLine.backgroundColor = .border
     }
     
-    @objc
-    private func longPress(_ sender: UILongPressGestureRecognizer)
-    {
-        if sender.state == .began
-        {
-            reset()
-            if let tableView = tableView(), let targetIndexPath = tableView.indexPath(for: self)
-            {
-                delegate?.longPress(at: targetIndexPath)
-            }
-        }
-    }
-    
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool
     {
-        if let tableView = tableView(), let targetIndexPath = tableView.indexPath(for: self)
+        if let targetIndexPath = self.indexPath
         {
             delegate?.cellWillBeginSwipe(at: targetIndexPath)
         }
@@ -306,8 +290,7 @@ class TopicCommentCell: SwipCell
     {
         if commentModel?.isThanked == false,
             let replyId = commentModel?.replyId,
-            let tableView = tableView(),
-            let targetIndexPath = tableView.indexPath(for: self)
+            let targetIndexPath = self.indexPath
         {
             delegate?.thankBtnTapped(withReplyId: replyId, indexPath: targetIndexPath)
         }

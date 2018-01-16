@@ -260,7 +260,62 @@ class TopicCommentsViewController: SwipeTableViewController, CommentImageTapDele
     {
         for cell in tableView.visibleCells as! [TopicCommentCell]
         {
-            cell.reset()
+            if cell.isDirty
+            {
+                cell.reset()
+                return
+            }
+        }
+        press(at: indexPath)
+    }
+    
+    private func press(at indexPath: IndexPath)
+    {
+        guard isCommmentContext == false else{
+            return
+        }
+        
+        if let parentVC = parent
+        {
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            
+            let cancelAction = UIAlertAction(title: R.String.Cancel, style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            
+            if User.shared.isLogin
+            {
+                let replyAction = UIAlertAction(title: R.String.Reply, style: .default) { (action) in
+                    
+                    let commentModel = self.topicComments[indexPath.row]
+                    if let username = commentModel.username, let index = commentModel.commentIndex
+                    {
+                        self.replyBtnTapped(withUsername: username, index: index)
+                    }
+                }
+                alertController.addAction(replyAction)
+            }
+            
+            let copyAction = UIAlertAction(title: R.String.CopyReplyText, style: .default) { (action) in
+                self.copyComment(at: indexPath)
+            }
+            alertController.addAction(copyAction)
+            
+            let dialogueAction = UIAlertAction(title: R.String.ViewConversationContext, style: .default) { (action) in
+                self.relevantComments(of: indexPath)
+            }
+            alertController.addAction(dialogueAction)
+            
+            let allRepliesAction = UIAlertAction(title: R.String.ViewUserAllReplies, style: .default) { (action) in
+                self.allCommentsOfMember(at: indexPath)
+            }
+            alertController.addAction(allRepliesAction)
+            
+            if let cell = tableView.cellForRow(at: indexPath)
+            {
+                alertController.popoverPresentationController?.sourceView = cell
+                alertController.popoverPresentationController?.sourceRect = cell.bounds
+            }
+            parentVC.present(alertController, animated: true, completion: nil)
         }
     }
     
@@ -382,40 +437,6 @@ class TopicCommentsViewController: SwipeTableViewController, CommentImageTapDele
     }
     
     // MARK: - CommentCellDelegate
-    func longPress(at indexPath: IndexPath)
-    {
-        guard isCommmentContext == false else{
-            return
-        }
-        
-        if let parentVC = parent
-        {
-            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-            let cancelAction = UIAlertAction(title: R.String.Cancel, style: .cancel, handler: nil)
-            alertController.addAction(cancelAction)
-            let copyAction = UIAlertAction(title: R.String.CopyReplyText, style: .default) { (action) in
-                self.copyComment(at: indexPath)
-            }
-            alertController.addAction(copyAction)
-            let dialogueAction = UIAlertAction(title: R.String.ViewConversationContext, style: .default) { (action) in
-                self.relevantComments(of: indexPath)
-            }
-            alertController.addAction(dialogueAction)
-            
-            let allRepliesAction = UIAlertAction(title: R.String.ViewUserAllReplies, style: .default) { (action) in
-                self.allCommentsOfMember(at: indexPath)
-            }
-            alertController.addAction(allRepliesAction)
-            
-            if let cell = tableView.cellForRow(at: indexPath)
-            {
-                alertController.popoverPresentationController?.sourceView = cell
-                alertController.popoverPresentationController?.sourceRect = cell.bounds
-            }
-            parentVC.present(alertController, animated: true, completion: nil)
-        }
-    }
-    
     func copyComment(at indexPath: IndexPath)
     {
         let comment = isOwnerView ? ownerComments[indexPath.row] : topicComments[indexPath.row]

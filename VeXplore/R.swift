@@ -201,7 +201,6 @@ struct R
         static let TopicPageMax = 9999
         static let EstimatedRowHeight: CGFloat = 44.0
         static let EstimatedSectionHeaderHeight: CGFloat = 20.0
-        static let SectionSeparatorHeight: CGFloat = 0.5
         static let DataPickerCellHeight: CGFloat = 30.0
         static let DataPickerHeight: CGFloat = 150.0
         static let LoadingViewHeight: CGFloat = 44.0

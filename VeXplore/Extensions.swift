@@ -111,7 +111,7 @@ extension UIViewController
 
 extension UITableViewCell
 {
-    func tableView() -> UITableView?
+    var tableView: UITableView?
     {
         var superview = self.superview
         var tableView: UITableView?
@@ -125,6 +125,11 @@ extension UITableViewCell
             superview = superview!.superview
         }
         return tableView
+    }
+    
+    var indexPath: IndexPath?
+    {
+        return tableView?.indexPath(for: self)
     }
     
 }

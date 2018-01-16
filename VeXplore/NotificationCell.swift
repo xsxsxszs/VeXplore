@@ -130,7 +130,7 @@ class NotificationCell: SwipCell
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool
     {
-        if let tableView = tableView(), let targetIndexPath = tableView.indexPath(for: self)
+        if let targetIndexPath = self.indexPath
         {
             delegate?.cellWillBeginSwipe(at: targetIndexPath)
         }

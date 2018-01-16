@@ -7,20 +7,14 @@
 
 import SharedKit
 
-class SeparatorFooterView: BaseTableViewHeaderFooterView
+class SeparatorCell: BaseTableViewCell
 {
-    override init(reuseIdentifier: String?)
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
-        super.init(reuseIdentifier: reuseIdentifier)
-        
-        let view = UIView()
-        view.backgroundColor = .border
-        backgroundView = view
-        
-        preservesSuperviewLayoutMargins = false
-        layoutMargins = .zero
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        heightAnchor.constraint(equalToConstant: 0.5).isActive = true
     }
-    
+
     required init?(coder aDecoder: NSCoder)
     {
         fatalError("init(coder:) has not been implemented")
@@ -30,7 +24,7 @@ class SeparatorFooterView: BaseTableViewHeaderFooterView
     override func refreshColorScheme()
     {
         super.refreshColorScheme()
-        backgroundView?.backgroundColor = .border
+        contentView.backgroundColor = .border
     }
     
 }

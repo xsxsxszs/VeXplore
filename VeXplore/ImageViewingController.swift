@@ -213,6 +213,7 @@ class ImageViewingController: UIViewController, UIScrollViewDelegate, UIGestureR
     {
         let translation = sender.translation(in: sender.view)
         let translationDistance = sqrt(pow(translation.x, 2) + pow(translation.y, 2))
+        let velocity = sender.velocity(in: view)
         switch sender.state
         {
         case .began:
@@ -221,7 +222,7 @@ class ImageViewingController: UIViewController, UIScrollViewDelegate, UIGestureR
             scrollView.center = CGPoint(x: originalScrollViewCenter.x + translation.x, y: originalScrollViewCenter.y + translation.y)
             snapshotView.alpha = min(max(translationDistance / dismissDistance * 0.5, 0.1), 0.6)
         default:
-            if translationDistance > dismissDistance
+            if translationDistance > dismissDistance || abs(velocity.x) > 600 || abs(velocity.y) > 600
             {
                 dismiss()
             }

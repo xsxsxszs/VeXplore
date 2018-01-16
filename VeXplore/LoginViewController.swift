@@ -62,13 +62,13 @@ class LoginViewController: SwipeTransitionViewController, UIWebViewDelegate
     
     private func notifyUser()
     {
-        let replaceScript = "document.querySelector('#Wrapper > div > div:nth-child(1) > div.cell > form > table > tbody > tr:nth-child(4) > td:nth-child(1)').innerHTML='若验证码识别不准确，可摇一摇重新识别'"
+        let replaceScript = isPad ? "document.querySelector('#Main > div.box > div.cell > form > table > tbody > tr:nth-child(3) > td:nth-child(1)').innerHTML='若验证码识别不准确，可摇一摇重新识别'" : "document.querySelector('#Wrapper > div > div:nth-child(1) > div.cell > form > table > tbody > tr:nth-child(4) > td:nth-child(1)').innerHTML='若验证码识别不准确，可摇一摇重新识别'"
         contentWebView.stringByEvaluatingJavaScript(from: replaceScript)
     }
     
     private func recognizeCaptcha()
     {
-        let captchaScript = "document.querySelector('#Wrapper > div > div:nth-child(1) > div.cell > form > table > tbody > tr:nth-child(3) > td > div').style.backgroundImage.slice(4, -1)"
+        let captchaScript = isPad ? "document.querySelector('#Main > div.box > div.cell > form > table > tbody > tr:nth-child(3) > td:nth-child(2) > div:nth-child(1)').style.backgroundImage.slice(4, -1)" : "document.querySelector('#Wrapper > div > div:nth-child(1) > div.cell > form > table > tbody > tr:nth-child(3) > td > div').style.backgroundImage.slice(4, -1)"
         if let captchaURLString = contentWebView.stringByEvaluatingJavaScript(from: captchaScript),
             captchaURLString.contains("/_captcha?once=")
         {
@@ -76,7 +76,7 @@ class LoginViewController: SwipeTransitionViewController, UIWebViewDelegate
             V2Request.OCR.recognize(captchaURLString: captchaURLString, completion: { (success, captcha) in
                 if success
                 {
-                    let fillCaptchaScript = String(format: "document.querySelector('#Wrapper > div > div:nth-child(1) > div.cell > form > table > tbody > tr:nth-child(4) > td:nth-child(2) > input').value='%@'", captcha)
+                    let fillCaptchaScript = String(format: isPad ? "document.querySelector('#Main > div.box > div.cell > form > table > tbody > tr:nth-child(3) > td:nth-child(2) > input').value='%@'" : "document.querySelector('#Wrapper > div > div:nth-child(1) > div.cell > form > table > tbody > tr:nth-child(4) > td:nth-child(2) > input').value='%@'", captcha)
                     self.contentWebView.stringByEvaluatingJavaScript(from: fillCaptchaScript)
                     UIApplication.shared.isNetworkActivityIndicatorVisible = false
                 }
@@ -90,13 +90,14 @@ class LoginViewController: SwipeTransitionViewController, UIWebViewDelegate
     
     private func verifyLoginStatus()
     {
-        let notificationsSript = "document.querySelectorAll(\"a[href^='/notifications']\")[0].text.includes('未读提醒')"
+        let notificationsSript = "document.querySelectorAll(\"a[href^='/settings']\").length>0"
         let usernamesSript = "document.querySelectorAll(\"a[href^='/member/']\")[0].href.split('/').pop()"
         if let isLogin = contentWebView.stringByEvaluatingJavaScript(from: notificationsSript)?.boolValue,
             isLogin == true,
             let username = contentWebView.stringByEvaluatingJavaScript(from: usernamesSript),
             username.count > 0
         {
+            // daily redeem
             V2Request.Topic.getTabList { (response) in
             }
             NotificationCenter.default.post(name: NSNotification.Name.User.DidLogin, object: nil)

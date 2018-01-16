@@ -150,7 +150,7 @@ class HorizontalTabCell: BaseCollectionViewCell
 }
 
 
-class HorizontalTabsView: UICollectionView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
+class HorizontalTabsView: BaseCollectionView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
 {
     private let cellWidth: CGFloat =  66.0
     weak var tabsDelegate: HorizontalTabsViewDelegate?
@@ -191,8 +191,9 @@ class HorizontalTabsView: UICollectionView, UICollectionViewDataSource, UICollec
     }
     
     @objc
-    private func refreshColorScheme()
+    override func refreshColorScheme()
     {
+        super.refreshColorScheme()
         backgroundColor = .subBackground
     }
     

@@ -106,6 +106,7 @@ class InputViewController: BaseViewController, SquareLoadingViewDelegate, SFSafa
     override func refreshColorScheme()
     {
         super.refreshColorScheme()
+        view.backgroundColor = .clear
         backgroudView.backgroundColor = .subBackground
         inputContainerView.backgroundColor = .background
     }
@@ -392,6 +393,7 @@ class InputContainerView: BaseView
         addConstraint(titleTextViewHeight)
         
         layer.cornerRadius = 10
+        layer.borderWidth = 1
         clipsToBounds = true
         layer.shadowOpacity = 0.7
         layer.shadowOffset = CGSize.zero
@@ -419,6 +421,7 @@ class InputContainerView: BaseView
     override func refreshColorScheme()
     {
         super.refreshColorScheme()
+        layer.borderColor = UIColor.border.cgColor
         titleLabel.textColor = .gray
         cancelBtn.tintColor = .desc
         postBtn.tintColor = .border

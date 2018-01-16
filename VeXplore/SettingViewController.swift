@@ -25,6 +25,7 @@ private enum ConfigSectionRow: Int
     case enableTabBarScrollHidden
     case addReplyIndex
     case fontSetting
+    case separator
 }
 
 private enum NightModeSectionRow: Int
@@ -32,6 +33,7 @@ private enum NightModeSectionRow: Int
     case title = 0
     case alwaysEnableNightMode
     case nightModeSchedule
+    case separator
 }
 
 private enum FeedbackSectionRow: Int
@@ -40,6 +42,7 @@ private enum FeedbackSectionRow: Int
     case contact
     case evaluate
     case openSource
+    case separator
 }
 
 class SettingViewController: BaseTableViewController, MFMailComposeViewControllerDelegate, NightModeScheduleDelegate
@@ -65,30 +68,21 @@ class SettingViewController: BaseTableViewController, MFMailComposeViewControlle
 
         tableView.register(SettingHeaderCell.self, forCellReuseIdentifier: String(describing: SettingHeaderCell.self))
         tableView.register(SettingCell.self, forCellReuseIdentifier: String(describing: SettingCell.self))
+        tableView.register(SeparatorCell.self, forCellReuseIdentifier: String(describing: SeparatorCell.self))
         tableView.register(VersionCell.self, forCellReuseIdentifier: String(describing: VersionCell.self))
-        tableView.register(SeparatorFooterView.self, forHeaderFooterViewReuseIdentifier: String(describing: SeparatorFooterView.self))
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = R.Constant.EstimatedRowHeight
-        tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.sectionFooterHeight = R.Constant.SectionSeparatorHeight
         tableView.cellLayoutMarginsFollowReadableWidth = false
         
         let closeBtn = UIBarButtonItem(image: R.Image.Close, style: .plain, target: self, action: #selector(closeBtnTapped))
         navigationItem.leftBarButtonItem = closeBtn
         
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshFontSettingInfo), name: NSNotification.Name.Setting.FontsizeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshFontSettingInfo), name: Notification.Name.Setting.FontsizeDidChange, object: nil)
     }
     
     private func alwaysEnableNightModeDidChange()
     {
-        if UserDefaults.isNightModeAlwaysEnabled
-        {
-            tableView.deleteRows(at: [IndexPath(row: 2, section: SettingSection.nightMode.rawValue)], with: .automatic)
-        }
-        else
-        {
-            tableView.insertRows(at: [IndexPath(row: 2, section: SettingSection.nightMode.rawValue)], with: .automatic)
-        }
+        tableView.reloadRows(at: [IndexPath(row: NightModeSectionRow.nightModeSchedule.rawValue, section: SettingSection.nightMode.rawValue)], with: .automatic)
         NotificationCenter.default.post(name: Notification.Name.Setting.NightModeDidChange, object: nil)
     }
     
@@ -123,11 +117,11 @@ class SettingViewController: BaseTableViewController, MFMailComposeViewControlle
         switch settingSection
         {
         case .config:
-            return 8
+            return 9
         case .nightMode:
-            return UserDefaults.isNightModeAlwaysEnabled ? 2 : 3
-        case .feedback:
             return 4
+        case .feedback:
+            return 5
         case .version:
             return 1
         }
@@ -206,6 +200,9 @@ class SettingViewController: BaseTableViewController, MFMailComposeViewControlle
                 cell.accessoryType = .disclosureIndicator
                 cell.line.isHidden = (indexPath.row == 1)
                 return cell
+            case .separator:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SeparatorCell.self), for: indexPath) as! SeparatorCell
+                return cell
             }
         case .nightMode:
             let nightModeSectionRow = NightModeSectionRow(rawValue: indexPath.row)!
@@ -233,6 +230,9 @@ class SettingViewController: BaseTableViewController, MFMailComposeViewControlle
                 cell.accessoryType = .disclosureIndicator
                 cell.line.isHidden = (indexPath.row == 1)
                 return cell
+            case .separator:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SeparatorCell.self), for: indexPath) as! SeparatorCell
+                return cell
             }
         case .feedback:
             let feedbackSectionRow = FeedbackSectionRow(rawValue: indexPath.row)!
@@ -257,6 +257,9 @@ class SettingViewController: BaseTableViewController, MFMailComposeViewControlle
                 cell.leftLabel.text = R.String.OpenSource
                 cell.line.isHidden = (indexPath.row == 1)
                 return cell
+            case .separator:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SeparatorCell.self), for: indexPath) as! SeparatorCell
+                return cell
             }
         case .version:
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: VersionCell.self), for: indexPath) as! VersionCell
@@ -264,19 +267,26 @@ class SettingViewController: BaseTableViewController, MFMailComposeViewControlle
         }
     }
     
-    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView?
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
-        let settingSection = SettingSection(rawValue: section)!
+        let settingSection = SettingSection(rawValue: indexPath.section)!
         switch settingSection
         {
-        case .config, .nightMode, .feedback:
-            let headerView: SeparatorFooterView! = tableView.dequeueReusableHeaderFooterView(withIdentifier: String(describing: SeparatorFooterView.self)) as? SeparatorFooterView ?? SeparatorFooterView()
-            return headerView
+        case .nightMode:
+            let nightModeSectionRow = NightModeSectionRow(rawValue: indexPath.row)!
+            switch nightModeSectionRow
+            {
+            case .nightModeSchedule:
+                return UserDefaults.isNightModeAlwaysEnabled ? 0 : UITableViewAutomaticDimension
+            default:
+                break
+            }
         default:
-            return nil
+            break
         }
+        return UITableViewAutomaticDimension
     }
-    
+
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
     {
         let settingSection = SettingSection(rawValue: indexPath.section)!
